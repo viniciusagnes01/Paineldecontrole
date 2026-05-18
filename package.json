@@ -1,0 +1,11 @@
+{
+  "name": "v4-command-center",
+  "version": "6.0.0",
+  "private": true,
+  "description": "Painel operacional V4 Company responsivo com CRM dinâmico Google Sheets, mídia, LPs, pixels, concorrentes SEMrush, eKyte e integrações.",
+  "scripts": {
+    "start": "python3 -m http.server 5173",
+    "test:layout": "node tests/layout-check.js"
+  },
+  "devDependencies": {}
+}

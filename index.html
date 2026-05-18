@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V4 Command Center</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main" id="main"></main>
+  </div>
+
+  <template id="metric-card-template">
+    <article class="metric-card glass-card">
+      <div class="metric-card__top">
+        <span class="metric-title"></span>
+        <span class="metric-icon"></span>
+      </div>
+      <strong class="metric-value"></strong>
+      <small class="metric-subtitle"></small>
+      <div class="sparkline"><span></span></div>
+    </article>
+  </template>
+
+  <script src="src/data/seed.js"></script>
+  <script src="src/services/integrations.js"></script>
+  <script src="src/services/sheets-crm.js"></script>
+  <script src="src/services/sheets-performance.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
