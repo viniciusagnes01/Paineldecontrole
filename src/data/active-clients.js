@@ -1,4 +1,16 @@
 (function () {
+  function makeGrowthPack(status, spreadsheetId, title) {
+    return {
+      status,
+      type: 'google_spreadsheet',
+      spreadsheetId: spreadsheetId || '',
+      url: spreadsheetId ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}` : '',
+      title: title || '',
+      resultSource: status === 'located',
+      sourceEvidenceRequired: true
+    };
+  }
+
   const OFFICIAL_ACTIVE_CLIENTS = Object.freeze([
     {
       id: 'alphaville',
@@ -6,7 +18,8 @@
       initials: 'AL',
       groupId: '120363257134796140',
       driveFolderId: '1lG21qv4S7LCWhHe7gBw73NPlDSJ4m-yi',
-      driveUrl: 'https://drive.google.com/drive/folders/1lG21qv4S7LCWhHe7gBw73NPlDSJ4m-yi'
+      driveUrl: 'https://drive.google.com/drive/folders/1lG21qv4S7LCWhHe7gBw73NPlDSJ4m-yi',
+      growthPack: makeGrowthPack('located', '1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws', 'Alphaville Sacadas | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'yousafer',
@@ -14,7 +27,8 @@
       initials: 'YS',
       groupId: '120363299569409896',
       driveFolderId: '1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
-      driveUrl: 'https://drive.google.com/drive/folders/1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY'
+      driveUrl: 'https://drive.google.com/drive/folders/1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
+      growthPack: makeGrowthPack('located', '1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'prime',
@@ -22,7 +36,8 @@
       initials: 'PR',
       groupId: '120363418609215409',
       driveFolderId: '1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
-      driveUrl: 'https://drive.google.com/drive/folders/1ynLKciynIzr7gVtgiq3fy5IoTranCFAn'
+      driveUrl: 'https://drive.google.com/drive/folders/1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
+      growthPack: makeGrowthPack('located', '1BOTJF5ymnYHZ69mhyvCUZZWqyGOEf2boeRFza3L5awI', 'Prime | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'multimed',
@@ -30,7 +45,8 @@
       initials: 'MM',
       groupId: '120363423606250960',
       driveFolderId: '1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
-      driveUrl: 'https://drive.google.com/drive/folders/1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB'
+      driveUrl: 'https://drive.google.com/drive/folders/1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
+      growthPack: makeGrowthPack('located', '1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'treinando-online',
@@ -38,7 +54,8 @@
       initials: 'TO',
       groupId: '120363421384631664',
       driveFolderId: '14sOPVe-9YiZrmQbKPLmEIg0CHrFlALq2',
-      driveUrl: 'https://drive.google.com/drive/folders/14sOPVe-9YiZrmQbKPLmEIg0CHrFlALq2'
+      driveUrl: 'https://drive.google.com/drive/folders/14sOPVe-9YiZrmQbKPLmEIg0CHrFlALq2',
+      growthPack: makeGrowthPack('located', '1rnD4jIpKfX5DAQMETQhOG-ULg81iAglJoej_AY8ArvA', 'Treinando Onlinne  | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'seg-eletronic',
@@ -46,7 +63,8 @@
       initials: 'SE',
       groupId: '120363427075801557',
       driveFolderId: '1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
-      driveUrl: 'https://drive.google.com/drive/folders/1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW'
+      driveUrl: 'https://drive.google.com/drive/folders/1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
+      growthPack: makeGrowthPack('located', '1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic| GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'espaco-master',
@@ -54,7 +72,8 @@
       initials: 'EM',
       groupId: '120363424198629431',
       driveFolderId: '1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
-      driveUrl: 'https://drive.google.com/drive/folders/1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC'
+      driveUrl: 'https://drive.google.com/drive/folders/1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
+      growthPack: makeGrowthPack('not_located', '', 'Nao localizado no Drive pelos nomes Espaco Master / Master GrowthPack')
     },
     {
       id: 'st1-internet',
@@ -62,7 +81,8 @@
       initials: 'ST',
       groupId: '120363403300629023',
       driveFolderId: '1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
-      driveUrl: 'https://drive.google.com/drive/folders/1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw'
+      driveUrl: 'https://drive.google.com/drive/folders/1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
+      growthPack: makeGrowthPack('located', '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet  | GrowthPack V26 (Inside Sales)')
     },
     {
       id: 'sindihoteleiros-cuidar-on',
@@ -70,7 +90,8 @@
       initials: 'SH',
       groupId: '120363372501205454',
       driveFolderId: '17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
-      driveUrl: 'https://drive.google.com/drive/folders/17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy'
+      driveUrl: 'https://drive.google.com/drive/folders/17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
+      growthPack: makeGrowthPack('not_located', '', 'Nao localizado no Drive pelos nomes SINDIHOTELEIROS / Sindi / Growth')
     }
   ]);
 
@@ -80,8 +101,10 @@
     allowCrossClientSearch: false,
     requireGroupId: true,
     requireDriveFolderId: true,
+    requireGrowthPackForResults: true,
     requireSourceEvidence: true,
     unknownClientBehavior: 'block_response',
+    missingGrowthPackBehavior: 'show_growth_pack_not_located',
     notFoundBehavior: 'say_not_found_in_client_drive',
     activeClientCount: OFFICIAL_ACTIVE_CLIENTS.length
   });
@@ -113,7 +136,7 @@
       ticket: 0,
       ctr: 0,
       conversion: 0,
-      dataSource: 'drive-not-synced'
+      dataSource: 'growthpack-not-synced'
     };
   }
 
@@ -135,19 +158,37 @@
     };
   }
 
-  function emptyPerformanceSheets() {
+  function performanceSheetsFromGrowthPack(growthPack) {
+    if (growthPack?.status !== 'located') {
+      return {
+        type: 'growthPackSpreadsheet',
+        spreadsheetId: '',
+        url: '',
+        monthlySheetName: '',
+        weeklySheetName: '',
+        monthlyGid: '',
+        weeklyGid: '',
+        metaRawSheetName: '',
+        googleRawSheetName: '',
+        proxyUrl: '',
+        status: 'GrowthPack nao localizado para este cliente',
+        lastSync: ''
+      };
+    }
+
     return {
-      type: 'googleDriveFolder',
-      spreadsheetId: '',
-      url: '',
-      monthlySheetName: '',
-      weeklySheetName: '',
+      type: 'growthPackSpreadsheet',
+      spreadsheetId: growthPack.spreadsheetId,
+      url: growthPack.url,
+      title: growthPack.title,
+      monthlySheetName: '1.0 Mensal',
+      weeklySheetName: '2.0 Semanal',
       monthlyGid: '',
       weeklyGid: '',
-      metaRawSheetName: '',
-      googleRawSheetName: '',
+      metaRawSheetName: 'bd Meta Ads',
+      googleRawSheetName: 'bd Google Ads ',
       proxyUrl: '',
-      status: 'Aguardando leitura da pasta Drive oficial',
+      status: 'GrowthPack vinculado - aguardando sincronizacao API',
       lastSync: ''
     };
   }
@@ -162,6 +203,7 @@
       groupId: client.groupId,
       driveFolderId: client.driveFolderId,
       driveUrl: client.driveUrl,
+      growthPack: client.growthPack,
       segment: 'Nao informado na base oficial',
       crm: 'Nao informado na base oficial',
       responsible: 'Vinicius Agnes',
@@ -174,7 +216,7 @@
       goals: emptyGoals(),
       lps: [],
       crmSheet: emptyCrmSheet(),
-      performanceSheets: emptyPerformanceSheets(),
+      performanceSheets: performanceSheetsFromGrowthPack(client.growthPack),
       knowledgeBase: {
         type: 'google_drive_folder',
         folderId: client.driveFolderId,
@@ -187,7 +229,8 @@
         clientScopedOnly: true,
         allowDemoData: false,
         allowCrossClientSearch: false,
-        requireEvidence: true
+        requireEvidence: true,
+        resultSource: client.growthPack?.status === 'located' ? 'growthPack' : 'not_located'
       }
     };
   }
@@ -199,7 +242,7 @@
       ...(seed.settings || {}),
       dataMode: GUARDRAILS.dataMode,
       allowDemoData: false,
-      period: 'Base oficial ativa - Google Drive por cliente',
+      period: 'Base oficial ativa - Drive + GrowthPack por cliente',
       refreshMode: 'Drive/API',
       workspace: 'V4 Company',
       operator: 'Vinicius Agnes'
@@ -217,7 +260,7 @@
       {
         id: 'official-drive-db-enabled',
         type: 'sync',
-        text: 'Base oficial habilitada: dados por cliente devem vir apenas da pasta Drive vinculada ao groupId.',
+        text: 'Base oficial habilitada: dados por cliente devem vir apenas da pasta Drive e GrowthPack vinculados ao groupId.',
         time: 'agora'
       }
     ];
@@ -226,13 +269,13 @@
         id: 'official-client-scope',
         level: 'ok',
         text: 'Escopo travado nos clientes ativos enviados',
-        detail: `${OFFICIAL_ACTIVE_CLIENTS.length} clientes oficiais carregados por groupId e driveFolderId.`
+        detail: `${OFFICIAL_ACTIVE_CLIENTS.length} clientes oficiais carregados por groupId, driveFolderId e GrowthPack.`
       },
       {
         id: 'demo-data-disabled',
         level: 'warning',
         text: 'Dados demonstrativos desativados',
-        detail: 'O painel nao deve exibir metricas de cliente sem evidencia da pasta Drive oficial.'
+        detail: 'O painel nao deve exibir metricas de cliente sem evidencia da pasta Drive ou GrowthPack oficial.'
       }
     ];
   }
@@ -265,6 +308,8 @@
       groupId: client.groupId,
       driveFolderId: client.driveFolderId,
       driveUrl: client.driveUrl,
+      growthPack: client.growthPack,
+      growthPackSpreadsheetId: client.growthPack?.spreadsheetId || '',
       scopeStatus: 'locked',
       guardrails: GUARDRAILS
     };
