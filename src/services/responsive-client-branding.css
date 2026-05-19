@@ -1,4 +1,194 @@
 /* Runtime layout fixes for responsive client-facing views. */
+:root {
+  --sidebar: 300px !important;
+}
+
+html,
+body,
+.app-shell {
+  min-height: 100dvh !important;
+}
+
+body {
+  overflow-x: hidden !important;
+}
+
+.sidebar {
+  height: 100dvh !important;
+  padding: 14px 14px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  overflow: hidden !important;
+}
+
+.brand-block {
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  margin-bottom: 8px !important;
+}
+
+.brand-logo {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 14px !important;
+}
+
+.brand-title {
+  font-size: .98rem !important;
+}
+
+.brand-subtitle {
+  font-size: .78rem !important;
+}
+
+.nav-stack {
+  gap: 8px !important;
+}
+
+.nav-btn {
+  min-height: 42px !important;
+  padding: 9px 12px !important;
+  border-radius: 14px !important;
+}
+
+.sidebar-card {
+  margin-top: 6px !important;
+  padding: 12px !important;
+  border-radius: 16px !important;
+}
+
+.sidebar-card strong {
+  font-size: 1.16rem !important;
+  margin: 4px 0 !important;
+}
+
+.sidebar-card p {
+  font-size: .85rem !important;
+  line-height: 1.1 !important;
+  margin-bottom: 8px !important;
+}
+
+.sidebar-section-title {
+  margin: 8px 0 6px !important;
+  font-size: .68rem !important;
+}
+
+.client-list {
+  display: grid !important;
+  gap: 8px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 4px !important;
+  padding-bottom: 16px !important;
+  min-height: 0 !important;
+}
+
+.client-btn {
+  min-height: 58px !important;
+  padding: 9px 10px !important;
+  border-radius: 16px !important;
+  grid-template-columns: 44px minmax(0, 1fr) !important;
+  gap: 10px !important;
+}
+
+.client-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  font-size: .88rem !important;
+}
+
+.client-name {
+  font-size: .9rem !important;
+  line-height: 1.05 !important;
+}
+
+.client-meta {
+  font-size: .76rem !important;
+  line-height: 1.05 !important;
+}
+
+.tab-rail {
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  justify-content: flex-start !important;
+  padding-bottom: 8px !important;
+}
+
+.tab-btn {
+  flex: 0 0 auto !important;
+}
+
+.source-filter-panel,
+.date-filter-panel {
+  margin-bottom: 16px !important;
+}
+
+.source-filter-head,
+.date-filter-head {
+  align-items: flex-start !important;
+}
+
+.source-filter-actions,
+.date-filter-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  justify-content: flex-end !important;
+}
+
+.source-filter-grid,
+.date-filter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 14px !important;
+  margin-top: 18px !important;
+}
+
+.date-filter-form {
+  display: flex !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  align-items: flex-end !important;
+}
+
+.date-filter-form label {
+  display: grid !important;
+  gap: 6px !important;
+  color: var(--muted) !important;
+  font-weight: 800 !important;
+  font-size: .8rem !important;
+}
+
+.date-filter-form input {
+  min-height: 44px !important;
+  min-width: 150px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.06) !important;
+  color: var(--text) !important;
+  padding: 9px 12px !important;
+}
+
+.client-logo-img,
+.identity-logo-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.identity-mark.has-logo {
+  padding: 18px !important;
+  background: rgba(255, 255, 255, .96) !important;
+}
+
+.client-avatar.has-logo {
+  background: rgba(255, 255, 255, .96) !important;
+  padding: 7px !important;
+}
+
 @media (max-width: 1180px) {
   .app-shell {
     grid-template-columns: 1fr !important;
@@ -15,9 +205,7 @@
   }
 
   .client-list {
-    display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
-    gap: 10px !important;
     max-height: none !important;
     overflow: visible !important;
   }
@@ -43,21 +231,11 @@
     min-height: auto !important;
   }
 
-  .tab-rail {
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    justify-content: flex-start !important;
-    padding-bottom: 8px !important;
-  }
-
-  .tab-btn {
-    flex: 0 0 auto !important;
-  }
-
   .metric-grid,
   .dashboard-grid,
   .insight-grid,
-  .source-filter-grid {
+  .source-filter-grid,
+  .date-filter-grid {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
   }
 
@@ -95,14 +273,18 @@
 
   .client-tags,
   .source-actions,
-  .source-filter-actions {
+  .source-filter-actions,
+  .date-filter-actions {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
   }
 
   .source-actions .btn,
-  .source-filter-actions .btn {
+  .source-filter-actions .btn,
+  .date-filter-actions .btn,
+  .date-filter-form input,
+  .date-filter-form label {
     width: 100% !important;
   }
 
@@ -116,44 +298,4 @@
   .insight-card {
     min-width: 0 !important;
   }
-}
-
-.source-filter-panel {
-  margin-bottom: 16px !important;
-}
-
-.source-filter-head {
-  align-items: flex-start !important;
-}
-
-.source-filter-actions {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  justify-content: flex-end !important;
-}
-
-.source-filter-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
-  gap: 14px !important;
-  margin-top: 18px !important;
-}
-
-.client-logo-img,
-.identity-logo-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  display: block !important;
-}
-
-.identity-mark.has-logo {
-  padding: 18px !important;
-  background: rgba(255, 255, 255, .96) !important;
-}
-
-.client-avatar.has-logo {
-  background: rgba(255, 255, 255, .96) !important;
-  padding: 7px !important;
 }
