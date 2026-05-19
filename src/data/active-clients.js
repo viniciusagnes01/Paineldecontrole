@@ -1,14 +1,16 @@
 (function () {
-  const OFFICIAL_DATA_VERSION = 3;
+  const OFFICIAL_DATA_VERSION = 7;
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
 
-  function makeGrowthPack(status, spreadsheetId, title) {
+  function makeGrowthPack(status, spreadsheetId, title, crmGid) {
     return {
       status,
       type: 'google_spreadsheet',
       spreadsheetId: spreadsheetId || '',
       url: spreadsheetId ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}` : '',
       title: title || '',
+      crmSheetName: status === 'located' ? 'BASE_CRM' : '',
+      crmGid: crmGid || '',
       resultSource: status === 'located',
       sourceEvidenceRequired: true
     };
@@ -22,7 +24,7 @@
       groupId: '120363257134796140',
       driveFolderId: '1lG21qv4S7LCWhHe7gBw73NPlDSJ4m-yi',
       driveUrl: 'https://drive.google.com/drive/folders/1lG21qv4S7LCWhHe7gBw73NPlDSJ4m-yi',
-      growthPack: makeGrowthPack('located', '1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws', 'Alphaville Sacadas | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws', 'Alphaville Sacadas | GrowthPack V26 (Inside Sales)', '833926654')
     },
     {
       id: 'yousafer',
@@ -31,16 +33,16 @@
       groupId: '120363299569409896',
       driveFolderId: '1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
       driveUrl: 'https://drive.google.com/drive/folders/1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
-      growthPack: makeGrowthPack('located', '1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)', '')
     },
     {
       id: 'prime',
-      name: 'Prime',
+      name: 'Prime Mecânica',
       initials: 'PR',
       groupId: '120363418609215409',
       driveFolderId: '1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
       driveUrl: 'https://drive.google.com/drive/folders/1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
-      growthPack: makeGrowthPack('located', '1BOTJF5ymnYHZ69mhyvCUZZWqyGOEf2boeRFza3L5awI', 'Prime | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8', 'Nova Atualizado Growth Pack 3.1 [Prime]', '1986904416')
     },
     {
       id: 'multimed',
@@ -49,7 +51,7 @@
       groupId: '120363423606250960',
       driveFolderId: '1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
       driveUrl: 'https://drive.google.com/drive/folders/1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
-      growthPack: makeGrowthPack('located', '1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)', '')
     },
     {
       id: 'treinando-online',
@@ -58,7 +60,7 @@
       groupId: '120363421384631664',
       driveFolderId: '14sOPVe-9YiZrmQbKPLmEIg0CHrFlALq2',
       driveUrl: 'https://drive.google.com/drive/folders/14sOPVe-9YiZrmQbKPLmEIg0CHrFlALq2',
-      growthPack: makeGrowthPack('located', '1rnD4jIpKfX5DAQMETQhOG-ULg81iAglJoej_AY8ArvA', 'Treinando Onlinne  | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1rnD4jIpKfX5DAQMETQhOG-ULg81iAglJoej_AY8ArvA', 'Treinando Onlinne | GrowthPack V26 (Inside Sales)', '')
     },
     {
       id: 'seg-eletronic',
@@ -67,7 +69,7 @@
       groupId: '120363427075801557',
       driveFolderId: '1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
       driveUrl: 'https://drive.google.com/drive/folders/1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
-      growthPack: makeGrowthPack('located', '1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic| GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic | GrowthPack V26 (Inside Sales)', '1929982003')
     },
     {
       id: 'espaco-master',
@@ -76,7 +78,7 @@
       groupId: '120363424198629431',
       driveFolderId: '1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
       driveUrl: 'https://drive.google.com/drive/folders/1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
-      growthPack: makeGrowthPack('not_located', '', 'Nao localizado no Drive pelos nomes Espaco Master / Master GrowthPack')
+      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para Espaco Master', '')
     },
     {
       id: 'st1-internet',
@@ -85,7 +87,7 @@
       groupId: '120363403300629023',
       driveFolderId: '1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
       driveUrl: 'https://drive.google.com/drive/folders/1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
-      growthPack: makeGrowthPack('located', '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet  | GrowthPack V26 (Inside Sales)')
+      growthPack: makeGrowthPack('located', '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet | GrowthPack V26 (Inside Sales)', '1699545222')
     },
     {
       id: 'sindihoteleiros-cuidar-on',
@@ -94,7 +96,7 @@
       groupId: '120363372501205454',
       driveFolderId: '17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
       driveUrl: 'https://drive.google.com/drive/folders/17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
-      growthPack: makeGrowthPack('not_located', '', 'Nao localizado no Drive pelos nomes SINDIHOTELEIROS / Sindi / Growth')
+      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para SindiHoteleiros', '')
     }
   ]);
 
@@ -168,11 +170,11 @@
       spreadsheetId: growthPack.spreadsheetId,
       url: growthPack.url,
       title: growthPack.title,
-      sheetName: 'BASE_CRM',
+      sheetName: growthPack.crmSheetName || 'BASE_CRM',
       dashboardSheetName: 'DASH_CRM',
-      gid: '',
+      gid: growthPack.crmGid || '',
       proxyUrl: '',
-      status: 'GrowthPack vinculado - aguardando sincronizacao CRM',
+      status: 'GrowthPack CRM vinculado - aguardando sincronizacao',
       lastSync: ''
     };
   }
@@ -227,7 +229,7 @@
       crm: 'Nao informado na base oficial',
       responsible: 'Vinicius Agnes',
       status: 'Base Drive + GrowthPack vinculados',
-      health: 0,
+      health: 70,
       color: ui.color,
       accent: ui.accent,
       mascot: client.initials,
@@ -269,34 +271,16 @@
     };
 
     seed.clients = OFFICIAL_ACTIVE_CLIENTS.map(toOfficialClient);
-
     ['pixels', 'competitors', 'campaigns', 'creatives', 'tasks', 'actionPlan'].forEach((collection) => {
       seed[collection] = [];
     });
 
     seed.crmSnapshots = {};
     seed.performanceSnapshots = {};
-    seed.events = [
-      {
-        id: 'official-drive-db-enabled',
-        type: 'sync',
-        text: 'Base oficial habilitada: dados por cliente devem vir apenas da pasta Drive e GrowthPack vinculados ao groupId.',
-        time: 'agora'
-      }
-    ];
+    seed.events = [{ id: 'official-drive-db-enabled', type: 'sync', text: 'Base oficial habilitada: dados por cliente devem vir apenas da pasta Drive e GrowthPack vinculados ao groupId.', time: 'agora' }];
     seed.alerts = [
-      {
-        id: 'official-client-scope',
-        level: 'ok',
-        text: 'Escopo travado nos clientes ativos enviados',
-        detail: `${OFFICIAL_ACTIVE_CLIENTS.length} clientes oficiais carregados por groupId, driveFolderId e GrowthPack.`
-      },
-      {
-        id: 'demo-data-disabled',
-        level: 'warning',
-        text: 'Dados demonstrativos desativados',
-        detail: 'O painel nao deve exibir metricas de cliente sem evidencia da pasta Drive ou GrowthPack oficial.'
-      }
+      { id: 'official-client-scope', level: 'ok', text: 'Escopo travado nos clientes ativos enviados', detail: `${OFFICIAL_ACTIVE_CLIENTS.length} clientes oficiais carregados por groupId, driveFolderId, GrowthPack e GID da BASE_CRM.` },
+      { id: 'demo-data-disabled', level: 'warning', text: 'Dados demonstrativos desativados', detail: 'O painel nao deve exibir metricas de cliente sem evidencia da BASE_CRM oficial.' }
     ];
   }
 
@@ -306,19 +290,7 @@
       if (!raw) return;
       const stored = JSON.parse(raw);
       const outdated = stored?.settings?.dataMode !== GUARDRAILS.dataMode || stored?.settings?.officialDataVersion !== OFFICIAL_DATA_VERSION;
-      const storedClients = Array.isArray(stored?.clients) ? stored.clients : [];
-      const wrongClientCount = storedClients.length !== OFFICIAL_ACTIVE_CLIENTS.length;
-      const hasDemoMetrics = storedClients.some((client) => client?.metrics?.dataSource !== 'growthpack-not-synced' && !stored?.crmSnapshots?.[client.id] && !stored?.performanceSnapshots?.[client.id]);
-      const missingGrowthPackAsCrm = storedClients.some((client) => {
-        const official = OFFICIAL_ACTIVE_CLIENTS.find((item) => item.id === client.id);
-        if (!official) return true;
-        if (official.growthPack.status !== 'located') return false;
-        return client?.crmSheet?.spreadsheetId !== official.growthPack.spreadsheetId || client?.performanceSheets?.spreadsheetId !== official.growthPack.spreadsheetId;
-      });
-
-      if (outdated || wrongClientCount || hasDemoMetrics || missingGrowthPackAsCrm) {
-        window.localStorage.removeItem(STORAGE_KEY);
-      }
+      if (outdated) window.localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       window.localStorage?.removeItem(STORAGE_KEY);
     }
@@ -338,12 +310,7 @@
     const client = groupId ? findOfficialClientByGroupId(groupId) : findOfficialClientById(clientId);
 
     if (!client) {
-      return {
-        ok: false,
-        error: 'CLIENT_NOT_FOUND_IN_OFFICIAL_DATABASE',
-        message: 'Cliente nao encontrado na base oficial de clientes ativos.',
-        guardrails: GUARDRAILS
-      };
+      return { ok: false, error: 'CLIENT_NOT_FOUND_IN_OFFICIAL_DATABASE', message: 'Cliente nao encontrado na base oficial de clientes ativos.', guardrails: GUARDRAILS };
     }
 
     return {
@@ -354,6 +321,7 @@
       driveUrl: client.driveUrl,
       growthPack: client.growthPack,
       growthPackSpreadsheetId: client.growthPack?.spreadsheetId || '',
+      growthPackCrmGid: client.growthPack?.crmGid || '',
       scopeStatus: 'locked',
       guardrails: GUARDRAILS
     };
