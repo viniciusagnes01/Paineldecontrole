@@ -1,0 +1,132 @@
+diff --git a/src/data/active-clients.js b/src/data/active-clients.js
+--- a/src/data/active-clients.js
++++ b/src/data/active-clients.js
+@@ -1,6 +1,6 @@
+ (function () {
+-  const OFFICIAL_DATA_VERSION = 7;
++  const OFFICIAL_DATA_VERSION = 9;
+   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
+@@
+   function crmSheetFromGrowthPack(growthPack) {
+     if (growthPack?.status !== 'located') {
+       return {
+@@
+       };
+     }
++
++    if (growthPack?.spreadsheetId === '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8') {
++      return {
++        type: 'fallbackReport',
++        spreadsheetId: '',
++        url: '',
++        title: 'Prime Mecanica - CRM em fallback ate conectar planilha/proxy correto',
++        sheetName: 'BASE_CRM',
++        dashboardSheetName: 'DASH_CRM',
++        gid: '1986904416',
++        proxyUrl: '',
++        status: 'Fallback Abril/2026',
++        lastSync: 'Usando relatorio/check-in ate conectar CRM dinamico',
++        syncBlocked: true,
++        syncBlockedReason: 'A planilha 1h6-xdgy... da Prime nao esta acessivel via CSV publico no front. Use proxy N8N/backend para sincronizacao dinamica.',
++        fallbackSnapshot: {
++          generatedAt: '2026-05-19T00:00:00.000Z',
++          rows: 179,
++          sourceLabels: ['Geral', 'Meta Ads', 'Google Ads', 'Organico'],
++          totals: { label: 'Geral', value: 0, lead: 179, mql: 16, sql: 0, opportunity: 2, purchase: 0, lost: 0, meta: 0, google: 0 },
++          rates: { leadToMql: 8.94, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 },
++          sourceFunnels: {
++            Geral: { label: 'Geral', value: 0, lead: 179, mql: 16, sql: 0, opportunity: 2, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 8.94, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++            'Meta Ads': { label: 'Meta Ads', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++            'Google Ads': { label: 'Google Ads', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++            Organico: { label: 'Organico', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } }
++          },
++          byMonth: [{ label: '04/2026', value: 0, lead: 179, mql: 16, sql: 0, opportunity: 2, purchase: 0, lost: 0, meta: 0, google: 0 }],
++          byWeek: [],
++          lossReasons: [],
++          owners: [],
++          sources: [{ label: 'Geral', value: 0, lead: 179, mql: 16, sql: 0, opportunity: 2, purchase: 0, lost: 0, meta: 0, google: 0 }],
++          lossBySource: [],
++          ownerReasonMatrix: [],
++          latest: [],
++          lostLatest: []
++        }
++      };
++    }
+ 
+     return {
+       type: 'growthPackSpreadsheet',
+@@
+   function performanceSheetsFromGrowthPack(growthPack) {
+     if (growthPack?.status !== 'located') {
+       return {
+@@
+       };
+     }
++
++    if (growthPack?.spreadsheetId === '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8') {
++      return {
++        type: 'fallbackReport',
++        spreadsheetId: '',
++        url: '',
++        title: 'Prime Mecanica - midia em fallback ate conectar planilha/proxy correto',
++        monthlySheetName: 'Relatorio Abril/2026',
++        weeklySheetName: 'Check-in Quarter / fallback',
++        monthlyGid: '',
++        weeklyGid: '',
++        metaRawSheetName: '',
++        googleRawSheetName: '',
++        monthlyProxyUrl: '',
++        weeklyProxyUrl: '',
++        proxyUrl: '',
++        status: 'Fallback Abril/2026',
++        lastSync: 'Usando relatorio/check-in ate conectar midia dinamica',
++        syncBlocked: true,
++        syncBlockedReason: 'A planilha 1h6-xdgy... e usada como GrowthPack/CRM da Prime. Nao usar como fonte dinamica de Midia & Ads.',
++        fallbackSnapshot: {
++          generatedAt: '2026-05-19T00:00:00.000Z',
++          monthly: {
++            sourceUrl: 'fallback:prime-relatorio-abril-2026',
++            current: { label: '04/2026', metrics: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 } },
++            periods: [{ label: '04/2026', metrics: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 } }],
++            totals: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 }
++          },
++          weekly: {
++            sourceUrl: 'fallback:prime-checkin-quarter',
++            current: { label: 'Check-in Quarter / fallback', metrics: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 } },
++            periods: [{ label: 'Check-in Quarter / fallback', metrics: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 } }],
++            totals: { investment: 3069.07, leads: 179, mql: 16, opportunities: 2, sales: 0, revenue: 0, cpl: 17.15, roas: 0, ctr: 0, cpc: 0, conversion: 0, pacing: 0, plannedMedia: 0 }
++          }
++        }
++      };
++    }
+ 
+     return {
+       type: 'growthPackSpreadsheet',
+diff --git a/src/services/sheets-crm.js b/src/services/sheets-crm.js
+--- a/src/services/sheets-crm.js
++++ b/src/services/sheets-crm.js
+@@ -46,6 +46,10 @@
+   }
+ 
+   async function load(source = {}) {
++    if (source.type === 'fallbackReport' && source.fallbackSnapshot) {
++      return { ok: true, sourceUrl: source.title || 'fallback-report', snapshot: { ...source.fallbackSnapshot, generatedAt: new Date().toISOString() } };
++    }
++
+     const urls = buildCsvUrls(source);
+     if (!urls.length) throw new Error('Fonte CRM não configurada.');
+     const errors = [];
+diff --git a/src/services/sheets-performance.js b/src/services/sheets-performance.js
+--- a/src/services/sheets-performance.js
++++ b/src/services/sheets-performance.js
+@@ -33,6 +33,10 @@
+   }
+ 
+   async function load(source = {}) {
++    if (source.type === 'fallbackReport' && source.fallbackSnapshot) {
++      return { ok: true, snapshot: { ...source.fallbackSnapshot, generatedAt: new Date().toISOString() } };
++    }
++
+     const [monthly, weekly] = await Promise.all([
+       loadOne(source, 'monthly'),
+       loadOne(source, 'weekly')
