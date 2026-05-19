@@ -1,0 +1,159 @@
+/* Runtime layout fixes for responsive client-facing views. */
+@media (max-width: 1180px) {
+  .app-shell {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+  }
+
+  .client-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+    gap: 10px !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .main {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 18px !important;
+    overflow: visible !important;
+  }
+
+  .client-hero,
+  .hero,
+  .source-panel,
+  .section-head {
+    grid-template-columns: 1fr !important;
+    display: grid !important;
+    gap: 18px !important;
+  }
+
+  .identity-card {
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  .tab-rail {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    justify-content: flex-start !important;
+    padding-bottom: 8px !important;
+  }
+
+  .tab-btn {
+    flex: 0 0 auto !important;
+  }
+
+  .metric-grid,
+  .dashboard-grid,
+  .insight-grid,
+  .source-filter-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  }
+
+  .span-12,
+  .span-8,
+  .span-6,
+  .span-4,
+  .span-3 {
+    grid-column: auto / span 1 !important;
+  }
+
+  .table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 12px !important;
+  }
+
+  .client-hero,
+  .hero {
+    padding: 24px !important;
+    border-radius: 24px !important;
+  }
+
+  .client-hero h1,
+  .hero h1 {
+    font-size: clamp(2rem, 12vw, 3.2rem) !important;
+    line-height: .95 !important;
+    word-break: break-word !important;
+  }
+
+  .client-tags,
+  .source-actions,
+  .source-filter-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .source-actions .btn,
+  .source-filter-actions .btn {
+    width: 100% !important;
+  }
+
+  .funnel {
+    grid-template-columns: 1fr !important;
+  }
+
+  .metric-card,
+  .glass-card,
+  .funnel-step,
+  .insight-card {
+    min-width: 0 !important;
+  }
+}
+
+.source-filter-panel {
+  margin-bottom: 16px !important;
+}
+
+.source-filter-head {
+  align-items: flex-start !important;
+}
+
+.source-filter-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  justify-content: flex-end !important;
+}
+
+.source-filter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 14px !important;
+  margin-top: 18px !important;
+}
+
+.client-logo-img,
+.identity-logo-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.identity-mark.has-logo {
+  padding: 18px !important;
+  background: rgba(255, 255, 255, .96) !important;
+}
+
+.client-avatar.has-logo {
+  background: rgba(255, 255, 255, .96) !important;
+  padding: 7px !important;
+}
