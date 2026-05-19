@@ -1,0 +1,151 @@
+diff --git a/src/data/active-clients.js b/src/data/active-clients.js
+index 579aaef..alphaville-fallback 100644
+--- a/src/data/active-clients.js
++++ b/src/data/active-clients.js
+@@ -1,6 +1,6 @@
+ (function () {
+-  const OFFICIAL_DATA_VERSION = 7;
++  const OFFICIAL_DATA_VERSION = 11;
+   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
++  const ALPHAVILLE_GROWTHPACK_ID = '1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws';
+@@
+   const OFFICIAL_ACTIVE_CLIENTS = Object.freeze([
+@@
+   ]);
++
++  const ALPHAVILLE_CRM_FALLBACK = Object.freeze({
++    generatedAt: '2026-05-19T21:00:58.898Z',
++    sourceLabel: 'Alphaville GrowthPack V26 + Atualizacao de Leads + Relatorio Abril',
++    rows: 1372,
++    totals: { label: 'Geral', value: 0, lead: 1372, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0 },
++    rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 },
++    sourceLabels: ['Geral', 'Meta Ads', 'Google Ads', 'Instagram', 'Indicacao', 'Organico'],
++    sourceFunnels: {
++      Geral: { label: 'Geral', value: 0, lead: 1372, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++      'Meta Ads': { label: 'Meta Ads', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++      'Google Ads': { label: 'Google Ads', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } },
++      'Orgânico': { label: 'Orgânico', value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, rates: { leadToMql: 0, mqlToSql: 0, sqlToOpportunity: 0, opportunityToSale: 0, saleRate: 0, lossRate: 0, ticket: 0 } }
++    },
++    byMonth: [{ label: 'GrowthPack acumulado', value: 0, lead: 1372, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0 }],
++    byWeek: [],
++    lossReasons: [
++      { label: 'O produto nao se encaixa a necessidade', value: 0, lead: 0, lost: 1 },
++      { label: 'Orcamento insuficiente', value: 0, lead: 0, lost: 1 }
++    ],
++    owners: [{ label: 'Alphaville fechamento de sacada', value: 0, lead: 1372, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0, lossRate: 0, saleRate: 0 }],
++    sources: [{ label: 'GrowthPack / BASE_CRM', value: 0, lead: 1372, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0 }],
++    lossBySource: [],
++    ownerReasonMatrix: [],
++    latest: [
++      { date: '2026-03-02', leadId: 'atualizacao-001', name: 'thais', value: 7000, owner: 'Alphaville', source: 'Indicacao', lossReason: '', flags: { lead: 1, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0 }, timestamp: 1772419200000 },
++      { date: '2026-03-02', leadId: 'atualizacao-002', name: 'vitor', value: 6450, owner: 'Alphaville', source: 'Instagram', lossReason: '', flags: { lead: 1, mql: 0, sql: 0, opportunity: 1, purchase: 0, lost: 0, meta: 1, google: 0 }, timestamp: 1772419200000 },
++      { date: '2026-03-02', leadId: 'atualizacao-003', name: 'andre', value: 7600, owner: 'Alphaville', source: 'Indicacao', lossReason: '', flags: { lead: 1, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0, meta: 0, google: 0 }, timestamp: 1772419200000 },
++      { date: '2026-03-02', leadId: 'atualizacao-004', name: 'janaina', value: 3255, owner: 'Alphaville', source: 'Instagram', lossReason: 'Perda', flags: { lead: 1, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 1, meta: 1, google: 0 }, timestamp: 1772419200000 }
++    ],
++    lostLatest: [
++      { date: '2026-03-02', leadId: 'atualizacao-004', name: 'janaina', value: 3255, owner: 'Alphaville', source: 'Instagram', lossReason: 'Perda', flags: { lead: 1, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 1, meta: 1, google: 0 }, timestamp: 1772419200000 }
++    ]
++  });
++
++  const ALPHAVILLE_PERFORMANCE_FALLBACK = Object.freeze({
++    generatedAt: '2026-05-19T21:00:58.898Z',
++    monthly: {
++      sourceUrl: 'fallback: Relatorio Mensal Alphaville Abril + GrowthPack',
++      current: { index: 1, mode: 'monthly', year: '2026', month: 'Abril', start: '01/04/2026', end: '30/04/2026', label: '04/2026', sortDate: 1775001600000, metrics: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }, raw: {} },
++      periods: [{ index: 1, mode: 'monthly', year: '2026', month: 'Abril', start: '01/04/2026', end: '30/04/2026', label: '04/2026', sortDate: 1775001600000, metrics: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }, raw: {} }],
++      totals: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }
++    },
++    weekly: {
++      sourceUrl: 'fallback: Check-ins Alphaville',
++      current: { index: 1, mode: 'weekly', year: '2026', month: 'Maio', start: '13/05/2026', end: '13/05/2026', label: '13/05/2026', sortDate: 1778630400000, metrics: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }, raw: {} },
++      periods: [{ index: 1, mode: 'weekly', year: '2026', month: 'Maio', start: '13/05/2026', end: '13/05/2026', label: '13/05/2026', sortDate: 1778630400000, metrics: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }, raw: {} }],
++      totals: { plannedMedia: 3000, investment: 3000, leads: 1372, cpl: 2.19, impressions: 1019630, clicks: 0, ctr: 0, roas: 0, revenue: 0 }
++    }
++  });
+@@
+   function crmSheetFromGrowthPack(growthPack) {
+@@
+     }
++
++    if (growthPack.spreadsheetId === ALPHAVILLE_GROWTHPACK_ID) {
++      return {
++        type: 'fallbackReport',
++        spreadsheetId: '',
++        url: growthPack.url,
++        title: growthPack.title,
++        sheetName: 'BASE_CRM',
++        dashboardSheetName: 'DASH_CRM',
++        gid: growthPack.crmGid || '833926654',
++        proxyUrl: '',
++        status: 'Fallback ativo - GrowthPack privado, usando snapshot seguro',
++        lastSync: 'Fallback carregado automaticamente',
++        syncBlocked: true,
++        syncBlockedReason: 'Google Sheets bloqueou leitura CSV direta no front-end. Usar proxy N8N para tempo real.',
++        fallbackSnapshot: ALPHAVILLE_CRM_FALLBACK
++      };
++    }
+ 
+     return {
+@@
+   function performanceSheetsFromGrowthPack(growthPack) {
+@@
+     }
++
++    if (growthPack.spreadsheetId === ALPHAVILLE_GROWTHPACK_ID) {
++      return {
++        type: 'fallbackReport',
++        spreadsheetId: '',
++        url: growthPack.url,
++        title: 'Alphaville - midia em fallback ate conectar proxy N8N',
++        monthlySheetName: 'Relatorio Abril/2026',
++        weeklySheetName: 'Check-in 13/05/2026',
++        monthlyGid: '',
++        weeklyGid: '',
++        metaRawSheetName: '',
++        googleRawSheetName: '',
++        monthlyProxyUrl: '',
++        weeklyProxyUrl: '',
++        proxyUrl: '',
++        status: 'Fallback Abril/2026',
++        lastSync: 'Usando relatorio/check-in ate conectar midia dinamica',
++        syncBlocked: true,
++        syncBlockedReason: 'A planilha do GrowthPack esta privada para fetch CSV direto. Usar proxy N8N para tempo real.',
++        fallbackSnapshot: ALPHAVILLE_PERFORMANCE_FALLBACK
++      };
++    }
+ 
+     return {
+diff --git a/src/services/sheets-crm.js b/src/services/sheets-crm.js
+index 12fa6b3..alphaville-fallback 100644
+--- a/src/services/sheets-crm.js
++++ b/src/services/sheets-crm.js
+@@ -47,6 +47,14 @@ window.V4_CRM_SHEETS = (() => {
+   }
+ 
+   async function load(source = {}) {
++    if (source.fallbackSnapshot) {
++      return {
++        ok: true,
++        sourceUrl: source.fallbackSourceUrl || source.title || 'fallbackSnapshot',
++        snapshot: source.fallbackSnapshot
++      };
++    }
++
+     const urls = buildCsvUrls(source);
+     if (!urls.length) throw new Error('Fonte CRM não configurada.');
+     const errors = [];
+diff --git a/src/services/sheets-performance.js b/src/services/sheets-performance.js
+index 14b5aa7..alphaville-fallback 100644
+--- a/src/services/sheets-performance.js
++++ b/src/services/sheets-performance.js
+@@ -34,6 +34,10 @@ window.V4_PERFORMANCE_SHEETS = (() => {
+   }
+ 
+   async function load(source = {}) {
++    if (source.fallbackSnapshot) {
++      return { ok: true, snapshot: source.fallbackSnapshot };
++    }
++
+     const [monthly, weekly] = await Promise.all([
+       loadOne(source, 'monthly'),
+       loadOne(source, 'weekly')
