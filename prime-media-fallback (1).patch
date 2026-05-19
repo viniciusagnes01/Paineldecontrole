@@ -1,0 +1,37 @@
+diff --git a/src/data/active-clients.js b/src/data/active-clients.js
+index 579aaef..primefix 100644
+--- a/src/data/active-clients.js
++++ b/src/data/active-clients.js
+@@ -1,5 +1,5 @@
+ (function () {
+-  const OFFICIAL_DATA_VERSION = 7;
++  const OFFICIAL_DATA_VERSION = 8;
+   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
+@@ -211,6 +211,27 @@
+     }
+ 
++    if (growthPack?.spreadsheetId === '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8') {
++      return {
++        type: 'fallbackReport',
++        spreadsheetId: '',
++        url: '',
++        title: 'Prime Mecânica - mídia em fallback até conectar planilha/proxy correto',
++        monthlySheetName: 'Relatório Abril/2026',
++        weeklySheetName: 'Check-in Quarter / fallback',
++        monthlyGid: '',
++        weeklyGid: '',
++        metaRawSheetName: '',
++        googleRawSheetName: '',
++        monthlyProxyUrl: '',
++        weeklyProxyUrl: '',
++        proxyUrl: '',
++        status: 'Fallback Abril/2026',
++        lastSync: 'Usando relatório/check-in até conectar mídia dinâmica',
++        syncBlocked: true,
++        syncBlockedReason: 'A planilha 1h6-xdgy... é usada como GrowthPack/CRM da Prime. Não usar como fonte dinâmica de Mídia & Ads.'
++      };
++    }
++
+     return {
+       type: 'growthPackSpreadsheet',
+       spreadsheetId: growthPack.spreadsheetId,
