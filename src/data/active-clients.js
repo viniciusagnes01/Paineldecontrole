@@ -1,4 +1,7 @@
 (function () {
+  const OFFICIAL_DATA_VERSION = 3;
+  const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
+
   function makeGrowthPack(status, spreadsheetId, title) {
     return {
       status,
@@ -97,6 +100,7 @@
 
   const GUARDRAILS = Object.freeze({
     dataMode: 'official_drive_database',
+    officialDataVersion: OFFICIAL_DATA_VERSION,
     allowDemoData: false,
     allowCrossClientSearch: false,
     requireGroupId: true,
@@ -144,16 +148,31 @@
     return { revenue: 0, leads: 0, mqlRate: 0, cac: 0, roas: 0 };
   }
 
-  function emptyCrmSheet() {
+  function crmSheetFromGrowthPack(growthPack) {
+    if (growthPack?.status !== 'located') {
+      return {
+        type: 'growthPackSpreadsheet',
+        spreadsheetId: '',
+        url: '',
+        sheetName: '',
+        dashboardSheetName: '',
+        gid: '',
+        proxyUrl: '',
+        status: 'GrowthPack nao localizado para este cliente',
+        lastSync: ''
+      };
+    }
+
     return {
-      type: 'googleDriveFolder',
-      spreadsheetId: '',
-      url: '',
-      sheetName: '',
-      dashboardSheetName: '',
+      type: 'growthPackSpreadsheet',
+      spreadsheetId: growthPack.spreadsheetId,
+      url: growthPack.url,
+      title: growthPack.title,
+      sheetName: 'BASE_CRM',
+      dashboardSheetName: 'DASH_CRM',
       gid: '',
       proxyUrl: '',
-      status: 'Aguardando leitura da pasta Drive oficial',
+      status: 'GrowthPack vinculado - aguardando sincronizacao CRM',
       lastSync: ''
     };
   }
@@ -188,7 +207,7 @@
       metaRawSheetName: 'bd Meta Ads',
       googleRawSheetName: 'bd Google Ads ',
       proxyUrl: '',
-      status: 'GrowthPack vinculado - aguardando sincronizacao API',
+      status: 'GrowthPack vinculado - aguardando sincronizacao midia',
       lastSync: ''
     };
   }
@@ -207,7 +226,7 @@
       segment: 'Nao informado na base oficial',
       crm: 'Nao informado na base oficial',
       responsible: 'Vinicius Agnes',
-      status: 'Base Drive vinculada',
+      status: 'Base Drive + GrowthPack vinculados',
       health: 0,
       color: ui.color,
       accent: ui.accent,
@@ -215,7 +234,7 @@
       metrics: emptyMetrics(),
       goals: emptyGoals(),
       lps: [],
-      crmSheet: emptyCrmSheet(),
+      crmSheet: crmSheetFromGrowthPack(client.growthPack),
       performanceSheets: performanceSheetsFromGrowthPack(client.growthPack),
       knowledgeBase: {
         type: 'google_drive_folder',
@@ -241,6 +260,7 @@
     seed.settings = {
       ...(seed.settings || {}),
       dataMode: GUARDRAILS.dataMode,
+      officialDataVersion: OFFICIAL_DATA_VERSION,
       allowDemoData: false,
       period: 'Base oficial ativa - Drive + GrowthPack por cliente',
       refreshMode: 'Drive/API',
@@ -278,6 +298,30 @@
         detail: 'O painel nao deve exibir metricas de cliente sem evidencia da pasta Drive ou GrowthPack oficial.'
       }
     ];
+  }
+
+  function purgeStaleLocalState() {
+    try {
+      const raw = window.localStorage?.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const stored = JSON.parse(raw);
+      const outdated = stored?.settings?.dataMode !== GUARDRAILS.dataMode || stored?.settings?.officialDataVersion !== OFFICIAL_DATA_VERSION;
+      const storedClients = Array.isArray(stored?.clients) ? stored.clients : [];
+      const wrongClientCount = storedClients.length !== OFFICIAL_ACTIVE_CLIENTS.length;
+      const hasDemoMetrics = storedClients.some((client) => client?.metrics?.dataSource !== 'growthpack-not-synced' && !stored?.crmSnapshots?.[client.id] && !stored?.performanceSnapshots?.[client.id]);
+      const missingGrowthPackAsCrm = storedClients.some((client) => {
+        const official = OFFICIAL_ACTIVE_CLIENTS.find((item) => item.id === client.id);
+        if (!official) return true;
+        if (official.growthPack.status !== 'located') return false;
+        return client?.crmSheet?.spreadsheetId !== official.growthPack.spreadsheetId || client?.performanceSheets?.spreadsheetId !== official.growthPack.spreadsheetId;
+      });
+
+      if (outdated || wrongClientCount || hasDemoMetrics || missingGrowthPackAsCrm) {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+    } catch (error) {
+      window.localStorage?.removeItem(STORAGE_KEY);
+    }
   }
 
   function findOfficialClientByGroupId(groupId) {
@@ -319,6 +363,8 @@
   window.V4_DATA_GUARDRAILS = GUARDRAILS;
   window.V4_FIND_CLIENT_BY_GROUP_ID = findOfficialClientByGroupId;
   window.V4_RESOLVE_CLIENT_CONTEXT = resolveOfficialClientContext;
+  window.V4_APPLY_OFFICIAL_DATABASE = applyOfficialDatabase;
 
+  purgeStaleLocalState();
   applyOfficialDatabase(window.V4_SEED);
 })();
