@@ -3,34 +3,74 @@
     'st1-internet': {
       fileId: '1tMEzaDgOvwcfdqq8GXe0EvhtyRWs9mYP',
       title: 'logo-ST1-01.png',
-      source: 'Drive > ST1 Internet > 1. Identidade Visual > MANUAL DA MARCA + LOGO E MASCOTE > LOGOS'
+      source: 'Drive > ST1 Internet > Identidade Visual > LOGOS'
     }
   };
 
+  const verifiedLogoCache = {};
+
   function logoUrl(fileId) {
-    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
   }
 
   function currentClientId() {
     return document.querySelector('.client-btn.active')?.dataset?.client || null;
   }
 
+  function restoreFallback(element) {
+    if (!element) return;
+    element.querySelectorAll('img').forEach((img) => img.remove());
+    element.classList.remove('has-logo');
+    const fallback = element.dataset.logoFallback || element.textContent || '';
+    if (fallback) element.textContent = fallback;
+  }
+
+  function preloadLogo(logo, callback) {
+    if (!logo?.fileId) return callback(null);
+    if (verifiedLogoCache[logo.fileId] === false) return callback(null);
+    if (verifiedLogoCache[logo.fileId]) return callback(verifiedLogoCache[logo.fileId]);
+
+    const src = logoUrl(logo.fileId);
+    const img = new Image();
+    img.referrerPolicy = 'no-referrer';
+    img.onload = () => {
+      if (!img.naturalWidth || img.naturalWidth < 20) {
+        verifiedLogoCache[logo.fileId] = false;
+        callback(null);
+        return;
+      }
+      verifiedLogoCache[logo.fileId] = src;
+      callback(src);
+    };
+    img.onerror = () => {
+      verifiedLogoCache[logo.fileId] = false;
+      callback(null);
+    };
+    img.src = src;
+  }
+
   function applyLogoToElement(element, logo) {
     if (!element || !logo) return;
-    if (element.querySelector('img')) return;
-    const img = document.createElement('img');
-    img.src = logoUrl(logo.fileId);
-    img.alt = logo.title || 'Logo do cliente';
-    img.loading = 'lazy';
-    img.referrerPolicy = 'no-referrer';
-    img.className = element.classList.contains('identity-mark') ? 'identity-logo-img' : 'client-logo-img';
-    img.onerror = () => {
-      img.remove();
-      element.classList.remove('has-logo');
-    };
-    element.textContent = '';
-    element.classList.add('has-logo');
-    element.appendChild(img);
+    if (!element.dataset.logoFallback) element.dataset.logoFallback = element.textContent.trim();
+    preloadLogo(logo, (src) => {
+      if (!src) {
+        restoreFallback(element);
+        return;
+      }
+      const current = element.querySelector('img');
+      if (current?.dataset?.fileId === logo.fileId) return;
+      element.textContent = '';
+      element.classList.add('has-logo');
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.dataset.fileId = logo.fileId;
+      img.className = element.classList.contains('identity-mark') ? 'identity-logo-img' : 'client-logo-img';
+      img.onerror = () => restoreFallback(element);
+      element.appendChild(img);
+    });
   }
 
   function applyBranding() {
@@ -42,9 +82,7 @@
 
     const activeClientId = currentClientId();
     const activeLogo = LOGOS_BY_CLIENT_ID[activeClientId];
-    if (activeLogo) {
-      applyLogoToElement(document.querySelector('.identity-mark'), activeLogo);
-    }
+    if (activeLogo) applyLogoToElement(document.querySelector('.identity-mark'), activeLogo);
   }
 
   window.V4_CLIENT_LOGOS = LOGOS_BY_CLIENT_ID;
