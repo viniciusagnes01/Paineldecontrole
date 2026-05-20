@@ -1,0 +1,11 @@
+# Credenciais e Ambiente Virtual
+.env
+service_account.json
+.venv/
+__pycache__/
+*.log
+
+# Node.js
+node_modules/
+dist/
+.DS_Store

@@ -207,7 +207,7 @@
       monthlyGid: '',
       weeklyGid: '',
       metaRawSheetName: 'bd Meta Ads',
-      googleRawSheetName: 'bd Google Ads ',
+      googleRawSheetName: 'bd Google Ads',
       proxyUrl: '',
       status: 'GrowthPack vinculado - aguardando sincronizacao midia',
       lastSync: ''

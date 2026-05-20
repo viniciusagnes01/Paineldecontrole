@@ -1,0 +1,5 @@
+google-ads
+facebook-business
+gspread
+google-auth
+python-dotenv
