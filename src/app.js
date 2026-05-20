@@ -152,6 +152,27 @@
     return state[collection].filter((item) => item.clientId === clientId);
   }
 
+  function hasConfiguredSource(source) {
+    return Boolean(source?.spreadsheetId || source?.url || source?.proxyUrl || source?.monthlyProxyUrl || source?.weeklyProxyUrl || source?.fallbackSnapshot);
+  }
+
+  function growthPackLabel(client) {
+    if (client.growthPack?.status === 'located') return 'GrowthPack localizado';
+    if (client.growthPack?.status === 'not_located') return 'GrowthPack não localizado';
+    return client.growthPack?.title || 'GrowthPack pendente';
+  }
+
+  function officialClientRows() {
+    return state.clients.map((client) => ({
+      name: client.name,
+      groupId: client.groupId || '-',
+      drive: client.driveFolderId || client.knowledgeBase?.folderId ? 'Drive vinculado' : 'Drive pendente',
+      growthPack: growthPackLabel(client),
+      crm: hasConfiguredSource(client.crmSheet) ? 'CRM pronto' : 'CRM pendente',
+      media: hasConfiguredSource(client.performanceSheets) ? 'Mídia pronta' : 'Mídia pendente'
+    }));
+  }
+
 
   function getCrmSnapshot(clientOrId) {
     const id = typeof clientOrId === 'string' ? clientOrId : clientOrId?.id;
@@ -337,7 +358,8 @@
           <div class="period-box">
             <small>Período</small>
             <strong>${escapeHtml(state.settings.period)}</strong>
-            <button class="btn primary" data-action="refresh">↻ Atualizar</button>
+            <button class="btn primary" data-action="sync-all-clients">Sincronizar todos</button>
+            <button class="btn ghost" data-action="refresh">↻ Atualizar</button>
           </div>
         </header>
 
@@ -478,6 +500,8 @@
             <span class="badge ok">${escapeHtml(client.status)}</span>
             <span class="badge client">Saúde: ${escapeHtml(client.health)}/100</span>
             <span class="badge client">Grupo: ${escapeHtml(client.groupId)}</span>
+            <span class="badge client">${escapeHtml(growthPackLabel(client))}</span>
+            <span class="badge client">${client.driveFolderId || client.knowledgeBase?.folderId ? 'Drive vinculado' : 'Drive pendente'}</span>
             <span class="badge client">Atualizado: ${new Date().toLocaleString('pt-BR')}</span>
           </div>
         </div>
@@ -683,7 +707,7 @@
 
   function renderPerformanceSourcePanel(client, snapshot) {
     const source = client.performanceSheets || {};
-    const configured = Boolean(source.spreadsheetId || source.url || source.proxyUrl);
+    const configured = hasConfiguredSource(source);
     return `
       <div class="source-panel">
         <div>
@@ -694,6 +718,7 @@
             ${badge(source.status || (configured ? 'Configurado' : 'Não configurado'))}
             <span class="badge client">Mensal: ${escapeHtml(source.monthlySheetName || '1.0 Mensal')}</span>
             <span class="badge client">Semanal: ${escapeHtml(source.weeklySheetName || '2.0 Semanal')}</span>
+            <span class="badge client">Fonte: ${escapeHtml(source.title || client.growthPack?.title || 'GrowthPack')}</span>
             <span class="badge client">Último sync: ${escapeHtml(source.lastSync || snapshot?.generatedAt || 'pendente')}</span>
           </div>
         </div>
@@ -702,6 +727,7 @@
           <button class="btn ghost" data-tab="client-config">Configurar fonte</button>
         </div>
       </div>
+      ${source.syncBlockedReason ? `<div class="empty">${escapeHtml(source.syncBlockedReason)}</div>` : ''}
       ${!configured ? '<div class="empty">Configure o ID da planilha ou proxy N8N em Config do Cliente.</div>' : ''}
     `;
   }
@@ -769,7 +795,7 @@
 
   function renderCrmSourcePanel(client, snapshot) {
     const source = client.crmSheet || {};
-    const configured = Boolean(source.spreadsheetId || source.url || source.proxyUrl);
+    const configured = hasConfiguredSource(source);
     return `
       <div class="source-panel">
         <div>
@@ -780,6 +806,7 @@
             ${badge(source.status || (configured ? 'Configurado' : 'Não configurado'))}
             <span class="badge client">Aba: ${escapeHtml(source.sheetName || 'BASE_CRM')}</span>
             <span class="badge client">GID: ${escapeHtml(source.gid || '-')}</span>
+            <span class="badge client">Fonte: ${escapeHtml(source.title || client.growthPack?.title || 'GrowthPack')}</span>
             <span class="badge client">Último sync: ${escapeHtml(source.lastSync || snapshot?.generatedAt || 'pendente')}</span>
           </div>
         </div>
@@ -788,6 +815,7 @@
           <button class="btn ghost" data-tab="client-config">Configurar fonte</button>
         </div>
       </div>
+      ${source.syncBlockedReason ? `<div class="empty">${escapeHtml(source.syncBlockedReason)}</div>` : ''}
       ${!configured ? '<div class="empty">Configure o ID da planilha ou uma URL proxy N8N em Config do Cliente.</div>' : ''}
     `;
   }
@@ -1039,7 +1067,7 @@
         <header class="hero">
           <img class="hero-logo" src="src/assets/v4-company-logo.jpg" alt="Logo V4 Company" />
           <div><p class="eyebrow">Administração</p><h1>Configurações Gerais</h1><p class="hero-copy">Área geral para inserir ou retirar clientes, editar integrações globais, exportar base local e preparar conexão real via N8N/backend.</p></div>
-          <div class="period-box"><small>Modo atual</small><strong>CRUD local + integrações preparadas</strong><button class="btn primary" data-action="export-json">Exportar JSON</button></div>
+          <div class="period-box"><small>Modo atual</small><strong>Base oficial + integrações por cliente</strong><button class="btn primary" data-action="sync-all-clients">Sincronizar todos</button><button class="btn ghost" data-action="export-json">Exportar JSON</button></div>
         </header>
         <section class="dashboard-grid">
           <article class="glass-card span-12">
@@ -1059,6 +1087,13 @@
             <h2>Clientes cadastrados</h2>
             <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Grupo</th><th>CRM</th><th>Status</th><th>Saúde</th><th>Ações</th></tr></thead><tbody>
               ${state.clients.map((client) => `<tr><td>${escapeHtml(client.name)}</td><td>${escapeHtml(client.groupId)}</td><td>${escapeHtml(client.crm)}</td><td>${badge(client.status)}</td><td>${client.health}/100</td><td><button class="btn small" data-client="${client.id}">Abrir</button> <button class="btn small danger" data-delete-client="${client.id}">Excluir</button></td></tr>`).join('')}
+            </tbody></table></div>
+          </article>
+          <article class="glass-card span-12">
+            <h2>Mapa oficial de integrações por cliente</h2>
+            <p class="muted">Este quadro mostra se cada cliente está com Drive, GrowthPack, CRM e mídia preparados. Clientes sem GrowthPack localizado ficam bloqueados para não misturar dados de outro cliente.</p>
+            <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Grupo</th><th>Drive</th><th>GrowthPack</th><th>CRM</th><th>Mídia</th></tr></thead><tbody>
+              ${officialClientRows().map((row) => `<tr><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.groupId)}</td><td>${badge(row.drive)}</td><td>${badge(row.growthPack)}</td><td>${badge(row.crm)}</td><td>${badge(row.media)}</td></tr>`).join('')}
             </tbody></table></div>
           </article>
           <article class="glass-card span-6">
@@ -1308,15 +1343,25 @@
     render();
   }
 
-  async function syncCrmClient(clientId) {
+  async function syncCrmClient(clientId, options = {}) {
+    const silent = Boolean(options.silent);
     const client = getClient(clientId || route.clientId);
-    if (!client) return notify('Cliente não encontrado.');
-    if (!window.V4_CRM_SHEETS) return notify('Serviço de CRM Sheets não carregado.');
+    if (!client) {
+      if (!silent) notify('Cliente não encontrado.');
+      return { ok: false, source: 'crm', clientId, message: 'Cliente não encontrado.' };
+    }
+    if (!window.V4_CRM_SHEETS) {
+      if (!silent) notify('Serviço de CRM Sheets não carregado.');
+      return { ok: false, source: 'crm', clientId: client.id, message: 'Serviço de CRM Sheets não carregado.' };
+    }
+    if (!hasConfiguredSource(client.crmSheet)) {
+      return { ok: false, source: 'crm', clientId: client.id, message: 'Fonte CRM não configurada.' };
+    }
     try {
-      notify('Sincronizando CRM...');
+      if (!silent) notify('Sincronizando CRM...');
       client.crmSheet = client.crmSheet || {};
       client.crmSheet.status = 'Sincronizando';
-      render();
+      if (!silent) render();
       const result = await window.V4_CRM_SHEETS.load(client.crmSheet);
       state.crmSnapshots[client.id] = result.snapshot;
       client.crmSheet.status = 'Sincronizado';
@@ -1335,28 +1380,44 @@
       };
       state.events.unshift({ id: uid('ev'), type: 'sync', text: `CRM sincronizado: ${client.name}`, time: 'agora' });
       saveState();
-      notify('CRM sincronizado com sucesso.');
-      render();
+      if (!silent) {
+        notify('CRM sincronizado com sucesso.');
+        render();
+      }
+      return { ok: true, source: 'crm', clientId: client.id, message: 'CRM sincronizado.' };
     } catch (error) {
       client.crmSheet = client.crmSheet || {};
       client.crmSheet.status = 'Erro de sync';
       client.crmSheet.lastSync = `Erro: ${error.message}`;
       saveState();
-      notify('Não consegui ler a planilha. Veja Config do Cliente.');
-      render();
+      if (!silent) {
+        notify('Não consegui ler a planilha. Veja Config do Cliente.');
+        render();
+      }
       console.error(error);
+      return { ok: false, source: 'crm', clientId: client.id, message: error.message };
     }
   }
 
-  async function syncPerformanceClient(clientId) {
+  async function syncPerformanceClient(clientId, options = {}) {
+    const silent = Boolean(options.silent);
     const client = getClient(clientId || route.clientId);
-    if (!client) return notify('Cliente não encontrado.');
-    if (!window.V4_PERFORMANCE_SHEETS) return notify('Serviço de performance Sheets não carregado.');
+    if (!client) {
+      if (!silent) notify('Cliente não encontrado.');
+      return { ok: false, source: 'performance', clientId, message: 'Cliente não encontrado.' };
+    }
+    if (!window.V4_PERFORMANCE_SHEETS) {
+      if (!silent) notify('Serviço de performance Sheets não carregado.');
+      return { ok: false, source: 'performance', clientId: client.id, message: 'Serviço de performance Sheets não carregado.' };
+    }
+    if (!hasConfiguredSource(client.performanceSheets)) {
+      return { ok: false, source: 'performance', clientId: client.id, message: 'Fonte de mídia não configurada.' };
+    }
     try {
-      notify('Sincronizando mídia...');
+      if (!silent) notify('Sincronizando mídia...');
       client.performanceSheets = client.performanceSheets || {};
       client.performanceSheets.status = 'Sincronizando';
-      render();
+      if (!silent) render();
       const result = await window.V4_PERFORMANCE_SHEETS.load(client.performanceSheets);
       state.performanceSnapshots[client.id] = result.snapshot;
       client.performanceSheets.status = 'Sincronizado';
@@ -1377,17 +1438,50 @@
       };
       state.events.unshift({ id: uid('ev'), type: 'sync', text: `Mídia sincronizada: ${client.name}`, time: 'agora' });
       saveState();
-      notify('Mídia sincronizada com sucesso.');
-      render();
+      if (!silent) {
+        notify('Mídia sincronizada com sucesso.');
+        render();
+      }
+      return { ok: true, source: 'performance', clientId: client.id, message: 'Mídia sincronizada.' };
     } catch (error) {
       client.performanceSheets = client.performanceSheets || {};
       client.performanceSheets.status = 'Erro de sync';
       client.performanceSheets.lastSync = `Erro: ${error.message}`;
       saveState();
-      notify('Não consegui ler mensal/semanal. Veja Config do Cliente ou use proxy N8N.');
-      render();
+      if (!silent) {
+        notify('Não consegui ler mensal/semanal. Veja Config do Cliente ou use proxy N8N.');
+        render();
+      }
       console.error(error);
+      return { ok: false, source: 'performance', clientId: client.id, message: error.message };
     }
+  }
+
+  async function syncAllClientSources() {
+    notify(`Sincronizando ${state.clients.length} clientes oficiais...`);
+    const results = [];
+
+    if (window.V4_INTEGRATIONS?.syncAll) {
+      try {
+        const integrationResult = await window.V4_INTEGRATIONS.syncAll();
+        results.push({ ok: integrationResult.ok, source: 'integrations', message: integrationResult.message });
+      } catch (error) {
+        results.push({ ok: false, source: 'integrations', message: error.message });
+      }
+    }
+
+    for (const client of state.clients) {
+      if (hasConfiguredSource(client.crmSheet)) results.push(await syncCrmClient(client.id, { silent: true }));
+      if (hasConfiguredSource(client.performanceSheets)) results.push(await syncPerformanceClient(client.id, { silent: true }));
+    }
+
+    const successful = results.filter((item) => item?.ok).length;
+    const failed = results.filter((item) => item && item.ok === false).length;
+    state.events.unshift({ id: uid('ev'), type: 'sync', text: `Sincronização geral: ${successful} ok, ${failed} pendências`, time: 'agora' });
+    saveState();
+    notify(`Sincronização finalizada: ${successful} ok, ${failed} pendências.`);
+    render();
+    return results;
   }
 
   async function handleAction(button) {
@@ -1410,6 +1504,7 @@
     if (action === 'export-json') exportJson();
     if (action === 'sync-crm-client') await syncCrmClient(button.dataset.clientId);
     if (action === 'sync-performance-client') await syncPerformanceClient(button.dataset.clientId);
+    if (action === 'sync-all-clients') await syncAllClientSources();
   }
 
   function exportJson() {

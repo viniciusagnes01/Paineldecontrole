@@ -45,6 +45,10 @@ window.V4_CRM_SHEETS = (() => {
   }
 
   async function load(source = {}) {
+    if (source.syncBlocked && source.fallbackSnapshot) {
+      return { ok: true, sourceUrl: 'fallback:crm', snapshot: withGeneratedAt(source.fallbackSnapshot) };
+    }
+
     const urls = buildCsvUrls(source);
     if (!urls.length) throw new Error('Fonte CRM não configurada.');
     const errors = [];
@@ -57,7 +61,14 @@ window.V4_CRM_SHEETS = (() => {
         errors.push(`${url}: ${error.message}`);
       }
     }
+    if (source.fallbackSnapshot) {
+      return { ok: true, sourceUrl: 'fallback:crm', snapshot: withGeneratedAt(source.fallbackSnapshot) };
+    }
     throw new Error(errors.join(' | '));
+  }
+
+  function withGeneratedAt(snapshot = {}) {
+    return { ...snapshot, generatedAt: snapshot.generatedAt || new Date().toISOString() };
   }
 
   function parseCsv(text) {

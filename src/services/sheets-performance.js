@@ -32,12 +32,27 @@ window.V4_PERFORMANCE_SHEETS = (() => {
   }
 
   async function load(source = {}) {
-    const [monthly, weekly] = await Promise.all([
-      loadOne(source, 'monthly'),
-      loadOne(source, 'weekly')
-    ]);
-    const snapshot = buildSnapshot(monthly, weekly);
-    return { ok: true, snapshot };
+    if (source.syncBlocked && source.fallbackSnapshot) {
+      return { ok: true, snapshot: withGeneratedAt(source.fallbackSnapshot) };
+    }
+
+    try {
+      const [monthly, weekly] = await Promise.all([
+        loadOne(source, 'monthly'),
+        loadOne(source, 'weekly')
+      ]);
+      const snapshot = buildSnapshot(monthly, weekly);
+      return { ok: true, snapshot };
+    } catch (error) {
+      if (source.fallbackSnapshot) {
+        return { ok: true, snapshot: withGeneratedAt(source.fallbackSnapshot), fallbackReason: error.message };
+      }
+      throw error;
+    }
+  }
+
+  function withGeneratedAt(snapshot = {}) {
+    return { ...snapshot, generatedAt: snapshot.generatedAt || new Date().toISOString() };
   }
 
   async function loadOne(source, mode) {
