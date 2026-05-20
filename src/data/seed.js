@@ -104,6 +104,15 @@ window.V4_SEED = {
       metrics: { revenue: 74400, revenueTarget: 140000, leads: 482, cpl: 39.9, roas: 2.9, investment: 25655, mql: 33, sql: 18, opportunities: 12, sales: 5, ticket: 14880, ctr: 1.7, conversion: 6.8 },
       goals: { revenue: 140000, leads: 700, mqlRate: 8, cac: 1200, roas: 3.5 },
       lps: [ { id: 'lp-sh-01', name: 'LP - Associados', url: 'https://cliente.com/sindi', status: 'Atenção', speed: 69, conversion: 3.5 } ]
+    },
+    {
+      id: 'black-ops', name: 'BLACK OPS', initials: 'BO', groupId: 'admin-001', segment: 'Painel administrativo', crm: 'N/A', responsible: 'Vinicius Agnes', status: 'Controle', health: 100, color: '#1a1a2e', accent: '#16213e', mascot: 'BO',
+      type: 'admin',
+      descricao: 'Painel geral de controle de todos os clientes e dados consolidados. Acesso às configurações mestras, integrações globais e planilha mestra de todos os clientes.',
+      planilhaOficial: 'https://docs.google.com/spreadsheets/u/1/d/1ET6cmm3SHCO_DnxJwMTLrDFpQ-pMOcSUm56hY5ZnGmk/edit?gid=744728561',
+      metrics: { revenue: 1163730, revenueTarget: 1900000, leads: 8088, cpl: 31.8, roas: 4.2, investment: 256826, mql: 584, sql: 327, opportunities: 242, sales: 116, ticket: 10032, ctr: 2.7, conversion: 7.6 },
+      goals: { revenue: 1900000, leads: 10000, mqlRate: 9, cac: 950, roas: 4.3 },
+      lps: []
     }
   ],
   pixels: [

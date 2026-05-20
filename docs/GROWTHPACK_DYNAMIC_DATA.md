@@ -1,29 +1,22 @@
-# Growth Pack dinâmico - ST1 Internet e Prime Mecânica
+# Growth Pack dinâmico - base oficial de clientes
 
-Este pacote adiciona uma camada de dados para puxar o máximo possível de informações dos Growth Packs de ST1 Internet e Prime Mecânica.
+Esta camada puxa o máximo possível de informações dos Growth Packs localizados na base oficial de clientes. O painel mantém o escopo travado por cliente, `groupId`, pasta Drive e planilha GrowthPack para não misturar dados entre operações.
 
-## Fontes configuradas
+## Clientes com GrowthPack localizado
 
-### ST1 Internet
-- Growth Pack: `ST1 Internet | GrowthPack V26 (Inside Sales)`
-- Spreadsheet: `1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA`
-- BASE_CRM GID: `1699545222`
-- Mensal: `1.0 Mensal`
-- Semanal: `2.0 Semanal`
-- Comunicação/N8N/Evolution: grupo `120363403300629023@g.us`
-- Ekyte: workspace `127063`, projeto `273637`, tipo de tarefa `55820`, task modelo `8851196`
+- Alphaville: `1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws`, BASE_CRM GID `833926654`.
+- YouSafer: `1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo`.
+- Prime Mecânica: `1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8`, BASE_CRM GID `1986904416`.
+- MultiMed: `1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg`.
+- Treinando Online: `1rnD4jIpKfX5DAQMETQhOG-ULg81iAglJoej_AY8ArvA`.
+- Seg Eletronic: `1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc`, BASE_CRM GID `1929982003`.
+- ST1 Internet: `1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA`, BASE_CRM GID `1699545222`.
 
-### Prime Mecânica
-- Growth Pack: `Prime | GrowthPack V26 (Inside Sales)`
-- Spreadsheet de performance: `1BOTJF5ymnYHZ69mhyvCUZZWqyGOEf2boeRFza3L5awI`
-- Spreadsheet de leads/BASE_CRM: `1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8`
-- BASE_CRM GID: `1986904416`
-- Comunicação/N8N/Evolution: grupo `120363418609215409@g.us`
-- Ekyte: workspace `106839`, projeto `291839`, tipo de tarefa `55820`, task modelo `8851196`
+Espaço Master e SindiHoteleiros/Cuidar On continuam no escopo oficial, mas aparecem como `GrowthPack não localizado` até a fonte real ser encontrada.
 
 ## Fallback até o backend/N8N estar pronto
 
-Enquanto o endpoint dinâmico não existir, o painel já recebe os dados do relatório mensal de abril/2026 como fallback:
+Enquanto o endpoint dinâmico não existir, o painel já recebe fallback apenas quando existe evidência local vinculada ao cliente, como Alphaville, ST1 Internet e Prime Mecânica:
 
 - métricas gerais;
 - divisão Meta Ads / Google Ads;
@@ -52,7 +45,7 @@ Resposta sugerida:
 }
 ```
 
-O front chama `window.V4_GROWTHPACK.syncClient('st1-internet')`, `window.V4_GROWTHPACK.syncClient('prime')` ou `window.V4_GROWTHPACK.syncAll()`.
+O front chama `window.V4_GROWTHPACK.syncClient('id-do-cliente')` ou `window.V4_GROWTHPACK.syncAll()`. O botão **Sincronizar todos** executa GrowthPack/eKyte e tenta CRM + mídia para todos os clientes configurados.
 
 ## Segurança
 

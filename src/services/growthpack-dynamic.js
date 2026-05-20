@@ -19,6 +19,27 @@
     return Array.from(map.values());
   }
 
+  function availableClients() {
+    const dynamicClients = window.V4_GROWTHPACK_CLIENTS || {};
+    const officialClients = (window.V4_OFFICIAL_ACTIVE_CLIENTS || [])
+      .filter((client) => client.growthPack?.status === 'located' && client.growthPack?.spreadsheetId)
+      .reduce((map, client) => {
+        map[client.id] = {
+          id: client.id,
+          name: client.name,
+          spreadsheetId: client.growthPack.spreadsheetId,
+          spreadsheetUrl: client.growthPack.url,
+          crmGid: client.growthPack.crmGid || '',
+          crmSheetName: client.growthPack.crmSheetName || 'BASE_CRM',
+          monthlySheetName: '1.0 Mensal',
+          weeklySheetName: '2.0 Semanal'
+        };
+        return map;
+      }, {});
+
+    return { ...officialClients, ...dynamicClients };
+  }
+
   async function fetchJson(url) {
     const response = await fetch(url, { headers: { Accept: 'application/json', 'X-V4-Source': 'v4-command-center-growthpack' } });
     const text = await response.text();
@@ -28,7 +49,7 @@
   }
 
   async function syncClient(clientId) {
-    const clients = window.V4_GROWTHPACK_CLIENTS || {};
+    const clients = availableClients();
     const config = clients[clientId];
     if (!config) throw new Error(`Cliente sem configuração Growth Pack: ${clientId}`);
 
@@ -53,7 +74,7 @@
   }
 
   async function syncAll() {
-    const ids = Object.keys(window.V4_GROWTHPACK_CLIENTS || {});
+    const ids = Object.keys(availableClients());
     const results = [];
     for (const id of ids) {
       try {
@@ -65,5 +86,5 @@
     return { ok: results.every((item) => item.ok), results };
   }
 
-  window.V4_GROWTHPACK = { syncClient, syncAll };
+  window.V4_GROWTHPACK = { syncClient, syncAll, availableClients };
 })();
