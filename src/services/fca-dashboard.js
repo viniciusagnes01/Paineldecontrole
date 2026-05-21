@@ -209,6 +209,56 @@
     return '<span class="badge warn">Aberto</span>';
   }
 
+  function readState() {
+    try { return JSON.parse(localStorage.getItem('v4-command-center-state-v6-crm-performance-losses') || JSON.stringify(window.V4_SEED || {})); } catch (error) { return JSON.parse(JSON.stringify(window.V4_SEED || {})); }
+  }
+
+  function writeState(state) {
+    localStorage.setItem('v4-command-center-state-v6-crm-performance-losses', JSON.stringify(state));
+  }
+
+  function upsertById(rows, item) {
+    const list = Array.isArray(rows) ? rows : [];
+    const index = list.findIndex((row) => row.id === item.id);
+    if (index >= 0) list[index] = { ...list[index], ...item };
+    else list.push(item);
+    return list;
+  }
+
+  function syncFcaActionPlan(clientId, row) {
+    const actions = splitActions(getField(row, 'acao'));
+    if (!actions.length) return;
+    const state = readState();
+    state.actionPlan = state.actionPlan || [];
+    const deadline = getField(row, 'deadline') || 'Check-in quarter';
+    const responsible = getField(row, 'responsavel') || getField(row, 'account') || 'V4 / Account';
+    const link = getField(row, 'linkGrowthPack') || `https://docs.google.com/spreadsheets/d/${FCA_SPREADSHEET_ID}/edit#gid=${FCA_GID}`;
+
+    actions.forEach((action, index) => {
+      state.actionPlan = upsertById(state.actionPlan, {
+        id: `fca-${clientId}-${index + 1}`,
+        clientId,
+        source: 'fca-cockpit',
+        what: action.replace(/^\bA\d+(?:\.\d+)?\s*[:.-]\s*/i, '').trim() || action,
+        why: getField(row, 'causa') || 'Plano extraido da base FCA para a reuniao de check-in quarter.',
+        where: 'FCA / Cockpit Overview',
+        when: deadline,
+        who: responsible,
+        how: `Acompanhar pela base oficial: ${link}`,
+        status: normalize(action).includes('CONCLUIDO') || normalize(action).includes('FINALIZADO') ? 'Concluido' : 'Em execucao'
+      });
+    });
+
+    const client = state.clients?.find((item) => item.id === clientId);
+    if (client) {
+      client.actionPlanSources = client.actionPlanSources || [];
+      const source = { title: 'FCA Cockpit Overview', type: 'Sheets', status: 'FCA sincronizado', url: `https://docs.google.com/spreadsheets/d/${FCA_SPREADSHEET_ID}/edit#gid=${FCA_GID}` };
+      if (!client.actionPlanSources.some((item) => item.url === source.url)) client.actionPlanSources.unshift(source);
+    }
+
+    writeState(state);
+  }
+
   function textBlock(title, value, extraClass = '') {
     return `
       <article class="fca-text-card ${extraClass}">
@@ -412,6 +462,7 @@
     try {
       const rows = await loadFcaRows();
       const row = findClientFca(rows, clientId);
+      if (row) syncFcaActionPlan(clientId, row);
       insertFcaHtml(row ? renderFcaDashboard(row) : renderEmpty(clientId));
       document.querySelector('[data-fca-tab]')?.classList.add('active');
     } catch (error) {

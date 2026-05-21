@@ -256,6 +256,14 @@
   });
 
   const schedule = () => window.requestAnimationFrame(applyFiltersAndRender);
+  window.V4_FILTER_ENGINE = {
+    applyFilters: applyFiltersAndRender,
+    buildFilteredSnapshot,
+    getSavedFilters,
+    saveFilters,
+    getDateLimits
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     const main = document.getElementById('main') || document.body;
     const observer = new MutationObserver(schedule);

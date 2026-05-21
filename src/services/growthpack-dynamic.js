@@ -51,7 +51,7 @@
   async function syncClient(clientId) {
     const clients = availableClients();
     const config = clients[clientId];
-    if (!config) throw new Error(`Cliente sem configuração Growth Pack: ${clientId}`);
+    if (!config) throw new Error(`Cliente sem configuracao Growth Pack: ${clientId}`);
 
     const payload = await fetchJson(`/api/growthpack/${clientId}/summary`);
     const state = readState();

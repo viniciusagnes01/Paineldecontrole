@@ -1,5 +1,5 @@
 (function () {
-  const OFFICIAL_DATA_VERSION = 7;
+  const OFFICIAL_DATA_VERSION = 9;
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
 
   function makeGrowthPack(status, spreadsheetId, title, crmGid) {

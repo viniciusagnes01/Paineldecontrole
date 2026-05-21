@@ -1,6 +1,6 @@
 (function () {
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
-  const VERSION = 'official-client-sources-20260519-02';
+  const VERSION = 'official-client-sources-20260520-01';
 
   const CLIENT_SOURCES = {
     alphaville: {
@@ -173,7 +173,7 @@
     data.settings = {
       ...(data.settings || {}),
       dataMode: 'official_drive_database',
-      officialDataVersion: 8,
+      officialDataVersion: 9,
       runtimeFixVersion: VERSION,
       allowDemoData: false,
       refreshMode: 'Drive/API',

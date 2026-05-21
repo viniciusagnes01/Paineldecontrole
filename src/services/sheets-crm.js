@@ -13,6 +13,7 @@ window.V4_CRM_SHEETS = (() => {
     lost: ['LEAD PERDIDO', 'PERDIDO', 'Lead Perdido'],
     meta: ['META ADS', 'Meta Ads'],
     google: ['GOOGLE ADS', 'Google Ads'],
+    origin: ['ORIGEM', 'Origem', 'CANAL', 'Canal', 'FONTE', 'Fonte', 'UTM SOURCE', 'utm_source'],
     owner: ['RESPONSAVEL', 'RESPONSÁVEL', 'Responsavel'],
     lossReason: ['MOTIVO DE PERDA', 'Motivo de Perda']
   };
@@ -125,6 +126,17 @@ window.V4_CRM_SHEETS = (() => {
     return Number(cleaned) || 0;
   }
 
+  function toFlag(value, fallback = 0) {
+    const raw = String(value ?? '').trim();
+    if (!raw) return fallback;
+    const n = toNumber(raw);
+    if (n) return n;
+    const normalized = normalizeKey(raw);
+    if (['SIM', 'TRUE', 'VERDADEIRO', 'YES', 'Y', 'X', 'OK'].includes(normalized)) return 1;
+    if (['NAO', 'NÃO', 'FALSE', 'FALSO', 'NO', 'N'].includes(normalized)) return 0;
+    return fallback;
+  }
+
   function parseDate(value) {
     const raw = String(value || '').trim();
     if (!raw) return null;
@@ -153,7 +165,11 @@ window.V4_CRM_SHEETS = (() => {
     return `${utc.getUTCFullYear()}-W${String(Math.ceil((((utc - yearStart) / 86400000) + 1) / 7)).padStart(2, '0')}`;
   }
 
-  function detectSource(meta, google) {
+  function detectSource(meta, google, origin = '') {
+    const normalized = normalizeKey(origin);
+    if (/META|FACEBOOK|INSTAGRAM|IG|FB/.test(normalized)) return 'Meta Ads';
+    if (/GOOGLE|SEARCH|YOUTUBE|GADS|ADWORDS/.test(normalized)) return 'Google Ads';
+    if (/ORGANICO|ORGÂNICO|ORGANIC|DIRETO|INDICACAO|INDICAÇÃO/.test(normalized)) return 'Orgânico';
     if (Number(meta || 0) > 0) return 'Meta Ads';
     if (Number(google || 0) > 0) return 'Google Ads';
     return 'Orgânico';
@@ -251,6 +267,7 @@ window.V4_CRM_SHEETS = (() => {
       const dateObj = parseDate(valueAt(row, map, 'date'));
       const meta = toNumber(valueAt(row, map, 'meta'));
       const google = toNumber(valueAt(row, map, 'google'));
+      const origin = valueAt(row, map, 'origin');
       return {
         dateObj,
         timestamp: dateObj ? dateObj.getTime() : 0,
@@ -258,15 +275,15 @@ window.V4_CRM_SHEETS = (() => {
         leadId: valueAt(row, map, 'leadId'),
         name: valueAt(row, map, 'name'),
         value: toNumber(valueAt(row, map, 'value')),
-        lead: map.lead === -1 ? 1 : toNumber(valueAt(row, map, 'lead')),
-        mql: toNumber(valueAt(row, map, 'mql')),
-        sql: toNumber(valueAt(row, map, 'sql')),
-        opportunity: toNumber(valueAt(row, map, 'opportunity')),
-        purchase: toNumber(valueAt(row, map, 'purchase')),
-        lost: toNumber(valueAt(row, map, 'lost')),
+        lead: map.lead === -1 ? 1 : toFlag(valueAt(row, map, 'lead'), 0),
+        mql: toFlag(valueAt(row, map, 'mql'), 0),
+        sql: toFlag(valueAt(row, map, 'sql'), 0),
+        opportunity: toFlag(valueAt(row, map, 'opportunity'), 0),
+        purchase: toFlag(valueAt(row, map, 'purchase'), 0),
+        lost: toFlag(valueAt(row, map, 'lost'), 0),
         meta,
         google,
-        source: detectSource(meta, google),
+        source: detectSource(meta, google, origin),
         owner: valueAt(row, map, 'owner') || 'Sem responsável',
         lossReason: valueAt(row, map, 'lossReason') || 'Sem motivo informado'
       };
