@@ -50,3 +50,38 @@ O front chama `window.V4_GROWTHPACK.syncClient('id-do-cliente')` ou `window.V4_G
 ## Segurança
 
 Tokens de Google, Kommo, Ekyte, Meta, Google Ads e Evolution devem ficar no backend/N8N. O front recebe somente JSON tratado.
+
+## Integrações por cliente (links adicionados ao catálogo oficial)
+
+### YouSafer
+- BD Meta Ads: https://docs.google.com/spreadsheets/d/1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo/edit#gid=662103333
+- BD Google Ads: https://docs.google.com/spreadsheets/d/1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo/edit#gid=2106399394
+- CRM / BASE_CRM: não encontrada na GrowthPack (campo vazio no catálogo)
+
+### Prime Mecânica
+- BD Meta Ads: https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=501111945
+- BD Google Ads: https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=867200802
+- BASE_CRM: https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=1986904416
+
+### MultiMed
+- BD Meta Ads: https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg
+- BD Google Ads: https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg
+- BASE_CRM: https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg
+
+### Seg Eletronic
+- BD Meta Ads: https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc
+- BD Google Ads: https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc
+- BASE_CRM: https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc
+
+### ST1 Internet
+- BD Meta Ads: https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA
+- BD Google Ads: https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA
+- BASE_CRM: https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA
+
+### Espaco Master
+- Arquivo (Drive): https://drive.google.com/file/d/1wX65NPe9m_sQtXoIQfvOdyMUxigkn0KO
+- Observação: arquivo `.xlsx` — não foi possível mapear GID de aba automaticamente
+
+### SindiHoteleiros
+- Observação: GrowthPack não localizado; materiais do projeto encontrados sem GrowthPack correspondente
+
