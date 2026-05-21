@@ -167,7 +167,7 @@ async function checkViewport(browserPath, appUrl, viewport) {
       innerWidth,
       scrollWidth: document.documentElement.scrollWidth,
       bodyScrollWidth: document.body.scrollWidth,
-      clients: document.querySelectorAll('.client-btn').length,
+      clients: document.querySelectorAll('.client-btn:not(.admin-client-btn)').length,
       metricCards: document.querySelectorAll('.metric-card').length,
       hasSyncAll: Boolean(document.querySelector('[data-action="sync-all-clients"]'))
     }))()`;
