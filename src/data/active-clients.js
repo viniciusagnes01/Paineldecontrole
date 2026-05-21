@@ -33,7 +33,14 @@
       groupId: '120363299569409896',
       driveFolderId: '1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
       driveUrl: 'https://drive.google.com/drive/folders/1Iz2nt_MwESsFCeAZD6z9IjQ8fz45iRmY',
-      growthPack: makeGrowthPack('located', '1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)', '')
+      growthPack: makeGrowthPack('located', '1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)', ''),
+      integrations: {
+        media: {
+          meta: 'https://docs.google.com/spreadsheets/d/1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo/edit#gid=662103333',
+          google: 'https://docs.google.com/spreadsheets/d/1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo/edit#gid=2106399394'
+        },
+        crm: ''
+      }
     },
     {
       id: 'prime',
@@ -42,7 +49,14 @@
       groupId: '120363418609215409',
       driveFolderId: '1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
       driveUrl: 'https://drive.google.com/drive/folders/1ynLKciynIzr7gVtgiq3fy5IoTranCFAn',
-      growthPack: makeGrowthPack('located', '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8', 'Nova Atualizado Growth Pack 3.1 [Prime]', '1986904416')
+      growthPack: makeGrowthPack('located', '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8', 'Nova Atualizado Growth Pack 3.1 [Prime]', '1986904416'),
+      integrations: {
+        media: {
+          meta: 'https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=501111945',
+          google: 'https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=867200802'
+        },
+        crm: 'https://docs.google.com/spreadsheets/d/1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8/edit#gid=1986904416'
+      }
     },
     {
       id: 'multimed',
@@ -51,7 +65,14 @@
       groupId: '120363423606250960',
       driveFolderId: '1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
       driveUrl: 'https://drive.google.com/drive/folders/1H5kekxtbt-67S4K_ZB9ip_Qag6h9GupB',
-      growthPack: makeGrowthPack('located', '1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)', '')
+      growthPack: makeGrowthPack('located', '1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)', ''),
+      integrations: {
+        media: {
+          meta: 'https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg',
+          google: 'https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg'
+        },
+        crm: 'https://docs.google.com/spreadsheets/d/1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg'
+      }
     },
     {
       id: 'treinando-online',
@@ -69,7 +90,14 @@
       groupId: '120363427075801557',
       driveFolderId: '1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
       driveUrl: 'https://drive.google.com/drive/folders/1naqEp5-RMWz7XEvsl50T5jpG2ecNDMDW',
-      growthPack: makeGrowthPack('located', '1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic | GrowthPack V26 (Inside Sales)', '1929982003')
+      growthPack: makeGrowthPack('located', '1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic | GrowthPack V26 (Inside Sales)', '1929982003'),
+      integrations: {
+        media: {
+          meta: 'https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc',
+          google: 'https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc'
+        },
+        crm: 'https://docs.google.com/spreadsheets/d/1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc'
+      }
     },
     {
       id: 'espaco-master',
@@ -78,7 +106,14 @@
       groupId: '120363424198629431',
       driveFolderId: '1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
       driveUrl: 'https://drive.google.com/drive/folders/1tQgluKulSRjbMB6p0iZbUQ4x6UsDeiCC',
-      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para Espaco Master', '')
+      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para Espaco Master', ''),
+      integrations: {
+        media: {
+          meta: 'https://drive.google.com/file/d/1wX65NPe9m_sQtXoIQfvOdyMUxigkn0KO',
+          google: 'https://drive.google.com/file/d/1wX65NPe9m_sQtXoIQfvOdyMUxigkn0KO'
+        },
+        crm: 'https://drive.google.com/file/d/1wX65NPe9m_sQtXoIQfvOdyMUxigkn0KO'
+      }
     },
     {
       id: 'st1-internet',
@@ -87,7 +122,14 @@
       groupId: '120363403300629023',
       driveFolderId: '1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
       driveUrl: 'https://drive.google.com/drive/folders/1IOElrGUmuVZ37Rqr443lGHdKiJIuVMxw',
-      growthPack: makeGrowthPack('located', '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet | GrowthPack V26 (Inside Sales)', '1699545222')
+      growthPack: makeGrowthPack('located', '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet | GrowthPack V26 (Inside Sales)', '1699545222'),
+      integrations: {
+        media: {
+          meta: 'https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA',
+          google: 'https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA'
+        },
+        crm: 'https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA'
+      }
     },
     {
       id: 'sindihoteleiros-cuidar-on',
@@ -96,7 +138,10 @@
       groupId: '120363372501205454',
       driveFolderId: '17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
       driveUrl: 'https://drive.google.com/drive/folders/17q8l0y5OhxL5qBtbv3RzyDUUVSL9nAPy',
-      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para SindiHoteleiros', '')
+      growthPack: makeGrowthPack('not_located', '', 'GrowthPack CRM nao localizado para SindiHoteleiros', ''),
+      integrations: {
+        note: 'GrowthPack nao localizado; materiais do projeto encontrados, sem GrowthPack identificado.'
+      }
     }
   ]);
 
