@@ -9,47 +9,56 @@ const CLIENTS = {
   'st1-internet': { id: '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', crm: 'BASE_CRM' }
 };
 
-const SOURCE_TABS = ['API_CONFIG', 'API_STATUS', 'bd Leads LP', 'bd Meta Ads', 'bd Google Ads ', 'bd Google Ads', 'bd Analytics'];
-
 function json(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
-  return handle(e);
+  return handle(e || { parameter: {} });
 }
 
 function doPost(e) {
-  return handle(e);
+  return handle(e || { parameter: {} });
 }
 
 function handle(e) {
-  const clientId = String(e.parameter.clientId || '').trim();
+  const startedAt = new Date();
+  const params = e.parameter || {};
+  const clientId = String(params.clientId || '').trim();
+  const mode = String(params.mode || 'crm').trim();
+  const limit = Math.max(50, Math.min(Number(params.limit || 1200), 2500));
   const client = CLIENTS[clientId];
+
   if (!client) return json({ ok: false, message: 'Cliente não configurado', clientId });
 
   const ss = SpreadsheetApp.openById(client.id);
   const payload = {
     ok: true,
     clientId,
+    mode,
     spreadsheetId: client.id,
     spreadsheetName: ss.getName(),
     loadedAt: new Date().toISOString(),
     apiConfig: readConfig(ss),
     apiStatus: readStatus(ss),
-    crm: readSheet(ss, client.crm),
-    leads: readSheet(ss, 'bd Leads LP'),
-    metaAds: readSheet(ss, 'bd Meta Ads'),
-    googleAds: readSheet(ss, 'bd Google Ads ') || readSheet(ss, 'bd Google Ads'),
-    analytics: readSheet(ss, 'bd Analytics')
+    crm: readSheet(ss, client.crm, limit)
   };
 
+  if (mode === 'full') {
+    payload.leads = readSheet(ss, 'bd Leads LP', limit);
+    payload.metaAds = readSheet(ss, 'bd Meta Ads', limit);
+    payload.googleAds = readSheet(ss, 'bd Google Ads ', limit) || readSheet(ss, 'bd Google Ads', limit);
+    payload.analytics = readSheet(ss, 'bd Analytics', limit);
+  }
+
+  payload.elapsedMs = new Date().getTime() - startedAt.getTime();
   return json(payload);
 }
 
 function readConfig(ss) {
   const rows = readRows(ss, 'API_CONFIG', 200);
   const out = {};
+  if (!rows) return out;
   rows.slice(1).forEach(function(row) {
     if (row[0]) out[String(row[0])] = row[1] || '';
   });
@@ -57,11 +66,11 @@ function readConfig(ss) {
 }
 
 function readStatus(ss) {
-  return readRows(ss, 'API_STATUS', 200);
+  return readRows(ss, 'API_STATUS', 200) || [];
 }
 
-function readSheet(ss, name) {
-  const rows = readRows(ss, name, 5000);
+function readSheet(ss, name, maxRows) {
+  const rows = readRows(ss, name, maxRows || 1200);
   if (!rows) return null;
   return { name, rows, rowCount: Math.max(rows.length - 1, 0) };
 }
@@ -69,8 +78,20 @@ function readSheet(ss, name) {
 function readRows(ss, name, maxRows) {
   const sheet = ss.getSheetByName(name);
   if (!sheet) return null;
-  const lastRow = Math.min(sheet.getLastRow(), maxRows || 1000);
+  const lastRow = sheet.getLastRow();
   const lastCol = sheet.getLastColumn();
   if (!lastRow || !lastCol) return [];
-  return sheet.getRange(1, 1, lastRow, lastCol).getDisplayValues();
+
+  const headerRows = Math.min(lastRow, 20);
+  const readLimit = Math.max(1, Math.min(maxRows || 1200, lastRow));
+
+  if (lastRow <= readLimit) {
+    return sheet.getRange(1, 1, lastRow, lastCol).getDisplayValues();
+  }
+
+  const header = sheet.getRange(1, 1, headerRows, lastCol).getDisplayValues();
+  const tailStart = Math.max(headerRows + 1, lastRow - readLimit + headerRows + 1);
+  const tailCount = Math.max(0, lastRow - tailStart + 1);
+  const tail = tailCount ? sheet.getRange(tailStart, 1, tailCount, lastCol).getDisplayValues() : [];
+  return header.concat(tail);
 }
