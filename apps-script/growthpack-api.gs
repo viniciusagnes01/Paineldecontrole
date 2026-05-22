@@ -9,8 +9,13 @@ const CLIENTS = {
   'st1-internet': { id: '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', crm: 'BASE_CRM' }
 };
 
-function json(payload) {
-  return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
+function output(payload, callback) {
+  const jsonText = JSON.stringify(payload);
+  if (callback) {
+    const safeCallback = String(callback).replace(/[^a-zA-Z0-9_$\.]/g, '');
+    return ContentService.createTextOutput(safeCallback + '(' + jsonText + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(jsonText).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
@@ -24,12 +29,13 @@ function doPost(e) {
 function handle(e) {
   const startedAt = new Date();
   const params = e.parameter || {};
+  const callback = params.callback || '';
   const clientId = String(params.clientId || '').trim();
   const mode = String(params.mode || 'crm').trim();
   const limit = Math.max(50, Math.min(Number(params.limit || 1200), 2500));
   const client = CLIENTS[clientId];
 
-  if (!client) return json({ ok: false, message: 'Cliente não configurado', clientId });
+  if (!client) return output({ ok: false, message: 'Cliente não configurado', clientId }, callback);
 
   const ss = SpreadsheetApp.openById(client.id);
   const payload = {
@@ -52,7 +58,7 @@ function handle(e) {
   }
 
   payload.elapsedMs = new Date().getTime() - startedAt.getTime();
-  return json(payload);
+  return output(payload, callback);
 }
 
 function readConfig(ss) {
