@@ -12,6 +12,18 @@
     'sindihoteleiros-cuidar-on': ['', 'GrowthPack nao localizada', '', '', '', '', 'GrowthPack especifica nao localizada', 'not_located']
   };
 
+  const BRAND = {
+    alphaville: ['#c91524', '#ff3045'],
+    yousafer: ['#0f898b', '#21d2cc'],
+    prime: ['#b70d1c', '#ff4354'],
+    multimed: ['#136cd8', '#5ea2ff'],
+    'treinando-online': ['#f05a28', '#ffad42'],
+    'seg-eletronic': ['#d21620', '#ff5360'],
+    'espaco-master': ['#8f2bd6', '#c47cff'],
+    'st1-internet': ['#1b78ff', '#70c0ff'],
+    'sindihoteleiros-cuidar-on': ['#607d8b', '#a1bbc6']
+  };
+
   function sheetUrl(id, gid) {
     if (!id) return '';
     const base = `https://docs.google.com/spreadsheets/d/${id}`;
@@ -22,8 +34,23 @@
     return id ? `https://drive.google.com/file/d/${id}` : '';
   }
 
+  function applyBrand(client) {
+    const brand = BRAND[client.id];
+    if (!brand) return client;
+    client.color = brand[0];
+    client.accent = brand[1];
+    client.identity = {
+      ...(client.identity || {}),
+      color: brand[0],
+      accent: brand[1],
+      source: 'client_identity_base'
+    };
+    return client;
+  }
+
   function applyClient(client) {
     const gp = GP[client.id];
+    applyBrand(client);
     if (!gp) return client;
     const [id, title, crmSheetName, crmGid, metaGid, googleGid, note, type = 'google_spreadsheet'] = gp;
     const isMissing = type === 'not_located' || !id;
@@ -115,9 +142,24 @@
       secondaryDataSource: 'Base de Comunicacao / Evolution',
       allowDemoData: false,
       requireClientScopedEvidence: true,
-      growthPackPriorityPatch: '20260522-02'
+      colorSource: 'client_identity_base',
+      growthPackPriorityPatch: '20260522-03'
     };
     return state;
+  }
+
+  function applyCssBranding() {
+    document.querySelectorAll('.client-btn').forEach((button) => {
+      const brand = BRAND[button.dataset.client];
+      if (!brand) return;
+      button.style.setProperty('--client-color', brand[0]);
+      button.style.setProperty('--client-accent', brand[1]);
+    });
+    const active = document.querySelector('.client-btn.active')?.dataset?.client;
+    const brand = BRAND[active];
+    if (!brand) return;
+    document.documentElement.style.setProperty('--red', brand[0]);
+    document.documentElement.style.setProperty('--red-2', brand[1]);
   }
 
   try {
@@ -129,5 +171,11 @@
     console.warn('[GrowthPackPriorityPatch]', error);
   }
 
-  window.V4_GROWTHPACK_PRIORITY_PATCH = { sources: GP, applyState, applyClient };
+  document.addEventListener('DOMContentLoaded', () => {
+    applyCssBranding();
+    const observer = new MutationObserver(() => requestAnimationFrame(applyCssBranding));
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  });
+
+  window.V4_GROWTHPACK_PRIORITY_PATCH = { sources: GP, brand: BRAND, applyState, applyClient };
 })();
