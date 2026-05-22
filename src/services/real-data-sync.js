@@ -4,9 +4,17 @@
   const DEBUG_KEY = 'v4-growthpack-debug-log';
   const MAX_RAW_RECORDS_PER_CLIENT = 1200;
   const SYNCABLE_CLIENTS = ['alphaville', 'prime', 'multimed', 'seg-eletronic', 'espaco-master', 'st1-internet', 'yousafer', 'treinando-online'];
+  const ALTERNATIVE_SOURCE_CLIENTS = {
+    'espaco-master': 'Fonte alternativa / planilha convertida. Integração direta GrowthPack não aplicável.',
+    'multimed': 'Fonte alternativa / integração GrowthPack pendente.'
+  };
   let isSyncing = false;
 
   function now() { return new Date().toLocaleString('pt-BR'); }
+
+  function isAlternativeSource(clientId) {
+    return Boolean(ALTERNATIVE_SOURCE_CLIENTS[clientId]);
+  }
 
   function logDebug(type, message, data) {
     const item = { at: now(), type, message, data: data || null };
@@ -70,6 +78,7 @@
     if (!el) return;
     el.dataset.status = status;
     el.textContent = label;
+    el.title = label;
   }
 
   function setBusy(value) {
@@ -81,9 +90,9 @@
     });
   }
 
-  function emptyCrmSnapshot(clientId, reason) {
+  function emptyCrmSnapshot(clientId, reason, sourceType) {
     return {
-      source: 'growthpack_apps_script',
+      source: sourceType || 'growthpack_apps_script',
       clientId,
       rows: 0,
       rawRecords: [],
@@ -91,8 +100,40 @@
       lostLatest: [],
       totals: { value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0 },
       rates: { saleRate: 0, lossRate: 0, ticket: 0 },
-      warning: reason || 'CRM não localizado na GrowthPack'
+      warning: reason || 'CRM não localizado na GrowthPack',
+      pending: sourceType === 'alternative_source'
     };
+  }
+
+  function markAlternativeSource(state, clientId) {
+    const client = findClient(state, clientId);
+    const reason = ALTERNATIVE_SOURCE_CLIENTS[clientId] || 'Fonte alternativa / integração GrowthPack pendente.';
+
+    state.crmSnapshots = state.crmSnapshots || {};
+    state.crmSnapshots[clientId] = emptyCrmSnapshot(clientId, reason, 'alternative_source');
+
+    if (client) {
+      client.crmSheet = client.crmSheet || {};
+      client.crmSheet.status = reason;
+      client.crmSheet.lastSync = now();
+      client.crmSheet.rowCount = 0;
+      client.growthPack = {
+        ...(client.growthPack || {}),
+        status: 'alternative_source',
+        resultSource: false,
+        lastRuntimeLoad: new Date().toISOString()
+      };
+      client.dataPolicy = {
+        ...(client.dataPolicy || {}),
+        primarySource: 'alternative_source',
+        resultSource: 'alternative_source',
+        allowDemoData: false,
+        requireEvidence: true
+      };
+    }
+
+    logDebug('sync_pending', `${clientId}: ${reason}`);
+    return { ok: true, pending: true, clientId, rows: 0, message: reason };
   }
 
   function trimSnapshot(snapshot) {
@@ -155,6 +196,11 @@
   }
 
   async function syncClientGrowthPack(clientId, state) {
+    if (isAlternativeSource(clientId)) {
+      setStatus(`Fonte alternativa: ${clientId}`, 'warn');
+      return markAlternativeSource(state, clientId);
+    }
+
     logDebug('api_check', `Runtime disponível: ${Boolean(window.V4_RUNTIME_API?.hasRuntimeApi?.())}`);
     if (!window.V4_RUNTIME_API?.hasRuntimeApi?.()) throw new Error('Runtime API pública não configurada.');
     if (!window.V4_RUNTIME_API?.loadGrowthPackClient) throw new Error('loadGrowthPackClient não disponível no runtime-api.js.');
@@ -185,8 +231,11 @@
     const results = [];
     try { results.push(await syncClientGrowthPack(targetClientId, state)); }
     catch (error) {
-      logDebug('sync_error', `${targetClientId}: ${error.message}`);
-      results.push({ ok: false, clientId: targetClientId, message: error.message });
+      if (isAlternativeSource(targetClientId)) results.push(markAlternativeSource(state, targetClientId));
+      else {
+        logDebug('sync_error', `${targetClientId}: ${error.message}`);
+        results.push({ ok: false, clientId: targetClientId, message: error.message });
+      }
     }
 
     finishSync(state, results, true);
@@ -206,8 +255,11 @@
       setStatus(`Atualizando ${index + 1}/${SYNCABLE_CLIENTS.length}: ${clientId}`, 'syncing');
       try { results.push(await syncClientGrowthPack(clientId, state)); }
       catch (error) {
-        logDebug('sync_error', `${clientId}: ${error.message}`);
-        results.push({ ok: false, clientId, message: error.message });
+        if (isAlternativeSource(clientId)) results.push(markAlternativeSource(state, clientId));
+        else {
+          logDebug('sync_error', `${clientId}: ${error.message}`);
+          results.push({ ok: false, clientId, message: error.message });
+        }
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -218,17 +270,22 @@
   }
 
   function finishSync(state, results, reload) {
-    const ok = results.filter((item) => item.ok).length;
-    const warnings = results.filter((item) => item.ok && item.warning).length;
+    const growthOk = results.filter((item) => item.ok && !item.warning && !item.pending).length;
+    const pending = results.filter((item) => item.ok && item.pending).length;
+    const warnings = results.filter((item) => item.ok && item.warning && !item.pending).length;
     const failed = results.filter((item) => !item.ok).length;
     const failedNames = results.filter((item) => !item.ok).map((item) => item.clientId).join(', ');
-    const warningNames = results.filter((item) => item.ok && item.warning).map((item) => item.clientId).join(', ');
+    const warningNames = results.filter((item) => item.ok && item.warning && !item.pending).map((item) => item.clientId).join(', ');
+    const pendingNames = results.filter((item) => item.ok && item.pending).map((item) => item.clientId).join(', ');
+
     state.events = state.events || [];
-    state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `GrowthPack API: ${ok} ok, ${warnings} aviso(s), ${failed} falha(s)`, time: 'agora' });
+    state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `GrowthPack API: ${growthOk} ok, ${pending} fonte(s) alternativa(s), ${warnings} aviso(s), ${failed} falha(s)`, time: 'agora' });
     writeState(state, { reload });
-    if (failed) setStatus(`${ok} ok, ${warnings} aviso(s), ${failed} falha(s): ${failedNames}`, 'error');
-    else if (warnings) setStatus(`${ok} ok, ${warnings} aviso(s): ${warningNames}`, 'warn');
-    else setStatus(`${ok} ok via Apps Script`, 'ok');
+
+    if (failed) setStatus(`${growthOk} ok via GrowthPack, ${pending} fonte(s) alternativa(s), ${failed} falha(s): ${failedNames}`, 'error');
+    else if (warnings) setStatus(`${growthOk} ok via GrowthPack, ${pending} fonte(s) alternativa(s), ${warnings} aviso(s): ${warningNames}`, 'warn');
+    else if (pending) setStatus(`${growthOk} ok via GrowthPack, ${pending} fonte(s) alternativa(s): ${pendingNames}`, 'warn');
+    else setStatus(`${growthOk} ok via Apps Script`, 'ok');
   }
 
   function clearLocalCache() {
@@ -253,7 +310,7 @@
     if (document.querySelector('[data-real-sync-box]')) return;
     const style = document.createElement('style');
     style.textContent = `
-      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 720px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
+      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 760px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
       [data-real-sync-box] button { border: 0; border-radius: 999px; padding: 8px 12px; background: linear-gradient(135deg, var(--red,#cf1022), var(--red-2,#700814)); color: white; font-weight: 900; cursor: pointer; }
       [data-real-sync-status][data-status="syncing"] { color: #ffcc66; } [data-real-sync-status][data-status="ok"] { color: #66dd88; } [data-real-sync-status][data-status="warn"] { color: #ffcc66; } [data-real-sync-status][data-status="error"] { color: #ff7777; }
       [data-v4-debug-panel] { flex-basis: 100%; max-height: 220px; overflow: auto; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.06); font-weight: 600; line-height: 1.35; display: none; }
@@ -300,5 +357,5 @@
 
   window.addEventListener('error', (event) => logDebug('window_error', event.message));
   window.addEventListener('unhandledrejection', (event) => logDebug('promise_error', event.reason?.message || String(event.reason)));
-  window.V4_REAL_DATA_SYNC = { runSync, runSyncAll, syncClientGrowthPack, clearLocalCache, clients: SYNCABLE_CLIENTS, debug: logDebug };
+  window.V4_REAL_DATA_SYNC = { runSync, runSyncAll, syncClientGrowthPack, clearLocalCache, clients: SYNCABLE_CLIENTS, alternativeSources: ALTERNATIVE_SOURCE_CLIENTS, debug: logDebug };
 })();
