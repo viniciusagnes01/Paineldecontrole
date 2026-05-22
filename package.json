@@ -1,8 +1,7 @@
 {
   "name": "v4-command-center",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "private": true,
-  "type": "module",
   "description": "Painel operacional V4 Company responsivo com runtime seguro para dados reais do Google Drive/Sheets.",
   "scripts": {
     "dev": "node server/src/index.js",
