@@ -3,18 +3,18 @@
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
   const DEBUG_KEY = 'v4-growthpack-debug-log';
   const MAX_RAW_RECORDS_PER_CLIENT = 1200;
-  const SYNCABLE_CLIENTS = ['alphaville', 'yousafer', 'prime', 'multimed', 'treinando-online', 'seg-eletronic', 'espaco-master', 'st1-internet'];
+  const SYNCABLE_CLIENTS = ['alphaville', 'prime', 'multimed', 'seg-eletronic', 'espaco-master', 'st1-internet', 'yousafer', 'treinando-online'];
+  let isSyncing = false;
 
   function now() { return new Date().toLocaleString('pt-BR'); }
 
   function logDebug(type, message, data) {
     const item = { at: now(), type, message, data: data || null };
     console.log('[V4 DEBUG]', item);
-    if (window.V4_BOOT_LOG) window.V4_BOOT_LOG(type, message);
     try {
       const list = JSON.parse(localStorage.getItem(DEBUG_KEY) || '[]');
       list.unshift(item);
-      localStorage.setItem(DEBUG_KEY, JSON.stringify(list.slice(0, 60)));
+      localStorage.setItem(DEBUG_KEY, JSON.stringify(list.slice(0, 80)));
     } catch {}
     paintDebug();
   }
@@ -29,34 +29,36 @@
     return window.V4_APP?.getState?.() || window.V4_SEED || {};
   }
 
-  function writeState(state) {
+  function shrinkState(state) {
+    if (state.crmSnapshots) {
+      Object.values(state.crmSnapshots).forEach((snapshot) => {
+        if (Array.isArray(snapshot.rawRecords)) snapshot.rawRecords = snapshot.rawRecords.slice(-MAX_RAW_RECORDS_PER_CLIENT);
+        if (Array.isArray(snapshot.latest)) snapshot.latest = snapshot.latest.slice(0, 12);
+        if (Array.isArray(snapshot.lostLatest)) snapshot.lostLatest = snapshot.lostLatest.slice(0, 12);
+      });
+    }
+    return state;
+  }
+
+  function writeState(state, options = {}) {
+    const reload = options.reload !== false;
     try {
-      const serialized = JSON.stringify(state);
+      const cleanState = shrinkState(state);
+      const serialized = JSON.stringify(cleanState);
       const sizeKb = Math.round(serialized.length / 1024);
       localStorage.setItem(STORAGE_KEY, serialized);
       logDebug('state_saved', `Estado salvo (${sizeKb} KB).`, { sizeKb });
     } catch (error) {
-      logDebug('state_save_error', 'Falha ao salvar estado. Limpando snapshots pesados.', error.message);
-      try {
-        if (state.crmSnapshots) {
-          Object.values(state.crmSnapshots).forEach((snapshot) => {
-            if (Array.isArray(snapshot.rawRecords)) snapshot.rawRecords = snapshot.rawRecords.slice(-300);
-          });
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (secondError) {
-        logDebug('state_save_error_final', 'Ainda não foi possível salvar estado.', secondError.message);
-      }
+      logDebug('state_save_error', 'Falha ao salvar estado mesmo após redução.', error.message);
     }
-    setTimeout(() => window.location.reload(), 700);
+    if (reload) setTimeout(() => window.location.reload(), 700);
   }
 
   function getCurrentClientId() {
     const activeClient = document.querySelector('[data-client].active')?.dataset?.client;
     const routeClient = window.V4_APP?.getRoute?.()?.clientId;
     const detected = activeClient || routeClient || SYNCABLE_CLIENTS[0];
-    if (SYNCABLE_CLIENTS.includes(detected)) return detected;
-    return SYNCABLE_CLIENTS[0];
+    return SYNCABLE_CLIENTS.includes(detected) ? detected : SYNCABLE_CLIENTS[0];
   }
 
   function findClient(state, clientId) {
@@ -68,6 +70,15 @@
     if (!el) return;
     el.dataset.status = status;
     el.textContent = label;
+  }
+
+  function setBusy(value) {
+    isSyncing = value;
+    document.querySelectorAll('[data-real-sync-current], [data-real-sync-all]').forEach((button) => {
+      button.disabled = value;
+      button.style.opacity = value ? '.65' : '1';
+      button.style.cursor = value ? 'wait' : 'pointer';
+    });
   }
 
   function trimSnapshot(snapshot) {
@@ -93,8 +104,21 @@
   function applyRuntimeEvidence(client, payload) {
     client.apiStatus = payload.apiStatus || [];
     client.apiConfig = payload.apiConfig || {};
-    client.growthPack = { ...(client.growthPack || {}), spreadsheetId: payload.spreadsheetId || '', title: payload.spreadsheetName || '', status: 'located', resultSource: true, lastRuntimeLoad: payload.loadedAt || new Date().toISOString() };
-    client.dataPolicy = { ...(client.dataPolicy || {}), primarySource: 'growthpack_apps_script', resultSource: 'growthpack_apps_script', allowDemoData: false, requireEvidence: true };
+    client.growthPack = {
+      ...(client.growthPack || {}),
+      spreadsheetId: payload.spreadsheetId || '',
+      title: payload.spreadsheetName || '',
+      status: 'located',
+      resultSource: true,
+      lastRuntimeLoad: payload.loadedAt || new Date().toISOString()
+    };
+    client.dataPolicy = {
+      ...(client.dataPolicy || {}),
+      primarySource: 'growthpack_apps_script',
+      resultSource: 'growthpack_apps_script',
+      allowDemoData: false,
+      requireEvidence: true
+    };
   }
 
   async function syncClientGrowthPack(clientId, state) {
@@ -107,8 +131,8 @@
 
     setStatus(`Buscando ${clientId}...`, 'syncing');
     logDebug('api_call_start', `Chamando Apps Script para ${clientId}`);
-    const payload = await window.V4_RUNTIME_API.loadGrowthPackClient(clientId);
-    logDebug('api_call_ok', `Resposta recebida de ${clientId}`, { ok: payload.ok, spreadsheetName: payload.spreadsheetName, crmRows: payload.crm?.rowCount });
+    const payload = await window.V4_RUNTIME_API.loadGrowthPackClient(clientId, { mode: 'crm', limit: 300 });
+    logDebug('api_call_ok', `Resposta recebida de ${clientId}`, { ok: payload.ok, spreadsheetName: payload.spreadsheetName, crmRows: payload.crm?.rowCount, elapsedMs: payload.elapsedMs });
     applyRuntimeEvidence(client, payload);
     const rows = applyCrmSnapshot(state, client, payload);
     logDebug('sync_ok', `${clientId} sincronizado`, { spreadsheetName: payload.spreadsheetName, rows });
@@ -116,6 +140,8 @@
   }
 
   async function runSync(clientId) {
+    if (isSyncing) return [];
+    setBusy(true);
     const targetClientId = clientId || getCurrentClientId();
     logDebug('run_sync_called', `runSync chamado para ${targetClientId}`);
     const state = readState();
@@ -128,18 +154,47 @@
       results.push({ ok: false, clientId: targetClientId, message: error.message });
     }
 
+    finishSync(state, results, true);
+    setBusy(false);
+    return results;
+  }
+
+  async function runSyncAll() {
+    if (isSyncing) return [];
+    setBusy(true);
+    const state = readState();
+    const results = [];
+    logDebug('run_sync_all_called', `Fila segura iniciada para ${SYNCABLE_CLIENTS.length} clientes.`);
+
+    for (let index = 0; index < SYNCABLE_CLIENTS.length; index += 1) {
+      const clientId = SYNCABLE_CLIENTS[index];
+      setStatus(`Atualizando ${index + 1}/${SYNCABLE_CLIENTS.length}: ${clientId}`, 'syncing');
+      try { results.push(await syncClientGrowthPack(clientId, state)); }
+      catch (error) {
+        logDebug('sync_error', `${clientId}: ${error.message}`);
+        results.push({ ok: false, clientId, message: error.message });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    finishSync(state, results, true);
+    setBusy(false);
+    return results;
+  }
+
+  function finishSync(state, results, reload) {
     const ok = results.filter((item) => item.ok).length;
     const failed = results.length - ok;
     state.events = state.events || [];
     state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `GrowthPack API: ${ok} ok, ${failed} falha(s)`, time: 'agora' });
-    writeState(state);
+    writeState(state, { reload });
     setStatus(failed ? `${ok} ok, ${failed} falha(s)` : `${ok} ok via Apps Script`, failed ? 'error' : 'ok');
-    return results;
   }
 
   function clearLocalCache() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(DEBUG_KEY);
+    localStorage.removeItem('v4-boot-debug-log');
     sessionStorage.clear();
     logDebug('cache_clear', 'Cache do painel limpo pelo botão.');
     setStatus('Cache limpo. Recarregando...', 'warn');
@@ -158,18 +213,20 @@
     if (document.querySelector('[data-real-sync-box]')) return;
     const style = document.createElement('style');
     style.textContent = `
-      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 560px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
+      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 650px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
       [data-real-sync-box] button { border: 0; border-radius: 999px; padding: 8px 12px; background: linear-gradient(135deg, var(--red,#cf1022), var(--red-2,#700814)); color: white; font-weight: 900; cursor: pointer; }
       [data-real-sync-status][data-status="syncing"] { color: #ffcc66; } [data-real-sync-status][data-status="ok"] { color: #66dd88; } [data-real-sync-status][data-status="warn"] { color: #ffcc66; } [data-real-sync-status][data-status="error"] { color: #ff7777; }
-      [data-v4-debug-panel] { flex-basis: 100%; max-height: 170px; overflow: auto; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.06); font-weight: 600; line-height: 1.35; display: none; }
+      [data-v4-debug-panel] { flex-basis: 100%; max-height: 190px; overflow: auto; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.06); font-weight: 600; line-height: 1.35; display: none; }
       [data-real-sync-box][data-debug-open="true"] [data-v4-debug-panel] { display: block; }
+      @media (max-width: 720px) { [data-real-sync-box] { left: 12px; right: 12px; bottom: 12px; } }
     `;
     document.head.appendChild(style);
     const box = document.createElement('div');
     box.dataset.realSyncBox = 'true';
     box.innerHTML = `
-      <span data-real-sync-status data-status="idle">Debug pronto</span>
+      <span data-real-sync-status data-status="idle">GrowthPack API pronta</span>
       <button type="button" data-real-sync-current>Atualizar cliente</button>
+      <button type="button" data-real-sync-all>Atualizar todos</button>
       <button type="button" data-v4-debug-toggle>Debug</button>
       <button type="button" data-v4-clear-cache>Limpar cache</button>
       <div data-v4-debug-panel><div data-v4-debug-list></div></div>
@@ -189,9 +246,8 @@
       runSync(clientId);
     }
     if (event.target.closest('[data-real-sync-all]')) {
-      const clientId = getCurrentClientId();
-      logDebug('click_update_all_disabled', `Atualizar todos desativado. Atualizando cliente atual: ${clientId}`);
-      runSync(clientId);
+      logDebug('click_update_all', 'Clique recebido. Iniciando fila segura de todos os clientes.');
+      runSyncAll();
     }
     if (event.target.closest('[data-v4-clear-cache]')) clearLocalCache();
     if (event.target.closest('[data-v4-debug-toggle]')) {
@@ -204,5 +260,5 @@
 
   window.addEventListener('error', (event) => logDebug('window_error', event.message));
   window.addEventListener('unhandledrejection', (event) => logDebug('promise_error', event.reason?.message || String(event.reason)));
-  window.V4_REAL_DATA_SYNC = { runSync, syncClientGrowthPack, clearLocalCache, clients: SYNCABLE_CLIENTS, debug: logDebug };
+  window.V4_REAL_DATA_SYNC = { runSync, runSyncAll, syncClientGrowthPack, clearLocalCache, clients: SYNCABLE_CLIENTS, debug: logDebug };
 })();
