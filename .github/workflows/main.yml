@@ -1,5 +1,23 @@
-npm cache clean --force
-npm install
-git add package-lock.json
-git commit -m "Update package-lock.json"
-git push
+name: Static validation
+
+on:
+  push:
+    branches:
+      - V4-COMPANY
+  workflow_dispatch:
+
+jobs:
+  validate-static-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required files
+        run: |
+          test -f index.html
+          test -f vercel.json
+          test -f src/services/runtime-api.js
+          test -f src/services/real-data-sync.js
+          test -f src/services/filter-runtime-fix.js
+          echo "Static V4 Command Center files validated. Deploy is handled by Vercel."
