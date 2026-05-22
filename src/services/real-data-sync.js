@@ -14,7 +14,7 @@
     try {
       const list = JSON.parse(localStorage.getItem(DEBUG_KEY) || '[]');
       list.unshift(item);
-      localStorage.setItem(DEBUG_KEY, JSON.stringify(list.slice(0, 80)));
+      localStorage.setItem(DEBUG_KEY, JSON.stringify(list.slice(0, 120)));
     } catch {}
     paintDebug();
   }
@@ -81,6 +81,20 @@
     });
   }
 
+  function emptyCrmSnapshot(clientId, reason) {
+    return {
+      source: 'growthpack_apps_script',
+      clientId,
+      rows: 0,
+      rawRecords: [],
+      latest: [],
+      lostLatest: [],
+      totals: { value: 0, lead: 0, mql: 0, sql: 0, opportunity: 0, purchase: 0, lost: 0 },
+      rates: { saleRate: 0, lossRate: 0, ticket: 0 },
+      warning: reason || 'CRM não localizado na GrowthPack'
+    };
+  }
+
   function trimSnapshot(snapshot) {
     if (!snapshot || !Array.isArray(snapshot.rawRecords)) return snapshot;
     const rawRecords = snapshot.rawRecords.slice(-MAX_RAW_RECORDS_PER_CLIENT);
@@ -89,12 +103,31 @@
 
   function applyCrmSnapshot(state, client, payload) {
     const rows = payload?.crm?.rows;
-    if (!Array.isArray(rows)) throw new Error('Payload CRM sem rows. Verifique BASE_CRM no Apps Script.');
-    if (!window.V4_CRM_SHEETS?.aggregate) throw new Error('Agregador V4_CRM_SHEETS indisponível.');
     state.crmSnapshots = state.crmSnapshots || {};
+    client.crmSheet = client.crmSheet || {};
+
+    if (!Array.isArray(rows)) {
+      const reason = `CRM não localizado na GrowthPack (${payload?.crm?.name || client.crmSheet?.sheetName || 'BASE_CRM'})`;
+      state.crmSnapshots[client.id] = emptyCrmSnapshot(client.id, reason);
+      client.crmSheet.status = reason;
+      client.crmSheet.lastSync = now();
+      client.crmSheet.rowCount = 0;
+      logDebug('crm_warning', `${client.id}: ${reason}`);
+      return 0;
+    }
+
+    if (!window.V4_CRM_SHEETS?.aggregate) {
+      const reason = 'Agregador V4_CRM_SHEETS indisponível.';
+      state.crmSnapshots[client.id] = emptyCrmSnapshot(client.id, reason);
+      client.crmSheet.status = reason;
+      client.crmSheet.lastSync = now();
+      client.crmSheet.rowCount = 0;
+      logDebug('crm_warning', `${client.id}: ${reason}`);
+      return 0;
+    }
+
     const snapshot = window.V4_CRM_SHEETS.aggregate(rows);
     state.crmSnapshots[client.id] = trimSnapshot(snapshot);
-    client.crmSheet = client.crmSheet || {};
     client.crmSheet.status = 'Sincronizado via Apps Script';
     client.crmSheet.lastSync = now();
     client.crmSheet.rowCount = payload.crm?.rowCount || rows.length;
@@ -135,8 +168,10 @@
     logDebug('api_call_ok', `Resposta recebida de ${clientId}`, { ok: payload.ok, spreadsheetName: payload.spreadsheetName, crmRows: payload.crm?.rowCount, elapsedMs: payload.elapsedMs });
     applyRuntimeEvidence(client, payload);
     const rows = applyCrmSnapshot(state, client, payload);
-    logDebug('sync_ok', `${clientId} sincronizado`, { spreadsheetName: payload.spreadsheetName, rows });
-    return { ok: true, clientId, rows, spreadsheetName: payload.spreadsheetName };
+    const warning = state.crmSnapshots?.[client.id]?.warning || '';
+    if (warning) logDebug('sync_warn', `${clientId} sincronizado com aviso: ${warning}`, { rows });
+    else logDebug('sync_ok', `${clientId} sincronizado`, { spreadsheetName: payload.spreadsheetName, rows });
+    return { ok: true, warning: Boolean(warning), clientId, rows, spreadsheetName: payload.spreadsheetName, message: warning };
   }
 
   async function runSync(clientId) {
@@ -184,11 +219,16 @@
 
   function finishSync(state, results, reload) {
     const ok = results.filter((item) => item.ok).length;
-    const failed = results.length - ok;
+    const warnings = results.filter((item) => item.ok && item.warning).length;
+    const failed = results.filter((item) => !item.ok).length;
+    const failedNames = results.filter((item) => !item.ok).map((item) => item.clientId).join(', ');
+    const warningNames = results.filter((item) => item.ok && item.warning).map((item) => item.clientId).join(', ');
     state.events = state.events || [];
-    state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `GrowthPack API: ${ok} ok, ${failed} falha(s)`, time: 'agora' });
+    state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `GrowthPack API: ${ok} ok, ${warnings} aviso(s), ${failed} falha(s)`, time: 'agora' });
     writeState(state, { reload });
-    setStatus(failed ? `${ok} ok, ${failed} falha(s)` : `${ok} ok via Apps Script`, failed ? 'error' : 'ok');
+    if (failed) setStatus(`${ok} ok, ${warnings} aviso(s), ${failed} falha(s): ${failedNames}`, 'error');
+    else if (warnings) setStatus(`${ok} ok, ${warnings} aviso(s): ${warningNames}`, 'warn');
+    else setStatus(`${ok} ok via Apps Script`, 'ok');
   }
 
   function clearLocalCache() {
@@ -206,17 +246,17 @@
     if (!panel) return;
     let logs = [];
     try { logs = JSON.parse(localStorage.getItem(DEBUG_KEY) || '[]'); } catch {}
-    panel.querySelector('[data-v4-debug-list]').innerHTML = logs.slice(0, 12).map((item) => `<div><strong>${item.at}</strong> [${item.type}] ${item.message}</div>`).join('') || '<div>Nenhum log ainda.</div>';
+    panel.querySelector('[data-v4-debug-list]').innerHTML = logs.slice(0, 16).map((item) => `<div><strong>${item.at}</strong> [${item.type}] ${item.message}</div>`).join('') || '<div>Nenhum log ainda.</div>';
   }
 
   function injectManualSync() {
     if (document.querySelector('[data-real-sync-box]')) return;
     const style = document.createElement('style');
     style.textContent = `
-      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 650px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
+      [data-real-sync-box] { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 720px; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.18); background: rgba(13,15,23,.94); color: #f5f5f5; box-shadow: 0 20px 55px rgba(0,0,0,.35); font: 700 12px system-ui; }
       [data-real-sync-box] button { border: 0; border-radius: 999px; padding: 8px 12px; background: linear-gradient(135deg, var(--red,#cf1022), var(--red-2,#700814)); color: white; font-weight: 900; cursor: pointer; }
       [data-real-sync-status][data-status="syncing"] { color: #ffcc66; } [data-real-sync-status][data-status="ok"] { color: #66dd88; } [data-real-sync-status][data-status="warn"] { color: #ffcc66; } [data-real-sync-status][data-status="error"] { color: #ff7777; }
-      [data-v4-debug-panel] { flex-basis: 100%; max-height: 190px; overflow: auto; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.06); font-weight: 600; line-height: 1.35; display: none; }
+      [data-v4-debug-panel] { flex-basis: 100%; max-height: 220px; overflow: auto; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.06); font-weight: 600; line-height: 1.35; display: none; }
       [data-real-sync-box][data-debug-open="true"] [data-v4-debug-panel] { display: block; }
       @media (max-width: 720px) { [data-real-sync-box] { left: 12px; right: 12px; bottom: 12px; } }
     `;
