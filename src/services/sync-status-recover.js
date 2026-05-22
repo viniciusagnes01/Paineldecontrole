@@ -13,7 +13,7 @@
   function clientFromMessage(message) {
     const text = String(message || '').trim();
     if (!text) return '';
-    const known = ['alphaville', 'prime', 'multimed', 'seg-eletronic', 'espaco-master', 'st1-internet', 'yousafer', 'treinando-online'];
+    const known = ['alphaville', 'prime', 'multimed', 'seg-eletronic', 'espaco-master', 'st1-internet', 'yousafer'];
     return known.find((clientId) => text.includes(clientId)) || text.split(':')[0].split(' ')[0].trim();
   }
 
