@@ -1,5 +1,6 @@
 (function () {
   const DEFAULT_BASE_URL = window.V4_RUNTIME_API_URL || '';
+  const DEFAULT_TIMEOUT_MS = 18000;
 
   function hasRuntimeApi() {
     return Boolean(DEFAULT_BASE_URL && DEFAULT_BASE_URL !== 'disabled');
@@ -15,21 +16,40 @@
   }
 
   async function fetchJson(url, options = {}) {
-    const response = await fetch(url, { cache: 'no-store', ...options });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok || payload.ok === false) throw new Error(payload.message || `Erro HTTP ${response.status}`);
-    return payload;
+    const controller = new AbortController();
+    const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { cache: 'no-store', ...options, signal: controller.signal });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) throw new Error(payload.message || `Erro HTTP ${response.status}`);
+      return payload;
+    } catch (error) {
+      if (error.name === 'AbortError') throw new Error(`Timeout da API apos ${Math.round(timeoutMs / 1000)}s. Teste o Apps Script direto no navegador.`);
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   async function request(path, options = {}) {
     if (!hasRuntimeApi()) throw new Error('Runtime API publica nao configurada.');
-    if (/script\.google\.com/.test(DEFAULT_BASE_URL)) return fetchJson(appsScriptUrl(options.params || {}), options);
+    if (/script\.google\.com/.test(DEFAULT_BASE_URL)) {
+      return fetchJson(appsScriptUrl(options.params || {}), options);
+    }
     const url = `${DEFAULT_BASE_URL}${path}${path.includes('?') ? '&' : '?'}cacheBust=${Date.now()}`;
     return fetchJson(url, { headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }, ...options });
   }
 
-  async function loadGrowthPackClient(clientId) {
-    return request('/api/growthpack', { params: { clientId } });
+  async function loadGrowthPackClient(clientId, options = {}) {
+    return request('/api/growthpack', {
+      params: {
+        clientId,
+        mode: options.mode || 'crm',
+        limit: options.limit || 300
+      },
+      timeoutMs: options.timeoutMs || DEFAULT_TIMEOUT_MS
+    });
   }
 
   async function loadCommunicationBase(clientId, options = {}) {
