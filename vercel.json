@@ -1,0 +1,5 @@
+{
+  "installCommand": "echo \"Skipping dependency installation for static deploy\"",
+  "buildCommand": "echo \"Static V4 Command Center deploy\"",
+  "outputDirectory": "."
+}
