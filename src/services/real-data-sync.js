@@ -1,7 +1,16 @@
-// Atualização manual de dados reais. Substitui o antigo auto-sync em intervalo.
+// Atualização manual de dados reais via Apps Script GrowthPack API.
 (function () {
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
-  const SYNCABLE_CLIENTS = ['espaco-master', 'st1-internet'];
+  const SYNCABLE_CLIENTS = [
+    'alphaville',
+    'yousafer',
+    'prime',
+    'multimed',
+    'treinando-online',
+    'seg-eletronic',
+    'espaco-master',
+    'st1-internet'
+  ];
 
   function getCurrentClientId() {
     const route = window.V4_APP?.getRoute?.();
@@ -42,30 +51,103 @@
     el.textContent = label;
   }
 
-  async function runSync(clientId) {
-    if (!window.V4_COMMUNICATION_BASE) {
-      setStatus('Serviço de comunicação não carregado', 'error');
-      return;
+  function findClient(state, clientId) {
+    return (state.clients || []).find((client) => client.id === clientId);
+  }
+
+  function normalizeApiRows(sheetPayload) {
+    if (!sheetPayload?.rows || !Array.isArray(sheetPayload.rows)) return null;
+    return sheetPayload.rows;
+  }
+
+  function applyCrmSnapshot(state, client, payload) {
+    const rows = normalizeApiRows(payload.crm);
+    if (!rows || !window.V4_CRM_SHEETS?.aggregate) return false;
+    state.crmSnapshots = state.crmSnapshots || {};
+    state.crmSnapshots[client.id] = window.V4_CRM_SHEETS.aggregate(rows);
+    client.crmSheet = client.crmSheet || {};
+    client.crmSheet.status = 'Sincronizado via Apps Script';
+    client.crmSheet.lastSync = new Date().toLocaleString('pt-BR');
+    client.crmSheet.sourceUrl = payload.spreadsheetId;
+    return true;
+  }
+
+  function applyRuntimeEvidence(client, payload) {
+    client.apiStatus = payload.apiStatus || [];
+    client.apiConfig = payload.apiConfig || {};
+    client.growthPack = {
+      ...(client.growthPack || {}),
+      spreadsheetId: payload.spreadsheetId || client.growthPack?.spreadsheetId || '',
+      title: payload.spreadsheetName || client.growthPack?.title || '',
+      status: 'located',
+      resultSource: true,
+      sourcePriority: 'growthpack_first',
+      lastRuntimeLoad: payload.loadedAt || new Date().toISOString()
+    };
+    client.dataPolicy = {
+      ...(client.dataPolicy || {}),
+      primarySource: 'growthpack_apps_script',
+      secondarySource: 'communication_base_evolution',
+      resultSource: 'growthpack_apps_script',
+      allowDemoData: false,
+      requireEvidence: true
+    };
+  }
+
+  async function syncClientGrowthPack(clientId, state) {
+    if (!window.V4_RUNTIME_API?.hasRuntimeApi?.()) {
+      return { ok: false, clientId, message: 'Runtime API pública não configurada.' };
+    }
+    if (!window.V4_RUNTIME_API?.loadGrowthPackClient) {
+      return { ok: false, clientId, message: 'loadGrowthPackClient indisponível.' };
     }
 
+    const client = findClient(state, clientId);
+    if (!client) return { ok: false, clientId, message: 'Cliente não encontrado no painel.' };
+
+    const payload = await window.V4_RUNTIME_API.loadGrowthPackClient(clientId);
+    applyRuntimeEvidence(client, payload);
+    const crmOk = applyCrmSnapshot(state, client, payload);
+
+    return {
+      ok: true,
+      clientId,
+      fromBackend: true,
+      crmOk,
+      spreadsheetName: payload.spreadsheetName,
+      rows: payload.crm?.rowCount || 0
+    };
+  }
+
+  async function runSync(clientId) {
     const state = readState();
     const targets = clientId ? [clientId] : SYNCABLE_CLIENTS;
-    setStatus(clientId ? `Atualizando ${clientId}...` : 'Atualizando bases reais...', 'syncing');
+    setStatus(clientId ? `Atualizando ${clientId}...` : 'Atualizando GrowthPacks...', 'syncing');
 
     const results = [];
     for (const target of targets) {
-      results.push(await window.V4_COMMUNICATION_BASE.syncClientBase(target, state, { fetchRemote: true }));
+      try {
+        results.push(await syncClientGrowthPack(target, state));
+      } catch (error) {
+        results.push({ ok: false, clientId: target, message: error.message });
+      }
     }
 
+    state.events = state.events || [];
     const ok = results.filter((item) => item.ok).length;
-    const fallback = results.filter((item) => item.ok && !item.fromBackend).length;
     const failed = results.filter((item) => !item.ok).length;
+    state.events.unshift({
+      id: `ev-growthpack-api-${Date.now()}`,
+      type: 'sync',
+      text: `GrowthPack API: ${ok} cliente(s) atualizados, ${failed} falha(s)`,
+      time: 'agora'
+    });
 
     writeState(state);
 
     if (failed) setStatus(`${ok} ok, ${failed} falha(s)`, 'error');
-    else if (fallback) setStatus(`${ok} ok via base verificada`, 'warn');
-    else setStatus(`${ok} ok via backend`, 'ok');
+    else setStatus(`${ok} ok via Apps Script`, 'ok');
+    return results;
   }
 
   function injectManualSync() {
@@ -94,7 +176,7 @@
         border: 0;
         border-radius: 999px;
         padding: 8px 12px;
-        background: linear-gradient(135deg, #cf1022, #700814);
+        background: linear-gradient(135deg, var(--red, #cf1022), var(--red-2, #700814));
         color: white;
         font-weight: 900;
         cursor: pointer;
@@ -109,9 +191,9 @@
     const box = document.createElement('div');
     box.dataset.realSyncBox = 'true';
     box.innerHTML = `
-      <span data-real-sync-status data-status="idle">Atualização manual</span>
+      <span data-real-sync-status data-status="idle">GrowthPack API ativa</span>
       <button type="button" data-real-sync-current>Atualizar cliente</button>
-      <button type="button" data-real-sync-all>Atualizar bases</button>
+      <button type="button" data-real-sync-all>Atualizar todos</button>
     `;
     document.body.appendChild(box);
   }
@@ -122,5 +204,5 @@
     if (event.target.closest('[data-real-sync-all]')) runSync(null);
   });
 
-  window.V4_REAL_DATA_SYNC = { runSync };
+  window.V4_REAL_DATA_SYNC = { runSync, syncClientGrowthPack, clients: SYNCABLE_CLIENTS };
 })();
