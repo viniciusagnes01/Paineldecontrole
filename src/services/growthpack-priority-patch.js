@@ -4,10 +4,10 @@
     alphaville: ['1CtfFiB0q2B72Cwb9VjTkv8gZHYtBv2keICwBNj7Z0ws', 'Alphaville Sacadas | GrowthPack V26 (Inside Sales)', 'BASE_CRM', '833926654'],
     yousafer: ['1KLxctUK2ZGaM7jm1y2zj-StwLTgV6qP0PL1a-ZEnMmo', 'YouSafer | GrowthPack V26 (Inside Sales)', '', '', '662103333', '2106399394', 'BASE_CRM nao localizada'],
     prime: ['1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8', 'Nova Atualizado Growth Pack 3.1 [Prime]', 'BASE_CRM', '1986904416', '501111945', '867200802'],
-    multimed: ['1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)', 'BASE_CRM', ''],
+    multimed: ['1h4obelICw7z1rbYNaEdkbrCH-qYUhFttzW3SopNxodg', 'MultiMed | GrowthPack V26 (Inside Sales)', 'BASE DO CRM', ''],
     'treinando-online': ['1rnD4jIpKfX5DAQMETQhOG-ULg81iAglJoej_AY8ArvA', 'Treinando Onlinne | GrowthPack V26 (Inside Sales)', 'BASE_CRM', ''],
     'seg-eletronic': ['1-CSmqLVLbfwVuVxkez4Q38fSTkVzyGOudUmj_GIxHAc', 'Seg Eletronic | GrowthPack V26 (Inside Sales)', 'BASE_CRM', '1929982003'],
-    'espaco-master': ['1wX65NPe9m_sQtXoIQfvOdyMUxigkn0KO', 'ESPACO MASTER _ GrowthPack V26 (Inside Sales) (2).xlsx', 'BASE_CRM', '', '', '', 'XLSX no Drive; leitura real requer API/Apps Script', 'drive_xlsx'],
+    'espaco-master': ['19-VWUfoJD27KxlFEn8uvoDVTKkahT7CSLlVoZD5-VUQ', 'ESPAÇO MASTER _ GrowthPack V26 (Inside Sales) - Google Sheets', 'BASE_CRM', '1733941213', '1736919533', '234259698', 'Google Sheets nativo validado; API_CONFIG e API_STATUS criadas'],
     'st1-internet': ['1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA', 'ST1 Internet | GrowthPack V26 (Inside Sales)', 'BASE_CRM', '1699545222'],
     'sindihoteleiros-cuidar-on': ['', 'GrowthPack nao localizada', '', '', '', '', 'GrowthPack especifica nao localizada', 'not_located']
   };
@@ -115,7 +115,7 @@
       secondaryDataSource: 'Base de Comunicacao / Evolution',
       allowDemoData: false,
       requireClientScopedEvidence: true,
-      growthPackPriorityPatch: '20260522-01'
+      growthPackPriorityPatch: '20260522-02'
     };
     return state;
   }
