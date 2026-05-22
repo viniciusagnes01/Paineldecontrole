@@ -38,9 +38,10 @@
     }
     details.innerHTML = `
       <strong>Último resultado:</strong> ${summary.label}<br>
+      ${summary.pendingClients.length ? `<span>Fonte alternativa: ${summary.pendingClients.join(', ')}</span><br>` : ''}
       ${summary.warningClients.length ? `<span>Com aviso: ${summary.warningClients.join(', ')}</span><br>` : ''}
       ${summary.errorClients.length ? `<span>Com falha: ${summary.errorClients.join(', ')}</span><br>` : ''}
-      ${summary.okClients.length ? `<span>OK: ${summary.okClients.join(', ')}</span>` : ''}
+      ${summary.okClients.length ? `<span>GrowthPack OK: ${summary.okClients.join(', ')}</span>` : ''}
     `;
   }
 
@@ -51,25 +52,29 @@
     const saved = logs.find((item) => item.type === 'state_saved');
     const errors = logs.filter((item) => item.type === 'sync_error').slice(0, 12);
     const warnings = logs.filter((item) => item.type === 'sync_warn' || item.type === 'crm_warning').slice(0, 12);
+    const pending = logs.filter((item) => item.type === 'sync_pending').slice(0, 12);
     const oks = logs.filter((item) => item.type === 'sync_ok').slice(0, 12);
 
-    if (!saved && !errors.length && !warnings.length && !oks.length) return null;
+    if (!saved && !errors.length && !warnings.length && !pending.length && !oks.length) return null;
 
     const errorClients = unique(errors.map((item) => clientFromMessage(item.message)));
     const warningClients = unique(warnings.map((item) => clientFromMessage(item.message)));
+    const pendingClients = unique(pending.map((item) => clientFromMessage(item.message)));
     const okClients = unique(oks.map((item) => clientFromMessage(item.message)));
-    const okTotal = okClients.length + warningClients.length;
 
     if (errorClients.length) {
-      return { status: 'error', label: `${okTotal} ok, ${warningClients.length} aviso(s), ${errorClients.length} falha(s): ${errorClients.join(', ')}`, okClients, warningClients, errorClients };
+      return { status: 'error', label: `${okClients.length} ok via GrowthPack, ${pendingClients.length} fonte(s) alternativa(s), ${errorClients.length} falha(s): ${errorClients.join(', ')}`, okClients, pendingClients, warningClients, errorClients };
     }
     if (warningClients.length) {
-      return { status: 'warn', label: `${okTotal} ok, ${warningClients.length} aviso(s): ${warningClients.join(', ')}`, okClients, warningClients, errorClients };
+      return { status: 'warn', label: `${okClients.length} ok via GrowthPack, ${pendingClients.length} fonte(s) alternativa(s), ${warningClients.length} aviso(s): ${warningClients.join(', ')}`, okClients, pendingClients, warningClients, errorClients };
+    }
+    if (pendingClients.length) {
+      return { status: 'warn', label: `${okClients.length} ok via GrowthPack, ${pendingClients.length} fonte(s) alternativa(s): ${pendingClients.join(', ')}`, okClients, pendingClients, warningClients, errorClients };
     }
     if (okClients.length) {
-      return { status: 'ok', label: `${okClients.length} ok via Apps Script`, okClients, warningClients, errorClients };
+      return { status: 'ok', label: `${okClients.length} ok via GrowthPack`, okClients, pendingClients, warningClients, errorClients };
     }
-    return { status: 'ok', label: 'Estado salvo após sincronização', okClients, warningClients, errorClients };
+    return { status: 'ok', label: 'Estado salvo após sincronização', okClients, pendingClients, warningClients, errorClients };
   }
 
   function recover() {
