@@ -1,7 +1,15 @@
 (function () {
-  const DEFAULT_BASE_URL = window.V4_RUNTIME_API_URL || 'http://localhost:5174';
+  const DEFAULT_BASE_URL = window.V4_RUNTIME_API_URL || '';
+
+  function hasRuntimeApi() {
+    return Boolean(DEFAULT_BASE_URL && DEFAULT_BASE_URL !== 'disabled');
+  }
 
   async function request(path, options = {}) {
+    if (!hasRuntimeApi()) {
+      throw new Error('Runtime API publica nao configurada. Usando fallback verificado do painel.');
+    }
+
     const response = await fetch(`${DEFAULT_BASE_URL}${path}`, {
       headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
       ...options
@@ -37,6 +45,7 @@
 
   window.V4_RUNTIME_API = {
     baseUrl: DEFAULT_BASE_URL,
+    hasRuntimeApi,
     loadCommunicationBase,
     syncCommunicationBase,
     syncOfficialCommunicationClients
