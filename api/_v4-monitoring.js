@@ -9,7 +9,8 @@ const CLIENTS = {
   yousafer: {
     name: 'YouSafer',
     growthPackClientId: 'yousafer',
-    crmMode: 'growthpack',
+    crmMode: 'alternative_source',
+    crmNote: 'GrowthPack sem BASE_CRM; monitorar mídia, analytics e fonte de CRM alternativa.',
     landingPages: [],
     tracking: { ga4PropertyId: '', ga4MeasurementId: '', gtmContainerId: '', metaPixelId: '' }
   },
@@ -140,7 +141,7 @@ async function checkGrowthPack(clientId, client) {
       clientId,
       clientName: client.name,
       status: 'alternative_source',
-      detail: 'Cliente usa fonte alternativa ou integracao GrowthPack pendente.'
+      detail: client.crmNote || 'Cliente usa fonte alternativa ou integracao GrowthPack pendente.'
     };
   }
 
@@ -222,7 +223,6 @@ function checkTrackingConfig(clientId, client) {
 
 async function runMonitoring(options = {}) {
   const targetClientId = options.clientId || '';
-  const clients = targetClientId ? { [targetClientId]: CLIENTS[targetClientId] }.filter : null;
   const entries = Object.entries(CLIENTS).filter(([clientId]) => !targetClientId || clientId === targetClientId);
 
   const results = [];
