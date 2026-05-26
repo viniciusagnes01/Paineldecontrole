@@ -18,8 +18,11 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     const urls = [];
     if (source.proxyUrl) urls.push(`${source.proxyUrl}${source.proxyUrl.includes('?') ? '&' : '?'}mode=${encodeURIComponent(mode)}`);
     if (proxyUrl) urls.push(proxyUrl);
-    urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`);
+
+    // Preferir GID quando existe. Em abas como "1,0 Mensal", a leitura por nome via gviz
+    // pode cair em aba errada/antiga dependendo de cache, locale ou caracteres especiais.
     if (gid) urls.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${encodeURIComponent(gid)}`);
+    urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`);
     return urls;
   }
 
@@ -238,6 +241,11 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     return rows[rowIndex]?.[colIndex] || '';
   }
 
+  function hasActualMetrics(period) {
+    const m = period?.metrics || {};
+    return Number(m.investment || 0) > 0 || Number(m.leads || 0) > 0 || Number(m.clicks || 0) > 0 || Number(m.impressions || 0) > 0;
+  }
+
   function derive(metrics) {
     const investment = Number(metrics.investment || 0);
     const leads = Number(metrics.leads || 0);
@@ -253,10 +261,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
   }
 
   function pickCurrent(periods) {
-    const eligible = periods.filter((period) => {
-      const m = period.metrics || {};
-      return Number(m.investment || 0) > 0 || Number(m.leads || 0) > 0 || Number(m.clicks || 0) > 0 || Number(m.impressions || 0) > 0;
-    });
+    const eligible = periods.filter(hasActualMetrics);
     return eligible[eligible.length - 1] || periods[periods.length - 1] || null;
   }
 
@@ -273,11 +278,17 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     return totals;
   }
 
+  function recentActualPeriods(periods, limit = 12) {
+    const actual = (periods || []).filter(hasActualMetrics);
+    const source = actual.length ? actual : (periods || []);
+    return source.slice(-limit);
+  }
+
   function buildSnapshot(monthly, weekly) {
     const monthlyPeriods = monthly.periods || [];
     const weeklyPeriods = weekly.periods || [];
-    const recentMonthly = monthlyPeriods.slice(-12);
-    const recentWeekly = weeklyPeriods.slice(-12);
+    const recentMonthly = recentActualPeriods(monthlyPeriods, 12);
+    const recentWeekly = recentActualPeriods(weeklyPeriods, 12);
     return {
       generatedAt: new Date().toISOString(),
       monthly: {
