@@ -16,13 +16,11 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     const gid = mode === 'weekly' ? source.weeklyGid : source.monthlyGid;
     const proxyUrl = mode === 'weekly' ? source.weeklyProxyUrl : source.monthlyProxyUrl;
     const urls = [];
-    if (source.proxyUrl) urls.push(`${source.proxyUrl}${source.proxyUrl.includes('?') ? '&' : '?'}mode=${encodeURIComponent(mode)}`);
-    if (proxyUrl) urls.push(proxyUrl);
 
-    // Preferir GID quando existe. Em abas como "1,0 Mensal", a leitura por nome via gviz
-    // pode cair em aba errada/antiga dependendo de cache, locale ou caracteres especiais.
+    if (proxyUrl) urls.push(proxyUrl);
     if (gid) urls.push(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${encodeURIComponent(gid)}`);
     urls.push(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`);
+    if (source.proxyUrl) urls.push(`${source.proxyUrl}${source.proxyUrl.includes('?') ? '&' : '?'}mode=${encodeURIComponent(mode)}`);
     return urls;
   }
 
@@ -30,28 +28,14 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}cacheBust=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const text = await response.text();
-    if (!text || /<html|<!doctype/i.test(text)) throw new Error('A resposta não veio em CSV. Confira compartilhamento/publicação da planilha ou use proxy N8N.');
+    if (!text || /<html|<!doctype/i.test(text)) throw new Error('A resposta não veio em CSV. Confira compartilhamento/publicação da planilha.');
     return text;
   }
 
   async function load(source = {}) {
-    if (source.syncBlocked && source.fallbackSnapshot) {
-      return { ok: true, snapshot: withGeneratedAt(source.fallbackSnapshot) };
-    }
-
-    try {
-      const [monthly, weekly] = await Promise.all([
-        loadOne(source, 'monthly'),
-        loadOne(source, 'weekly')
-      ]);
-      const snapshot = buildSnapshot(monthly, weekly);
-      return { ok: true, snapshot };
-    } catch (error) {
-      if (source.fallbackSnapshot) {
-        return { ok: true, snapshot: withGeneratedAt(source.fallbackSnapshot), fallbackReason: error.message };
-      }
-      throw error;
-    }
+    if (source.syncBlocked && source.fallbackSnapshot) return { ok: true, snapshot: withGeneratedAt(source.fallbackSnapshot) };
+    const [monthly, weekly] = await Promise.all([loadOne(source, 'monthly'), loadOne(source, 'weekly')]);
+    return { ok: true, snapshot: buildSnapshot(monthly, weekly) };
   }
 
   function withGeneratedAt(snapshot = {}) {
@@ -62,6 +46,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     const urls = buildCsvUrls(source, mode);
     if (!urls.length) throw new Error(`Fonte ${mode} não configurada.`);
     const errors = [];
+
     for (const url of urls) {
       try {
         const csv = await fetchText(url);
@@ -72,6 +57,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
         errors.push(`${url}: ${error.message}`);
       }
     }
+
     throw new Error(errors.join(' | '));
   }
 
@@ -81,6 +67,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     let cell = '';
     let quoted = false;
     const input = String(text || '').replace(/^\uFEFF/, '');
+
     for (let i = 0; i < input.length; i += 1) {
       const char = input[i];
       const next = input[i + 1];
@@ -102,6 +89,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
         cell += char;
       }
     }
+
     row.push(cell);
     if (row.some((value) => String(value).trim() !== '')) rows.push(row);
     return rows;
@@ -117,20 +105,30 @@ window.V4_PERFORMANCE_SHEETS = (() => {
   }
 
   function toNumber(value) {
-    if (typeof value === 'number') return value;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
     const raw = String(value || '').trim();
-    if (!raw || raw === '-' || raw === '--') return 0;
+    if (!raw || raw === '-' || raw === '--' || /^#N\/?A$/i.test(raw)) return 0;
+
     const isPercent = raw.includes('%');
-    const cleaned = raw
+    let cleaned = raw
       .replace(/R\$/g, '')
+      .replace(/\$/g, '')
       .replace(/%/g, '')
       .replace(/\s/g, '')
       .replace(/[^0-9,.-]/g, '');
-    if (!cleaned || cleaned === '-' || cleaned === ',') return 0;
-    let number;
-    if (cleaned.includes(',') && cleaned.includes('.')) number = Number(cleaned.replace(/\./g, '').replace(',', '.'));
-    else if (cleaned.includes(',')) number = Number(cleaned.replace(',', '.'));
-    else number = Number(cleaned);
+
+    if (!cleaned || cleaned === '-' || cleaned === ',' || cleaned === '.') return 0;
+
+    const lastComma = cleaned.lastIndexOf(',');
+    const lastDot = cleaned.lastIndexOf('.');
+    if (lastComma >= 0 && lastDot >= 0) {
+      if (lastComma > lastDot) cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+      else cleaned = cleaned.replace(/,/g, '');
+    } else if (lastComma >= 0) {
+      cleaned = cleaned.replace(',', '.');
+    }
+
+    const number = Number(cleaned);
     if (!Number.isFinite(number)) return 0;
     return isPercent ? number : number;
   }
@@ -185,18 +183,16 @@ window.V4_PERFORMANCE_SHEETS = (() => {
   }
 
   function slugKey(text) {
-    return String(text || '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '_')
-      .replace(/^_|_$/g, '')
-      .slice(0, 42);
+    return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 42);
   }
 
   function parsePerformanceRows(rows, mode) {
     const cleanRows = rows.filter((row) => row.some((cell) => String(cell).trim() !== ''));
     if (!cleanRows.length) throw new Error('Aba sem dados.');
+
     const maxCols = cleanRows.reduce((max, row) => Math.max(max, row.length), 0);
     const periods = [];
+
     for (let col = 1; col < maxCols; col += 1) {
       const start = mode === 'weekly' ? valueAt(cleanRows, 2, col) : valueAt(cleanRows, 1, col);
       const end = mode === 'weekly' ? valueAt(cleanRows, 3, col) : valueAt(cleanRows, 2, col);
@@ -204,6 +200,7 @@ window.V4_PERFORMANCE_SHEETS = (() => {
       const month = mode === 'weekly' ? valueAt(cleanRows, 1, col) : valueAt(cleanRows, 3, col);
       const hasPeriod = start || end || month || year;
       if (!hasPeriod) continue;
+
       const period = {
         index: col,
         mode,
@@ -218,21 +215,22 @@ window.V4_PERFORMANCE_SHEETS = (() => {
       };
 
       cleanRows.forEach((row) => {
-        const label = row[0];
-        const key = metricKey(label);
+        const key = metricKey(row[0]);
         if (!key) return;
         const rawValue = row[col];
-        const number = toNumber(rawValue);
-        period.metrics[key] = number;
+        period.metrics[key] = toNumber(rawValue);
         period.raw[key] = rawValue;
       });
+
       derive(period.metrics);
       periods.push(period);
     }
+
     const sorted = periods.sort((a, b) => Number(a.sortDate || 0) - Number(b.sortDate || 0));
+    const actual = sorted.filter(hasActualMetrics);
     return {
-      periods: sorted,
-      current: pickCurrent(sorted),
+      periods: actual,
+      current: actual[actual.length - 1] || null,
       updatedAt: new Date().toISOString()
     };
   }
@@ -251,18 +249,14 @@ window.V4_PERFORMANCE_SHEETS = (() => {
     const leads = Number(metrics.leads || 0);
     const clicks = Number(metrics.clicks || 0);
     const impressions = Number(metrics.impressions || 0);
+    const revenue = Number(metrics.revenue || 0);
     const sales = Number(metrics.sales || 0);
     if (!metrics.cpl && leads) metrics.cpl = investment / leads;
     if (!metrics.cpc && clicks) metrics.cpc = investment / clicks;
     if (!metrics.ctr && impressions) metrics.ctr = clicks / impressions * 100;
     if (!metrics.conversion && clicks) metrics.conversion = leads / clicks * 100;
     if (!metrics.cpv && sales) metrics.cpv = investment / sales;
-    if (!metrics.roas && investment && metrics.revenue) metrics.roas = metrics.revenue / investment;
-  }
-
-  function pickCurrent(periods) {
-    const eligible = periods.filter(hasActualMetrics);
-    return eligible[eligible.length - 1] || periods[periods.length - 1] || null;
+    if (!metrics.roas && investment && revenue) metrics.roas = revenue / investment;
   }
 
   function sumPeriods(periods) {
@@ -279,27 +273,23 @@ window.V4_PERFORMANCE_SHEETS = (() => {
   }
 
   function recentActualPeriods(periods, limit = 12) {
-    const actual = (periods || []).filter(hasActualMetrics);
-    const source = actual.length ? actual : (periods || []);
-    return source.slice(-limit);
+    return (periods || []).filter(hasActualMetrics).slice(-limit);
   }
 
   function buildSnapshot(monthly, weekly) {
-    const monthlyPeriods = monthly.periods || [];
-    const weeklyPeriods = weekly.periods || [];
-    const recentMonthly = recentActualPeriods(monthlyPeriods, 12);
-    const recentWeekly = recentActualPeriods(weeklyPeriods, 12);
+    const recentMonthly = recentActualPeriods(monthly.periods || [], 12);
+    const recentWeekly = recentActualPeriods(weekly.periods || [], 12);
     return {
       generatedAt: new Date().toISOString(),
       monthly: {
         sourceUrl: monthly.sourceUrl,
-        current: monthly.current,
+        current: recentMonthly[recentMonthly.length - 1] || null,
         periods: recentMonthly,
         totals: sumPeriods(recentMonthly)
       },
       weekly: {
         sourceUrl: weekly.sourceUrl,
-        current: weekly.current,
+        current: recentWeekly[recentWeekly.length - 1] || null,
         periods: recentWeekly,
         totals: sumPeriods(recentWeekly)
       }
