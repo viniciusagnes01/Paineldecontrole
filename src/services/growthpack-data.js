@@ -12,7 +12,7 @@
       segment: 'Internet / telecom / provedor de internet',
       crm: 'Kommo',
       responsible: 'Vinicius Agnes',
-      status: 'Growth Pack V26 - monitoramento dinâmico',
+      status: 'Growth Pack V26 - fonte oficial Google Sheets',
       health: 72,
       color: '#1b78ff',
       accent: '#70c0ff',
@@ -20,17 +20,23 @@
       growthPack: {
         version: 'GrowthPack V26 (Inside Sales)',
         planningStatus: 'Relatório mensal; planejamento rodando',
-        sourceKind: 'dynamic-growthpack',
+        sourceKind: 'google-sheets-official',
         spreadsheetId: '1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA',
         spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/1BurqRDqYbWq8dPVxXiKjWH6WmfBNoe39AymwJM8LpFA/edit',
-        monthlySheetName: '1.0 Mensal',
+        monthlySheetName: '1,0 Mensal',
+        monthlyGid: '1253486000',
         weeklySheetName: '2.0 Semanal',
+        weeklyGid: '85034568',
+        dailySheetName: '3.0 Diario',
+        dailyGid: '2073034759',
         crmSheetName: 'BASE_CRM',
         crmGid: '1699545222',
-        monthlyGid: '1980055319',
-        weeklyGid: '85034568',
         metaRawSheetName: 'bd Meta Ads',
-        googleRawSheetName: 'bd Google Ads '
+        metaRawGid: '662103333',
+        googleRawSheetName: 'bd Google Ads ',
+        googleRawGid: '2106399394',
+        analyticsSheetName: 'bd Analytics',
+        analyticsGid: '1624663946'
       },
       communicationBase: {
         objective: 'Centralizar mensagens, aprovações, riscos, pendências, promessas, contexto do cliente, Ekyte e histórico social para automação N8N + Evolution + IA.',
@@ -53,43 +59,33 @@
         statusAutomacao: 'preparada'
       },
       metrics: {
-        revenue: 13201,
+        revenue: 0,
         revenueTarget: 160000,
-        leads: 736,
-        cpl: 15.60,
-        roas: 1.15,
-        investment: 11483.95,
-        mql: 391,
-        sql: 215,
-        opportunities: 142,
-        sales: 129,
-        ticket: 102.33,
-        impressions: 589301,
-        clicks: 7122,
-        ctr: 1.20,
-        conversion: 17.53,
-        dataSource: 'relatorio-mensal-abril-fallback'
+        leads: 0,
+        cpl: 0,
+        roas: 0,
+        investment: 0,
+        mql: 0,
+        sql: 0,
+        opportunities: 0,
+        sales: 0,
+        ticket: 0,
+        impressions: 0,
+        clicks: 0,
+        ctr: 0,
+        conversion: 0,
+        dataSource: 'pending-real-sync'
       },
-      goals: { revenue: 160000, leads: 1500, mqlRate: 53.12, cac: 80.87, roas: 1.15 },
+      goals: { revenue: 160000, leads: 1500, mqlRate: 0, cac: 0, roas: 0 },
       lps: [
-        { id: 'lp-st1-fibra', name: 'LP - Internet Fibra / Provedor', url: 'https://cliente.com/fibra', status: 'Ativo', speed: 81, conversion: 5.0 }
+        { id: 'lp-st1-fibra', name: 'LP - Internet Fibra / Provedor', url: '', status: 'Pendente', speed: 0, conversion: 0 }
       ],
       reportFallback: {
-        period: 'Abril/2026',
-        leadGoal: 1500,
-        goalProgress: 45.20,
-        ltv: 27.6,
-        ltvRevenue: 236170.11,
-        allFunnelRevenue: 68786,
-        allFunnelSales: 675,
-        allFunnelLeads: 3136,
-        meta: { leads: 492, investment: 5535.80, sales: 55, cpl: 11.25, cpa: 100.65, roas: 0.97, roi: 0.63, capturedValue: 7826 },
-        google: { leads: 244, investment: 5948.15, sales: 74, cpl: 24.37, cpa: 80.38, roas: 1.32, roi: 0.85, capturedValue: 5375 },
+        period: '',
         learnings: [
-          'Organizar orçamento pelos grupos de anúncio que geram leads mais baratos.',
-          'Comunicar semanalmente quantos leads viraram oportunidades.',
-          'Negativar canais e palavras-chave sem relação com o serviço.',
-          'Validar qualidade de MQL dos leads de Meta e Google para otimizações.'
+          'Sincronizar mídia somente pelas abas oficiais 1,0 Mensal e 2.0 Semanal.',
+          'Usar bd Meta Ads e bd Google Ads apenas como camada de auditoria/drill-down.',
+          'Não usar DASH_CRM no painel.'
         ]
       }
     },
@@ -101,15 +97,15 @@
       segment: 'Oficina mecânica / veículos pesados / serviços automotivos',
       crm: 'Kommo',
       responsible: 'Vinicius Agnes',
-      status: 'Growth Pack V26 - monitoramento dinâmico',
+      status: 'Growth Pack V26 - fonte oficial Google Sheets',
       health: 68,
       color: '#b70d1c',
       accent: '#ff4354',
       mascot: 'PM',
       growthPack: {
         version: 'GrowthPack V26 (Inside Sales) + Growth Pack 3.1 [Prime]',
-        planningStatus: 'Execução do Growth Pack; abril usado como fallback de check-in/relatório',
-        sourceKind: 'dynamic-growthpack',
+        planningStatus: 'Execução do Growth Pack',
+        sourceKind: 'google-sheets-official',
         spreadsheetId: '1BOTJF5ymnYHZ69mhyvCUZZWqyGOEf2boeRFza3L5awI',
         spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/1BOTJF5ymnYHZ69mhyvCUZZWqyGOEf2boeRFza3L5awI/edit',
         leadSpreadsheetId: '1h6-xdgyekZrNLZ4luZU61S0hzh0Z-HLAZR7qCm8NQG8',
@@ -144,41 +140,31 @@
       metrics: {
         revenue: 0,
         revenueTarget: 120000,
-        leads: 179,
-        cpl: 17.14,
+        leads: 0,
+        cpl: 0,
         roas: 0,
-        investment: 3069.07,
-        mql: 16,
+        investment: 0,
+        mql: 0,
         sql: 0,
-        opportunities: 2,
+        opportunities: 0,
         sales: 0,
         ticket: 0,
-        impressions: 299275,
-        clicks: 2330,
-        ctr: 0.77,
-        conversion: 7.68,
-        dataSource: 'relatorio-mensal-abril-fallback'
+        impressions: 0,
+        clicks: 0,
+        ctr: 0,
+        conversion: 0,
+        dataSource: 'pending-real-sync'
       },
-      goals: { revenue: 120000, leads: 600, mqlRate: 8.93, cac: 1534.53, roas: 1 },
+      goals: { revenue: 120000, leads: 600, mqlRate: 0, cac: 0, roas: 0 },
       lps: [
-        { id: 'lp-prime-veiculos-pesados', name: 'LP - Veículos Pesados / Frota', url: 'https://cliente.com/prime-mecanica', status: 'Ativo', speed: 78, conversion: 4.2 }
+        { id: 'lp-prime-veiculos-pesados', name: 'LP - Veículos Pesados / Frota', url: '', status: 'Pendente', speed: 0, conversion: 0 }
       ],
       reportFallback: {
-        period: 'Abril/2026',
-        meta: { leads: 130, investment: 1537.85, sales: 0, cpl: 11.82, cpa: 0, roas: 0, roi: 0, capturedValue: 0 },
-        google: { leads: 49, investment: 1531.22, sales: 0, cpl: 31.24, cpa: 0, roas: 0, roi: 0, capturedValue: 0 },
-        organic: { followers: 26 },
-        winningCreatives: [
-          { label: 'Criativo vencedor 1', leads: 56, cpl: 7.09 },
-          { label: 'Criativo vencedor 2', leads: 39, cpl: 9.33 },
-          { label: 'Criativo vencedor 3', leads: 37, cpl: 9.95 }
-        ],
+        period: '',
         learnings: [
-          'Fast Traffic foi otimizado mantendo criativos vencedores nos 4 grupos de anúncios ativos.',
-          'Validar se os leads estão dentro de MQL e se vendas acompanham o crescimento.',
-          'Produzir novos vídeos inspirados nos criativos vencedores para evitar desgaste.',
-          'Se ROAS evoluir, escalar com Remarketing e Públicos Semelhantes.',
-          'Google: LP de Festas de 15 anos + otimização/negativação de palavras-chave.'
+          'Sincronizar mídia e CRM apenas pelas fontes oficiais configuradas.',
+          'Não usar endpoints /api/growthpack inexistentes.',
+          'Não usar DASH_CRM no painel.'
         ]
       }
     }
@@ -200,6 +186,19 @@
     return (rows || []).filter((row) => !(row.clientId === clientId && row.source === source));
   }
 
+  function cleanDashCrm(obj) {
+    if (!obj || typeof obj !== 'object') return obj;
+    Object.keys(obj).forEach((key) => {
+      const value = obj[key];
+      if (String(value || '').trim().toUpperCase() === 'DASH_CRM' || key === 'dashboardSheetName' || key === 'dashboardGid' || key === 'dashCrm') {
+        delete obj[key];
+      } else if (value && typeof value === 'object') {
+        cleanDashCrm(value);
+      }
+    });
+    return obj;
+  }
+
   function buildTasks(client) {
     const tasks = [];
     const learnings = client.reportFallback?.learnings || [];
@@ -209,13 +208,13 @@
         clientId: client.id,
         source: 'growthpack-report',
         title: text,
-        status: index < 2 ? 'Em execução' : 'Backlog',
+        status: index < 1 ? 'Em execução' : 'Backlog',
         owner: client.responsible,
-        type: index < 2 ? 'Otimização / validação' : 'Plano de ação',
-        priority: index < 2 ? 'Alta' : 'Média',
+        type: index < 1 ? 'Integração / saneamento' : 'Plano de ação',
+        priority: index < 1 ? 'Alta' : 'Média',
         start: '2026-05-19',
         end: '2026-05-31',
-        progress: index < 2 ? 45 : 10,
+        progress: index < 1 ? 45 : 10,
         link: client.growthPack?.spreadsheetUrl || ''
       });
     });
@@ -223,13 +222,13 @@
       id: `gp-${client.id}-sync-growthpack`,
       clientId: client.id,
       source: 'growthpack-report',
-      title: `Sincronizar ${client.growthPack.version} com BASE_CRM, 1.0 Mensal e 2.0 Semanal`,
+      title: `Sincronizar ${client.growthPack.version} com BASE_CRM, ${client.growthPack.monthlySheetName || 'Mensal'} e ${client.growthPack.weeklySheetName || 'Semanal'}`,
       status: 'Em execução',
       owner: 'N8N / Backend',
       type: 'Integração Growth Pack',
       priority: 'Alta',
       start: '2026-05-19',
-      end: '2026-05-22',
+      end: '2026-05-31',
       progress: 60,
       link: client.growthPack?.spreadsheetUrl || ''
     });
@@ -249,6 +248,11 @@
       how: task.link ? `Acompanhar na fonte oficial: ${task.link}` : 'Acompanhar na rotina V4.',
       status: task.status
     };
+  }
+
+  function removeLegacySnapshots(state, clientId) {
+    if (state.performanceSnapshots?.[clientId]?.source === 'relatorio-mensal-abril-fallback') delete state.performanceSnapshots[clientId];
+    if (state.crmSnapshots?.[clientId]?.source === 'growthpack-fallback') delete state.crmSnapshots[clientId];
   }
 
   function applyClient(state, client) {
@@ -277,11 +281,9 @@
         spreadsheetId: client.growthPack.leadSpreadsheetId || client.growthPack.spreadsheetId,
         url: client.growthPack.leadSpreadsheetUrl || client.growthPack.spreadsheetUrl,
         sheetName: client.growthPack.crmSheetName || 'BASE_CRM',
-        dashboardSheetName: 'DASH_CRM',
         gid: client.growthPack.crmGid || '',
-        proxyUrl: `/api/growthpack/${client.id}/crm`,
-        status: 'Configurado - Growth Pack',
-        lastSync: `Fonte preparada em ${nowPtBr()}`
+        status: 'Configurado - Google Sheets oficial',
+        lastSync: `Fonte configurada em ${nowPtBr()}`
       },
       performanceSheets: {
         type: 'googleSheetsCsv',
@@ -292,10 +294,13 @@
         monthlyGid: client.growthPack.monthlyGid || '',
         weeklyGid: client.growthPack.weeklyGid || '',
         metaRawSheetName: client.growthPack.metaRawSheetName || 'bd Meta Ads',
+        metaRawGid: client.growthPack.metaRawGid || '',
         googleRawSheetName: client.growthPack.googleRawSheetName || 'bd Google Ads ',
-        proxyUrl: `/api/growthpack/${client.id}/performance`,
-        status: 'Configurado - Growth Pack',
-        lastSync: `Fallback Abril/2026 aplicado em ${nowPtBr()}`
+        googleRawGid: client.growthPack.googleRawGid || '',
+        analyticsSheetName: client.growthPack.analyticsSheetName || 'bd Analytics',
+        analyticsGid: client.growthPack.analyticsGid || '',
+        status: 'Configurado - Google Sheets oficial',
+        lastSync: `Fonte configurada em ${nowPtBr()}`
       }
     };
 
@@ -305,90 +310,13 @@
     const tasks = buildTasks(client);
     state.tasks.push(...tasks);
     state.actionPlan.push(...tasks.map(buildActionPlan));
-
     state.performanceSnapshots = state.performanceSnapshots || {};
-    state.performanceSnapshots[client.id] = {
-      source: 'relatorio-mensal-abril-fallback',
-      generatedAt: nowPtBr(),
-      monthly: {
-        current: {
-          label: client.reportFallback?.period || 'Abril/2026',
-          metrics: {
-            investment: client.metrics.investment,
-            impressions: client.metrics.impressions,
-            clicks: client.metrics.clicks,
-            leads: client.metrics.leads,
-            cpl: client.metrics.cpl,
-            ctr: client.metrics.ctr,
-            roas: client.metrics.roas,
-            revenue: client.metrics.revenue,
-            sales: client.metrics.sales,
-            mql: client.metrics.mql,
-            sql: client.metrics.sql,
-            opportunities: client.metrics.opportunities
-          }
-        },
-        periods: [{
-          label: client.reportFallback?.period || 'Abril/2026',
-          metrics: {
-            investment: client.metrics.investment,
-            impressions: client.metrics.impressions,
-            clicks: client.metrics.clicks,
-            leads: client.metrics.leads,
-            cpl: client.metrics.cpl,
-            ctr: client.metrics.ctr,
-            roas: client.metrics.roas,
-            revenue: client.metrics.revenue,
-            sales: client.metrics.sales
-          }
-        }]
-      },
-      weekly: { current: null, periods: [] },
-      channels: {
-        meta: client.reportFallback?.meta || {},
-        google: client.reportFallback?.google || {},
-        organic: client.reportFallback?.organic || {}
-      },
-      learnings: client.reportFallback?.learnings || [],
-      winningCreatives: client.reportFallback?.winningCreatives || []
-    };
-
     state.crmSnapshots = state.crmSnapshots || {};
-    state.crmSnapshots[client.id] = {
-      source: 'growthpack-fallback',
-      generatedAt: nowPtBr(),
-      rows: client.metrics.leads,
-      totals: {
-        lead: client.metrics.leads,
-        mql: client.metrics.mql,
-        sql: client.metrics.sql,
-        opportunity: client.metrics.opportunities,
-        purchase: client.metrics.sales,
-        lost: 0,
-        value: client.metrics.revenue,
-        meta: client.reportFallback?.meta?.leads || 0,
-        google: client.reportFallback?.google?.leads || 0
-      },
-      rates: {
-        leadToMql: client.metrics.leads ? client.metrics.mql / client.metrics.leads * 100 : 0,
-        mqlToSql: client.metrics.mql ? client.metrics.sql / client.metrics.mql * 100 : 0,
-        sqlToOpportunity: client.metrics.sql ? client.metrics.opportunities / client.metrics.sql * 100 : 0,
-        opportunityToSale: client.metrics.opportunities ? client.metrics.sales / client.metrics.opportunities * 100 : 0,
-        saleRate: client.metrics.leads ? client.metrics.sales / client.metrics.leads * 100 : 0,
-        lossRate: 0,
-        ticket: client.metrics.ticket || 0
-      },
-      sources: [
-        { label: 'Meta Ads', lead: client.reportFallback?.meta?.leads || 0 },
-        { label: 'Google Ads', lead: client.reportFallback?.google?.leads || 0 },
-        { label: 'Orgânico / demais', lead: Math.max(0, client.metrics.leads - (client.reportFallback?.meta?.leads || 0) - (client.reportFallback?.google?.leads || 0)) }
-      ],
-      latest: []
-    };
+    removeLegacySnapshots(state, client.id);
   }
 
   function applyGrowthPackData(target) {
-    const state = target || {};
+    const state = cleanDashCrm(target || {});
     state.clients = state.clients || [];
     state.tasks = state.tasks || [];
     state.actionPlan = state.actionPlan || [];
@@ -398,21 +326,19 @@
       id: 'growthpack',
       name: 'Growth Pack Dinâmico',
       type: 'Dados / CRM / Mídia',
-      status: 'Configurado',
-      sync: 'Google Sheets + N8N',
+      status: 'Configurado sem proxy legado',
+      sync: 'Google Sheets oficial + Apps Script público',
       lastUpdate: nowPtBr()
     });
     state.events = state.events || [];
-    state.events.unshift({ id: `ev-growthpack-${Date.now()}`, type: 'sync', text: 'Growth Pack ST1 Internet e Prime Mecânica preparado com fallback Abril/2026', time: 'agora' });
+    state.events.unshift({ id: `ev-growthpack-${Date.now()}`, type: 'sync', text: 'Growth Pack saneado: sem DASH_CRM e sem /api/growthpack legado', time: 'agora' });
     return state;
   }
 
   window.V4_GROWTHPACK_CLIENTS = CLIENTS;
   window.V4_APPLY_GROWTHPACK_DATA = applyGrowthPackData;
 
-  if (window.V4_SEED) {
-    applyGrowthPackData(window.V4_SEED);
-  }
+  if (window.V4_SEED) applyGrowthPackData(window.V4_SEED);
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
