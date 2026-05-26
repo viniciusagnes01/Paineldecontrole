@@ -1,5 +1,10 @@
 {
   "installCommand": "echo \"Skipping dependency installation for static deploy\"",
   "buildCommand": "echo \"Static V4 Command Center deploy\"",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/api/monitoring/check", "destination": "/api/monitoring-check" },
+    { "source": "/api/monitoring/run", "destination": "/api/monitoring-run" },
+    { "source": "/api/evolution/send-alert", "destination": "/api/evolution-send-alert" }
+  ]
 }
