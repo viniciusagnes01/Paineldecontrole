@@ -11,14 +11,24 @@ body.v4-auth-required .v4-drive-live-launcher,body.v4-auth-loading .v4-drive-liv
 .v4-auth-signal strong{font-size:.72rem!important;line-height:1!important}
 .v4-auth-kicker{margin:0 0 10px!important;font-size:.64rem!important;letter-spacing:.18em!important;line-height:1.2!important;text-align:left!important}
 .v4-auth-brand h1{font-size:clamp(2.28rem,3.05vw,3rem)!important;line-height:.92!important;margin:0 0 16px!important;letter-spacing:-.072em!important;max-width:500px!important;text-align:left!important;text-wrap:balance!important}
-.v4-auth-copy{font-size:.9rem!important;line-height:1.38!important;max-width:520px!important;margin:0 0 22px!important;text-align:left!important;color:#d7d9e2!important}
+.v4-auth-copy{font-size:0!important;line-height:1.38!important;max-width:520px!important;margin:0 0 22px!important;text-align:left!important;color:#d7d9e2!important}
+.v4-auth-copy:after{content:'Acompanhe indicadores estratégicos, prioridades operacionais, evolução do funil e próximos passos do projeto em um ambiente seguro e orientado à performance.';display:block!important;font-size:.9rem!important;line-height:1.38!important;color:#d7d9e2!important}
 .v4-auth-feature-grid{margin:0 0 16px!important;gap:10px!important;max-width:520px!important;width:100%!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .v4-auth-feature{min-height:64px!important;padding:11px!important;border-radius:14px!important;text-align:left!important}
 .v4-auth-feature strong{font-size:.94rem!important;margin:0 0 4px!important;line-height:1!important}
 .v4-auth-feature small{font-size:.72rem!important;line-height:1.25!important}
 .v4-auth-flow{margin:0!important;gap:8px!important;max-width:520px!important;width:100%!important}
 .v4-auth-flow-row{padding:7px 10px!important;grid-template-columns:58px 1fr 32px!important;font-size:.7rem!important;line-height:1!important;text-align:left!important}
-.v4-auth-flow-bar{height:5px!important}
+.v4-auth-flow-bar{height:5px!important;position:relative!important;overflow:hidden!important}
+.v4-auth-flow-bar span{width:0!important;position:relative!important;overflow:hidden!important;animation:v4-flow-fill 1.6s cubic-bezier(.22,1,.36,1) forwards,v4-flow-pulse 2.4s ease-in-out infinite 1.7s!important}
+.v4-auth-flow-row:nth-child(2) .v4-auth-flow-bar span{animation-delay:.18s,1.9s!important}
+.v4-auth-flow-row:nth-child(3) .v4-auth-flow-bar span{animation-delay:.36s,2.1s!important}
+.v4-auth-flow-bar span:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-120%);animation:v4-flow-shine 2s ease-in-out infinite 1.3s!important}
+.v4-auth-flow-row strong{animation:v4-flow-number 1.2s ease-out both .9s!important}
+@keyframes v4-flow-fill{from{width:0}to{width:var(--p)}}
+@keyframes v4-flow-pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.32)}}
+@keyframes v4-flow-shine{0%{transform:translateX(-120%)}55%,100%{transform:translateX(140%)}}
+@keyframes v4-flow-number{from{opacity:.35;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
 .v4-auth-tabs{margin:0 0 18px!important;padding:5px!important;border-radius:15px!important}
 .v4-auth-tabs button{min-height:36px!important;font-size:.86rem!important;border-radius:12px!important}
 .v4-auth-panel h2{font-size:1.6rem!important;margin:0 0 6px!important;letter-spacing:-.045em!important;line-height:1!important}
