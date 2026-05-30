@@ -66,17 +66,26 @@
     return Boolean(client.growthPack?.spreadsheetId || client.growthPack?.version || client.performanceSheets?.spreadsheetId || client.crmSheet?.spreadsheetId);
   }
 
-  function findMainGrid() {
-    const main = document.getElementById('main');
-    if (!main) return null;
-    const grids = Array.from(main.querySelectorAll('.dashboard-grid'));
-    return grids.find((grid) => /Painel de Controle|V4 Company|Clientes e sa[úu]de|Landing Pages|Integra[cç][oõ]es/i.test(grid.closest('.page')?.innerText || grid.innerText || '')) || grids[0] || null;
+  function activeClientButton() {
+    return document.querySelector('.client-btn.active, [data-client].active');
   }
 
-  function isGlobalDashboard() {
+  function isBlackOpsDashboard() {
+    const active = activeClientButton();
+    const activeText = active?.textContent || '';
+    const activeClientId = active?.dataset?.client || '';
+    return /black\s*ops/i.test(activeText) || /black-?ops/i.test(activeClientId);
+  }
+
+  function findMainGrid() {
     const main = document.getElementById('main');
-    const text = main?.innerText || '';
-    return /Painel de Controle|V4 Company/i.test(text) && /Landing Pages|Integra[cç][oõ]es|Clientes e sa[úu]de/i.test(text);
+    if (!main || !isBlackOpsDashboard()) return null;
+    const grids = Array.from(main.querySelectorAll('.dashboard-grid'));
+    return grids[0] || null;
+  }
+
+  function removePortfolioTables() {
+    document.querySelectorAll('[data-v4-global-results], [data-v4-global-integrations]').forEach((el) => el.remove());
   }
 
   function removeBrokenBlocks() {
@@ -105,7 +114,7 @@
     return `
       <article class="glass-card span-12 v4-clean-card" data-v4-global-results>
         <div class="section-head">
-          <div><p class="eyebrow">Carteira</p><h3>Resultados por cliente</h3><p class="muted">Consolidado por cliente com dados reais quando CRM e midia estiverem sincronizados.</p></div>
+          <div><p class="eyebrow">Carteira</p><h3>Resultados por cliente</h3><p class="muted">Consolidado geral exclusivo do Black Ops.</p></div>
         </div>
         <div class="table-wrap v4-clean-table"><table>
           <thead><tr><th>Cliente</th><th>Receita</th><th>Leads</th><th>Investimento</th><th>CPL</th><th>ROAS</th><th>CRM</th><th>Mídia</th></tr></thead>
@@ -130,7 +139,7 @@
     return `
       <article class="glass-card span-12 v4-clean-card" data-v4-global-integrations>
         <div class="section-head">
-          <div><p class="eyebrow">Arquitetura operacional</p><h3>Integrações por cliente</h3><p class="muted">Mapa simples de fontes oficiais. O objetivo é evitar blocos comprimidos, dados fantasmas e ruído operacional.</p></div>
+          <div><p class="eyebrow">Arquitetura operacional</p><h3>Integrações por cliente</h3><p class="muted">Mapa geral exclusivo do Black Ops.</p></div>
         </div>
         <div class="table-wrap v4-clean-table"><table>
           <thead><tr><th>Cliente</th><th>Drive</th><th>GrowthPack</th><th>CRM</th><th>Mídia</th><th>Responsável</th></tr></thead>
@@ -142,10 +151,10 @@
 
   function mountCleanPortfolio() {
     removeBrokenBlocks();
-    if (!isGlobalDashboard()) return;
+    removePortfolioTables();
+    if (!isBlackOpsDashboard()) return;
     const grid = findMainGrid();
     if (!grid) return;
-    document.querySelectorAll('[data-v4-global-results], [data-v4-global-integrations]').forEach((el) => el.remove());
     const state = readState();
     grid.insertAdjacentHTML('beforeend', buildResultsTable(state) + buildIntegrationsTable(state));
   }
@@ -165,5 +174,5 @@
   setTimeout(mountCleanPortfolio, 600);
   setTimeout(mountCleanPortfolio, 1500);
 
-  window.V4_GLOBAL_PANEL_CLEANUP = { mountCleanPortfolio, removeBrokenBlocks };
+  window.V4_GLOBAL_PANEL_CLEANUP = { mountCleanPortfolio, removeBrokenBlocks, removePortfolioTables };
 })();
