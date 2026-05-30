@@ -34,7 +34,7 @@
       }
       window.addEventListener('error', function (event) { bootLog('window_error', event.message || 'Erro JS sem mensagem'); });
       window.addEventListener('unhandledrejection', function (event) { bootLog('promise_error', event.reason && event.reason.message ? event.reason.message : String(event.reason)); });
-      bootLog('boot', 'Bootloader carregado. Asset 20260529-01.');
+      bootLog('boot', 'Bootloader carregado. Asset 20260529-03.');
     })();
   </script>
 </head>
@@ -66,7 +66,7 @@
   </template>
 
   <script>
-    window.V4_ASSET_VERSION = 'official-all-clients-20260529-01';
+    window.V4_ASSET_VERSION = 'official-all-clients-20260529-03';
     window.V4_RUNTIME_API_URL = window.V4_SAFE_MODE ? 'disabled' : 'https://script.google.com/macros/s/AKfycbw3St4yVxOXDrJorFa-CWCzn08G2Ht9Ctu4QCIPPYK15RiQFayZaw63UyyHrWk8kKO8/exec';
     if (window.V4_SHOW_BOOT_DEBUG) document.getElementById('v4-boot-debug').style.display = 'block';
     if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('config', 'Runtime API: ' + window.V4_RUNTIME_API_URL);
@@ -101,6 +101,7 @@
   <script src="src/services/media-ads-runtime-fix.js?v=media-ads-runtime-fix-20260526-04"></script>
   <script src="src/services/st1-media-force-loader.js?v=st1-media-force-20260526-08"></script>
   <script src="src/services/role-view-modes.js?v=role-view-modes-20260526-01"></script>
+  <script src="src/services/remove-noise-sections.js?v=remove-noise-20260529-01"></script>
   <script src="src/services/sync-status-recover.js?v=sync-status-20260522-02"></script>
   <script src="src/services/fca-dashboard.js?v=official-all-clients-20260519-02"></script>
   <script src="src/services/ekyte-ui.js?v=official-all-clients-20260519-02"></script>
