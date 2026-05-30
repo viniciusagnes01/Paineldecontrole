@@ -1,43 +1,61 @@
 (function () {
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
+  const BROKEN_HEADINGS = [
+    /Resumo de campanhas/i,
+    /Alertas e pontos de aten[cç][aã]o/i,
+    /Eventos recentes/i,
+    /[ÁA]rea edit[aá]vel do sistema/i
+  ];
 
   function readState() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return window.V4_SEED || {}; }
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return stored && Array.isArray(stored.clients) ? stored : (window.V4_SEED || {});
+    } catch {
+      return window.V4_SEED || {};
+    }
   }
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
   }
 
-  function money(value) {
+  function asNumber(value) {
     const number = Number(value || 0);
-    return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function money(value) {
+    return asNumber(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
   function number(value) {
-    return Number(value || 0).toLocaleString('pt-BR');
+    return asNumber(value).toLocaleString('pt-BR');
   }
 
   function decimal(value) {
-    return Number(value || 0).toFixed(2).replace('.', ',');
+    return asNumber(value).toFixed(2).replace('.', ',');
   }
 
-  function okBadge(label, ok) {
-    return `<span class="badge ${ok ? 'ok' : 'warn'}">${escapeHtml(label)}</span>`;
+  function badge(label, ok, warnOnly) {
+    const cls = ok ? 'ok' : warnOnly ? 'warn' : 'bad';
+    return `<span class="badge ${cls}">${escapeHtml(label)}</span>`;
+  }
+
+  function latestPerformance(state, clientId) {
+    return state.performanceSnapshots?.[clientId]?.monthly?.current?.metrics || state.performanceSnapshots?.[clientId]?.weekly?.current?.metrics || null;
   }
 
   function clientMetrics(state, client) {
     const crm = state.crmSnapshots?.[client.id] || null;
-    const monthly = state.performanceSnapshots?.[client.id]?.monthly?.current?.metrics || null;
-    const weekly = state.performanceSnapshots?.[client.id]?.weekly?.current?.metrics || null;
-    const perf = monthly || weekly || {};
+    const perf = latestPerformance(state, client.id) || {};
     const base = client.metrics || {};
-    const investment = Number(perf.investment || base.investment || 0);
-    const revenue = Number(crm?.totals?.value || perf.revenue || base.revenue || 0);
-    const leads = Number(crm?.totals?.lead || perf.leads || base.leads || 0);
-    const cpl = Number(perf.cpl || base.cpl || (investment && leads ? investment / leads : 0));
-    const roas = Number(perf.roas || base.roas || (investment && revenue ? revenue / investment : 0));
-    return { revenue, investment, leads, cpl, roas, hasCrm: Boolean(crm), hasMedia: Boolean(monthly || weekly) };
+    const investment = asNumber(perf.investment || base.investment);
+    const revenue = asNumber(crm?.totals?.value || perf.revenue || base.revenue);
+    const leads = asNumber(crm?.totals?.lead || perf.leads || base.leads);
+    const cpl = asNumber(perf.cpl || base.cpl || (investment && leads ? investment / leads : 0));
+    const roas = asNumber(perf.roas || base.roas || (investment && revenue ? revenue / investment : 0));
+    return { revenue, investment, leads, cpl, roas, hasCrm: Boolean(crm), hasMedia: Boolean(perf && Object.keys(perf).length) };
   }
 
   function hasDrive(client) {
@@ -45,18 +63,27 @@
   }
 
   function hasGrowthPack(client) {
-    return Boolean(client.growthPack?.spreadsheetId || client.growthPack?.version || client.performanceSheets?.spreadsheetId);
+    return Boolean(client.growthPack?.spreadsheetId || client.growthPack?.version || client.performanceSheets?.spreadsheetId || client.crmSheet?.spreadsheetId);
   }
 
-  function isGlobalPage() {
-    return /Painel de Controle/i.test(document.querySelector('h1')?.textContent || '') && /V4 Company/i.test(document.body?.innerText || '');
+  function findMainGrid() {
+    const main = document.getElementById('main');
+    if (!main) return null;
+    const grids = Array.from(main.querySelectorAll('.dashboard-grid'));
+    return grids.find((grid) => /Painel de Controle|V4 Company|Clientes e sa[úu]de|Landing Pages|Integra[cç][oõ]es/i.test(grid.closest('.page')?.innerText || grid.innerText || '')) || grids[0] || null;
+  }
+
+  function isGlobalDashboard() {
+    const main = document.getElementById('main');
+    const text = main?.innerText || '';
+    return /Painel de Controle|V4 Company/i.test(text) && /Landing Pages|Integra[cç][oõ]es|Clientes e sa[úu]de/i.test(text);
   }
 
   function removeBrokenBlocks() {
     document.querySelectorAll('h2, h3').forEach((heading) => {
       const text = heading.textContent || '';
-      if (!/Resumo de campanhas/i.test(text)) return;
-      const card = heading.closest('article.glass-card, .glass-card, article');
+      if (!BROKEN_HEADINGS.some((pattern) => pattern.test(text))) return;
+      const card = heading.closest('article.glass-card, .glass-card, article, section');
       if (card) card.remove();
     });
   }
@@ -65,20 +92,21 @@
     const rows = (state.clients || []).map((client) => {
       const m = clientMetrics(state, client);
       return `<tr>
-        <td><strong>${escapeHtml(client.name)}</strong><br><small class="muted">${escapeHtml(client.segment || '')}</small></td>
-        <td>${money(m.revenue)}</td>
-        <td>${number(m.leads)}</td>
-        <td>${money(m.investment)}</td>
-        <td>${money(m.cpl)}</td>
-        <td>${decimal(m.roas)}x</td>
-        <td>${okBadge(m.hasCrm ? 'CRM ok' : 'CRM pendente', m.hasCrm)}</td>
-        <td>${okBadge(m.hasMedia ? 'Mídia ok' : 'Mídia pendente', m.hasMedia)}</td>
+        <td data-label="Cliente"><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.segment || 'Segmento nao informado')}</small></td>
+        <td data-label="Receita">${money(m.revenue)}</td>
+        <td data-label="Leads">${number(m.leads)}</td>
+        <td data-label="Investimento">${money(m.investment)}</td>
+        <td data-label="CPL">${money(m.cpl)}</td>
+        <td data-label="ROAS">${decimal(m.roas)}x</td>
+        <td data-label="CRM">${badge(m.hasCrm ? 'CRM ok' : 'CRM pendente', m.hasCrm, true)}</td>
+        <td data-label="Mídia">${badge(m.hasMedia ? 'Midia ok' : 'Midia pendente', m.hasMedia, true)}</td>
       </tr>`;
     }).join('');
     return `
-      <article class="glass-card span-12" data-v4-global-results>
-        <h3>Resultados por cliente</h3>
-        <p class="muted">Consolidado operacional por cliente, usando CRM e mídia sincronizados quando disponíveis.</p>
+      <article class="glass-card span-12 v4-clean-card" data-v4-global-results>
+        <div class="section-head">
+          <div><p class="eyebrow">Carteira</p><h3>Resultados por cliente</h3><p class="muted">Consolidado por cliente com dados reais quando CRM e midia estiverem sincronizados.</p></div>
+        </div>
         <div class="table-wrap v4-clean-table"><table>
           <thead><tr><th>Cliente</th><th>Receita</th><th>Leads</th><th>Investimento</th><th>CPL</th><th>ROAS</th><th>CRM</th><th>Mídia</th></tr></thead>
           <tbody>${rows || '<tr><td colspan="8">Nenhum cliente cadastrado.</td></tr>'}</tbody>
@@ -91,18 +119,19 @@
     const rows = (state.clients || []).map((client) => {
       const m = clientMetrics(state, client);
       return `<tr>
-        <td><strong>${escapeHtml(client.name)}</strong><br><small class="muted">Grupo ${escapeHtml(client.groupId || '-')}</small></td>
-        <td>${okBadge(hasDrive(client) ? 'Drive ok' : 'Pendente', hasDrive(client))}</td>
-        <td>${okBadge(hasGrowthPack(client) ? 'GrowthPack ok' : 'Fonte alternativa', hasGrowthPack(client))}</td>
-        <td>${okBadge(m.hasCrm ? 'Sincronizado' : 'Pendente', m.hasCrm)}</td>
-        <td>${okBadge(m.hasMedia ? 'Sincronizada' : 'Pendente', m.hasMedia)}</td>
-        <td>${escapeHtml(client.responsible || 'V4')}</td>
+        <td data-label="Cliente"><strong>${escapeHtml(client.name)}</strong><small>Grupo ${escapeHtml(client.groupId || '-')}</small></td>
+        <td data-label="Drive">${badge(hasDrive(client) ? 'Drive ok' : 'Pendente', hasDrive(client), true)}</td>
+        <td data-label="GrowthPack">${badge(hasGrowthPack(client) ? 'GrowthPack ok' : 'Fonte alternativa', hasGrowthPack(client), true)}</td>
+        <td data-label="CRM">${badge(m.hasCrm ? 'Sincronizado' : 'Pendente', m.hasCrm, true)}</td>
+        <td data-label="Mídia">${badge(m.hasMedia ? 'Sincronizada' : 'Pendente', m.hasMedia, true)}</td>
+        <td data-label="Responsável">${escapeHtml(client.responsible || 'V4')}</td>
       </tr>`;
     }).join('');
     return `
-      <article class="glass-card span-12" data-v4-global-integrations>
-        <h3>Integrações por cliente</h3>
-        <p class="muted">Mapa limpo de fontes oficiais, sem blocos quebrados e sem tabelas comprimidas.</p>
+      <article class="glass-card span-12 v4-clean-card" data-v4-global-integrations>
+        <div class="section-head">
+          <div><p class="eyebrow">Arquitetura operacional</p><h3>Integrações por cliente</h3><p class="muted">Mapa simples de fontes oficiais. O objetivo é evitar blocos comprimidos, dados fantasmas e ruído operacional.</p></div>
+        </div>
         <div class="table-wrap v4-clean-table"><table>
           <thead><tr><th>Cliente</th><th>Drive</th><th>GrowthPack</th><th>CRM</th><th>Mídia</th><th>Responsável</th></tr></thead>
           <tbody>${rows || '<tr><td colspan="6">Nenhuma integração cadastrada.</td></tr>'}</tbody>
@@ -112,29 +141,29 @@
   }
 
   function mountCleanPortfolio() {
-    if (!isGlobalPage()) return;
     removeBrokenBlocks();
-    document.querySelectorAll('[data-v4-global-results], [data-v4-global-integrations]').forEach((el) => el.remove());
-    const grid = document.querySelector('.dashboard-grid');
+    if (!isGlobalDashboard()) return;
+    const grid = findMainGrid();
     if (!grid) return;
+    document.querySelectorAll('[data-v4-global-results], [data-v4-global-integrations]').forEach((el) => el.remove());
     const state = readState();
     grid.insertAdjacentHTML('beforeend', buildResultsTable(state) + buildIntegrationsTable(state));
   }
 
-  document.addEventListener('DOMContentLoaded', () => setTimeout(mountCleanPortfolio, 300));
+  document.addEventListener('DOMContentLoaded', () => setTimeout(mountCleanPortfolio, 250));
   document.addEventListener('click', () => {
-    setTimeout(mountCleanPortfolio, 120);
-    setTimeout(mountCleanPortfolio, 700);
+    setTimeout(mountCleanPortfolio, 80);
+    setTimeout(mountCleanPortfolio, 500);
   });
 
   const observer = new MutationObserver(() => {
     clearTimeout(window.__v4GlobalCleanupTimer);
-    window.__v4GlobalCleanupTimer = setTimeout(mountCleanPortfolio, 160);
+    window.__v4GlobalCleanupTimer = setTimeout(mountCleanPortfolio, 120);
   });
 
   if (document.body) observer.observe(document.body, { childList: true, subtree: true });
-  setTimeout(mountCleanPortfolio, 700);
-  setTimeout(mountCleanPortfolio, 1600);
+  setTimeout(mountCleanPortfolio, 600);
+  setTimeout(mountCleanPortfolio, 1500);
 
   window.V4_GLOBAL_PANEL_CLEANUP = { mountCleanPortfolio, removeBrokenBlocks };
 })();
