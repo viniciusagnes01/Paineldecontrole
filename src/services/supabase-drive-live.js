@@ -115,6 +115,24 @@
     });
   }
 
+  function loadAuthGateAssets() {
+    if (!document.querySelector('link[data-v4-auth-gate]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'src/services/auth-gate.css?v=auth-gate-20260530-01';
+      link.dataset.v4AuthGate = 'true';
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('script[data-v4-auth-gate]')) {
+      const script = document.createElement('script');
+      script.src = 'src/services/auth-gate.js?v=auth-gate-20260530-01';
+      script.defer = true;
+      script.dataset.v4AuthGate = 'true';
+      document.body.appendChild(script);
+    }
+  }
+
   window.V4_DRIVE_LIVE = {
     ensureClient,
     getSession,
@@ -129,4 +147,5 @@
   };
 
   bootLog('drive_live', 'Servico Supabase Drive Live carregado.');
+  loadAuthGateAssets();
 })();
