@@ -119,14 +119,22 @@
     if (!document.querySelector('link[data-v4-auth-gate]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'src/services/auth-gate.css?v=auth-gate-20260530-01';
+      link.href = 'src/services/auth-gate.css?v=auth-gate-20260530-02';
       link.dataset.v4AuthGate = 'true';
       document.head.appendChild(link);
     }
 
+    if (!document.querySelector('link[data-v4-auth-gate-responsive]')) {
+      const responsiveLink = document.createElement('link');
+      responsiveLink.rel = 'stylesheet';
+      responsiveLink.href = 'src/services/auth-gate-responsive.css?v=auth-responsive-20260530-01';
+      responsiveLink.dataset.v4AuthGateResponsive = 'true';
+      document.head.appendChild(responsiveLink);
+    }
+
     if (!document.querySelector('script[data-v4-auth-gate]')) {
       const script = document.createElement('script');
-      script.src = 'src/services/auth-gate.js?v=auth-gate-20260530-01';
+      script.src = 'src/services/auth-gate.js?v=auth-gate-20260530-02';
       script.defer = true;
       script.dataset.v4AuthGate = 'true';
       document.body.appendChild(script);
