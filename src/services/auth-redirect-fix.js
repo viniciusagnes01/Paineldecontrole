@@ -1,5 +1,12 @@
 (function () {
   const PRODUCTION_REDIRECT_URL = 'https://paineldecomando.vercel.app';
+  const GOOGLE_SCOPES = [
+    'openid',
+    'email',
+    'profile',
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/spreadsheets.readonly'
+  ].join(' ');
 
   function log(type, message) {
     if (window.V4_BOOT_LOG) window.V4_BOOT_LOG(type, message);
@@ -64,13 +71,13 @@
         event.preventDefault();
         event.stopImmediatePropagation();
         busy(true);
-        status('Abrindo Google com retorno para paineldecomando.vercel.app...', 'ok');
+        status('Abrindo Google com permissão de leitura do Drive/Sheets...', 'ok');
         try {
           const response = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
               redirectTo: PRODUCTION_REDIRECT_URL,
-              scopes: 'openid email profile',
+              scopes: GOOGLE_SCOPES,
               queryParams: {
                 access_type: 'offline',
                 prompt: 'consent'
@@ -108,7 +115,7 @@
       }
     }, true);
 
-    log('auth_redirect_fix', 'Redirect de autenticação fixado para produção e Google scopes aplicados.');
+    log('auth_redirect_fix', 'Redirect de produção e scopes Google Drive/Sheets aplicados.');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { patch(0); });
