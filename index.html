@@ -34,7 +34,7 @@
       }
       window.addEventListener('error', function (event) { bootLog('window_error', event.message || 'Erro JS sem mensagem'); });
       window.addEventListener('unhandledrejection', function (event) { bootLog('promise_error', event.reason && event.reason.message ? event.reason.message : String(event.reason)); });
-      bootLog('boot', 'Bootloader carregado. Asset 20260530-01.');
+      bootLog('boot', 'Bootloader carregado. Asset 20260530-03.');
     })();
   </script>
 </head>
@@ -66,13 +66,14 @@
   </template>
 
   <script>
-    window.V4_ASSET_VERSION = 'official-all-clients-20260530-01';
+    window.V4_ASSET_VERSION = 'official-all-clients-20260530-03';
     window.V4_RUNTIME_API_URL = window.V4_SAFE_MODE ? 'disabled' : 'https://script.google.com/macros/s/AKfycbw3St4yVxOXDrJorFa-CWCzn08G2Ht9Ctu4QCIPPYK15RiQFayZaw63UyyHrWk8kKO8/exec';
     if (window.V4_SHOW_BOOT_DEBUG) document.getElementById('v4-boot-debug').style.display = 'block';
     if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('config', 'Runtime API: ' + window.V4_RUNTIME_API_URL);
   </script>
   <script src="src/data/seed.js?v=official-all-clients-20260519-02"></script>
   <script src="src/data/active-clients.js?v=official-all-clients-20260519-02"></script>
+  <script src="src/services/official-client-bindings-patch.js?v=official-client-bindings-20260530-02"></script>
   <script src="src/data/remove-treinando-online.js?v=remove-treinando-20260522-01"></script>
   <script src="src/data/media-accounts-config.js?v=media-config-20260522-01"></script>
   <script src="src/data/tracking-config.js?v=tracking-config-20260522-01"></script>
