@@ -1,21 +1,17 @@
-// Atualização manual segura via Apps Script GrowthPack API + Performance Sheets.
+// Atualização manual segura via Vercel GrowthPack proxy + Performance Sheets.
 (function () {
   const STORAGE_KEY = 'v4-command-center-state-v6-crm-performance-losses';
   const DEBUG_KEY = 'v4-growthpack-debug-log';
   const MAX_RAW_RECORDS_PER_CLIENT = 1200;
-  const SYNCABLE_CLIENTS = ['alphaville', 'prime', 'seg-eletronic', 'espaco-master', 'st1-internet', 'yousafer', 'multimed'];
+  const SYNCABLE_CLIENTS = ['alphaville', 'yousafer', 'prime', 'multimed', 'seg-eletronic', 'espaco-master', 'st1-internet'];
   const ALTERNATIVE_SOURCE_CLIENTS = {
     'espaco-master': 'Fonte alternativa / planilha convertida. Integração direta GrowthPack não aplicável.',
-    'multimed': 'Fonte alternativa / integração GrowthPack pendente.',
-    'yousafer': 'GrowthPack sem BASE_CRM. CRM deve ser tratado como fonte alternativa.'
+    'multimed': 'Fonte alternativa / integração GrowthPack pendente.'
   };
   let isSyncing = false;
 
   function now() { return new Date().toLocaleString('pt-BR'); }
-
-  function isAlternativeSource(clientId) {
-    return Boolean(ALTERNATIVE_SOURCE_CLIENTS[clientId]);
-  }
+  function isAlternativeSource(clientId) { return Boolean(ALTERNATIVE_SOURCE_CLIENTS[clientId]); }
 
   function logDebug(type, message, data) {
     const item = { at: now(), type, message, data: data || null };
@@ -70,9 +66,7 @@
     return SYNCABLE_CLIENTS.includes(detected) ? detected : SYNCABLE_CLIENTS[0];
   }
 
-  function findClient(state, clientId) {
-    return (state.clients || []).find((client) => client.id === clientId);
-  }
+  function findClient(state, clientId) { return (state.clients || []).find((client) => client.id === clientId); }
 
   function setStatus(label, status) {
     const el = document.querySelector('[data-real-sync-status]');
@@ -93,7 +87,7 @@
 
   function emptyCrmSnapshot(clientId, reason, sourceType) {
     return {
-      source: sourceType || 'growthpack_apps_script',
+      source: sourceType || 'growthpack_vercel_proxy',
       clientId,
       rows: 0,
       rawRecords: [],
@@ -109,30 +103,16 @@
   function markAlternativeSource(state, clientId) {
     const client = findClient(state, clientId);
     const reason = ALTERNATIVE_SOURCE_CLIENTS[clientId] || 'Fonte alternativa / integração GrowthPack pendente.';
-
     state.crmSnapshots = state.crmSnapshots || {};
     state.crmSnapshots[clientId] = emptyCrmSnapshot(clientId, reason, 'alternative_source');
-
     if (client) {
       client.crmSheet = client.crmSheet || {};
       client.crmSheet.status = reason;
       client.crmSheet.lastSync = now();
       client.crmSheet.rowCount = 0;
-      client.growthPack = {
-        ...(client.growthPack || {}),
-        status: client.growthPack?.status || 'alternative_source',
-        resultSource: false,
-        lastRuntimeLoad: new Date().toISOString()
-      };
-      client.dataPolicy = {
-        ...(client.dataPolicy || {}),
-        primarySource: 'alternative_source',
-        resultSource: 'alternative_source',
-        allowDemoData: false,
-        requireEvidence: true
-      };
+      client.growthPack = { ...(client.growthPack || {}), status: client.growthPack?.status || 'alternative_source', resultSource: false, lastRuntimeLoad: new Date().toISOString() };
+      client.dataPolicy = { ...(client.dataPolicy || {}), primarySource: 'alternative_source', resultSource: 'alternative_source', allowDemoData: false, requireEvidence: true };
     }
-
     logDebug('sync_pending', `${clientId}: ${reason}`);
     return { ok: true, pending: true, source: 'crm', clientId, rows: 0, message: reason };
   }
@@ -170,7 +150,7 @@
 
     const snapshot = window.V4_CRM_SHEETS.aggregate(rows);
     state.crmSnapshots[client.id] = trimSnapshot(snapshot);
-    client.crmSheet.status = 'Sincronizado via Apps Script';
+    client.crmSheet.status = 'Sincronizado via GrowthPack proxy';
     client.crmSheet.lastSync = now();
     client.crmSheet.rowCount = payload.crm?.rowCount || rows.length;
     return state.crmSnapshots[client.id].rows || 0;
@@ -179,78 +159,29 @@
   function applyRuntimeEvidence(client, payload) {
     client.apiStatus = payload.apiStatus || [];
     client.apiConfig = payload.apiConfig || {};
-    client.growthPack = {
-      ...(client.growthPack || {}),
-      spreadsheetId: payload.spreadsheetId || client.growthPack?.spreadsheetId || '',
-      title: payload.spreadsheetName || client.growthPack?.title || '',
-      status: 'located',
-      resultSource: true,
-      lastRuntimeLoad: payload.loadedAt || new Date().toISOString()
-    };
-    client.dataPolicy = {
-      ...(client.dataPolicy || {}),
-      primarySource: 'growthpack_apps_script',
-      resultSource: 'growthpack_apps_script',
-      allowDemoData: false,
-      requireEvidence: true
-    };
+    client.growthPack = { ...(client.growthPack || {}), spreadsheetId: payload.spreadsheetId || client.growthPack?.spreadsheetId || '', title: payload.spreadsheetName || client.growthPack?.title || '', status: 'located', resultSource: true, lastRuntimeLoad: payload.loadedAt || new Date().toISOString() };
+    client.dataPolicy = { ...(client.dataPolicy || {}), primarySource: 'growthpack_vercel_proxy', resultSource: 'growthpack_vercel_proxy', allowDemoData: false, requireEvidence: true };
   }
 
   function applyMetricsFromPerformance(client, snapshot) {
     const metrics = snapshot?.monthly?.current?.metrics || snapshot?.weekly?.current?.metrics || {};
-    client.metrics = {
-      ...(client.metrics || {}),
-      investment: Number(metrics.investment || client.metrics?.investment || 0),
-      cpl: Number(metrics.cpl || client.metrics?.cpl || 0),
-      roas: Number(metrics.roas || client.metrics?.roas || 0),
-      impressions: Number(metrics.impressions || client.metrics?.impressions || 0),
-      clicks: Number(metrics.clicks || client.metrics?.clicks || 0),
-      ctr: Number(metrics.ctr || client.metrics?.ctr || 0),
-      cpc: Number(metrics.cpc || client.metrics?.cpc || 0),
-      conversion: Number(metrics.conversion || client.metrics?.conversion || 0),
-      pacing: Number(metrics.pacing || client.metrics?.pacing || 0),
-      plannedMedia: Number(metrics.plannedMedia || client.metrics?.plannedMedia || 0)
-    };
+    client.metrics = { ...(client.metrics || {}), investment: Number(metrics.investment || client.metrics?.investment || 0), cpl: Number(metrics.cpl || client.metrics?.cpl || 0), roas: Number(metrics.roas || client.metrics?.roas || 0), impressions: Number(metrics.impressions || client.metrics?.impressions || 0), clicks: Number(metrics.clicks || client.metrics?.clicks || 0), ctr: Number(metrics.ctr || client.metrics?.ctr || 0), cpc: Number(metrics.cpc || client.metrics?.cpc || 0), conversion: Number(metrics.conversion || client.metrics?.conversion || 0), pacing: Number(metrics.pacing || client.metrics?.pacing || 0), plannedMedia: Number(metrics.plannedMedia || client.metrics?.plannedMedia || 0) };
   }
 
   async function syncClientPerformance(clientId, state) {
     const client = findClient(state, clientId);
     if (!client) throw new Error(`Cliente ${clientId} não encontrado para mídia.`);
-    if (!window.V4_PERFORMANCE_SHEETS?.load) {
-      logDebug('performance_skip', `${clientId}: serviço V4_PERFORMANCE_SHEETS não disponível.`);
-      return { ok: false, source: 'performance', clientId, message: 'Serviço de performance indisponível.' };
-    }
-
+    if (!window.V4_PERFORMANCE_SHEETS?.load) return { ok: false, source: 'performance', clientId, message: 'Serviço de performance indisponível.' };
     const source = client.performanceSheets || {};
     const configured = Boolean(source.spreadsheetId || source.url || source.proxyUrl || source.monthlyProxyUrl || source.weeklyProxyUrl || source.fallbackSnapshot);
-    if (!configured) {
-      logDebug('performance_skip', `${clientId}: fonte de mídia não configurada.`);
-      return { ok: false, source: 'performance', clientId, message: 'Fonte de mídia não configurada.' };
-    }
-
+    if (!configured) return { ok: false, source: 'performance', clientId, message: 'Fonte de mídia não configurada.' };
     setStatus(`Buscando mídia ${clientId}...`, 'syncing');
-    logDebug('performance_call_start', `Lendo mensal/semanal para ${clientId}`, {
-      spreadsheetId: source.spreadsheetId || source.url || '',
-      monthly: source.monthlySheetName,
-      weekly: source.weeklySheetName,
-      monthlyGid: source.monthlyGid,
-      weeklyGid: source.weeklyGid
-    });
-
+    logDebug('performance_call_start', `Lendo mensal/semanal para ${clientId}`, { spreadsheetId: source.spreadsheetId || source.url || '', monthly: source.monthlySheetName, weekly: source.weeklySheetName, monthlyGid: source.monthlyGid, weeklyGid: source.weeklyGid });
     const result = await window.V4_PERFORMANCE_SHEETS.load(source);
     state.performanceSnapshots = state.performanceSnapshots || {};
     state.performanceSnapshots[clientId] = result.snapshot;
-    client.performanceSheets = {
-      ...source,
-      status: 'Sincronizado via Google Sheets',
-      lastSync: now()
-    };
+    client.performanceSheets = { ...source, status: 'Sincronizado via Google Sheets', lastSync: now() };
     applyMetricsFromPerformance(client, result.snapshot);
-    logDebug('performance_sync_ok', `${clientId}: mídia sincronizada`, {
-      monthlyCurrent: result.snapshot?.monthly?.current?.label || '',
-      weeklyCurrent: result.snapshot?.weekly?.current?.label || '',
-      investment: result.snapshot?.monthly?.current?.metrics?.investment || 0
-    });
     return { ok: true, source: 'performance', clientId, message: 'Mídia sincronizada.' };
   }
 
@@ -259,18 +190,13 @@
       setStatus(`Fonte alternativa CRM: ${clientId}`, 'warn');
       return markAlternativeSource(state, clientId);
     }
-
-    logDebug('api_check', `Runtime disponível: ${Boolean(window.V4_RUNTIME_API?.hasRuntimeApi?.())}`);
-    if (!window.V4_RUNTIME_API?.hasRuntimeApi?.()) throw new Error('Runtime API pública não configurada.');
     if (!window.V4_RUNTIME_API?.loadGrowthPackClient) throw new Error('loadGrowthPackClient não disponível no runtime-api.js.');
-
     const client = findClient(state, clientId);
     if (!client) throw new Error(`Cliente ${clientId} não encontrado no painel.`);
-
     setStatus(`Buscando CRM ${clientId}...`, 'syncing');
-    logDebug('api_call_start', `Chamando Apps Script para ${clientId}`);
-    const payload = await window.V4_RUNTIME_API.loadGrowthPackClient(clientId, { mode: 'crm', limit: 300 });
-    logDebug('api_call_ok', `Resposta recebida de ${clientId}`, { ok: payload.ok, spreadsheetName: payload.spreadsheetName, crmRows: payload.crm?.rowCount, elapsedMs: payload.elapsedMs });
+    logDebug('api_call_start', `Chamando Vercel GrowthPack proxy para ${clientId}`);
+    const payload = await window.V4_RUNTIME_API.loadGrowthPackClient(clientId, { mode: 'crm', limit: 1200, timeoutMs: 28000 });
+    logDebug('api_call_ok', `Resposta recebida de ${clientId}`, { ok: payload.ok, spreadsheetName: payload.spreadsheetName, crmRows: payload.crm?.rowCount, elapsedMs: payload.elapsedMs, proxy: payload.proxy });
     applyRuntimeEvidence(client, payload);
     const rows = applyCrmSnapshot(state, client, payload);
     const warning = state.crmSnapshots?.[client.id]?.warning || '';
@@ -282,22 +208,11 @@
   async function syncClientAllSources(clientId, state) {
     const results = [];
     try { results.push(await syncClientGrowthPack(clientId, state)); }
-    catch (error) {
-      if (isAlternativeSource(clientId)) results.push(markAlternativeSource(state, clientId));
-      else {
-        logDebug('sync_error', `${clientId}: ${error.message}`);
-        results.push({ ok: false, source: 'crm', clientId, message: error.message });
-      }
-    }
-
+    catch (error) { logDebug('sync_error', `${clientId}: ${error.message}`); results.push({ ok: false, source: 'crm', clientId, message: error.message }); }
     try { results.push(await syncClientPerformance(clientId, state)); }
     catch (error) {
       const client = findClient(state, clientId);
-      if (client) {
-        client.performanceSheets = client.performanceSheets || {};
-        client.performanceSheets.status = 'Erro de sync';
-        client.performanceSheets.lastSync = `Erro: ${error.message}`;
-      }
+      if (client) { client.performanceSheets = client.performanceSheets || {}; client.performanceSheets.status = 'Erro de sync'; client.performanceSheets.lastSync = `Erro: ${error.message}`; }
       logDebug('performance_sync_error', `${clientId}: ${error.message}`);
       results.push({ ok: false, source: 'performance', clientId, message: error.message });
     }
@@ -311,7 +226,6 @@
     logDebug('run_sync_called', `runSync chamado para ${targetClientId}`);
     const state = readState();
     setStatus(`Atualizando ${targetClientId}...`, 'syncing');
-
     const results = await syncClientAllSources(targetClientId, state);
     finishSync(state, results, true);
     setBusy(false);
@@ -324,7 +238,6 @@
     const state = readState();
     const results = [];
     logDebug('run_sync_all_called', `Fila segura iniciada para ${SYNCABLE_CLIENTS.length} clientes.`);
-
     for (let index = 0; index < SYNCABLE_CLIENTS.length; index += 1) {
       const clientId = SYNCABLE_CLIENTS[index];
       setStatus(`Atualizando ${index + 1}/${SYNCABLE_CLIENTS.length}: ${clientId}`, 'syncing');
@@ -332,7 +245,6 @@
       results.push(...clientResults);
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
-
     finishSync(state, results, true);
     setBusy(false);
     return results;
@@ -349,11 +261,9 @@
     const failedNames = results.filter((item) => !item.ok).map((item) => `${item.clientId}/${item.source || 'sync'}`).join(', ');
     const warningNames = crmResults.filter((item) => item.ok && item.warning && !item.pending).map((item) => item.clientId).join(', ');
     const pendingNames = crmResults.filter((item) => item.ok && item.pending).map((item) => item.clientId).join(', ');
-
     state.events = state.events || [];
     state.events.unshift({ id: `ev-growthpack-api-${Date.now()}`, type: 'sync', text: `Sync: CRM ${growthOk} ok, ${pending} fonte(s) alternativa(s), mídia ${mediaOk} ok, ${failed} falha(s)`, time: 'agora' });
     writeState(state, { reload });
-
     if (failed) setStatus(`CRM ${growthOk} ok, mídia ${mediaOk} ok, ${failed} falha(s): ${failedNames}`, 'error');
     else if (warnings) setStatus(`CRM ${growthOk} ok, mídia ${mediaOk} ok, ${pending} fonte(s) alternativa(s), ${warnings} aviso(s): ${warningNames}`, 'warn');
     else if (pending) setStatus(`CRM ${growthOk} ok, mídia ${mediaOk} ok, ${pending} fonte(s) alternativa(s): ${pendingNames}`, 'warn');
