@@ -86,11 +86,21 @@
             <div class="v4-auth-logo-wrap">
               <img src="src/assets/v4-company-logo.jpg" alt="V4 Company" class="v4-auth-logo" />
             </div>
-            <p class="v4-auth-kicker">V4 Command Center</p>
-            <h1 id="v4-auth-title">Acesse seu cockpit de crescimento</h1>
-            <p class="v4-auth-copy">Entre com login e senha ou use sua conta Google para acessar direto o painel operacional.</p>
             <div class="v4-auth-signal">
-              <span></span><strong>Ambiente seguro</strong><small>Autenticação via Supabase Auth</small>
+              <span></span><strong>Área segura para operação e performance</strong><small>V4 Company</small>
+            </div>
+            <p class="v4-auth-kicker">V4 Company • Growth Access</p>
+            <h1 id="v4-auth-title">Entre no seu cockpit <strong>de crescimento.</strong></h1>
+            <p class="v4-auth-copy">Acesse indicadores, tarefas, funil comercial, próximos passos e rotinas do projeto em uma experiência simples, segura e com visual tecnológico.</p>
+            <div class="v4-auth-feature-grid">
+              <div class="v4-auth-feature"><strong>CRM</strong><small>Funil e campos obrigatórios</small></div>
+              <div class="v4-auth-feature"><strong>CS</strong><small>Check-ins e follow-ups</small></div>
+              <div class="v4-auth-feature"><strong>BI</strong><small>Performance e decisões</small></div>
+            </div>
+            <div class="v4-auth-flow" aria-hidden="true">
+              <div class="v4-auth-flow-row"><span>Leads</span><div class="v4-auth-flow-bar"><span style="--p:82%"></span></div><strong>82%</strong></div>
+              <div class="v4-auth-flow-row"><span>MQL</span><div class="v4-auth-flow-bar"><span style="--p:64%"></span></div><strong>64%</strong></div>
+              <div class="v4-auth-flow-row"><span>SQL</span><div class="v4-auth-flow-bar"><span style="--p:48%"></span></div><strong>48%</strong></div>
             </div>
           </aside>
 
@@ -102,10 +112,10 @@
 
             <div class="v4-auth-panel" data-auth-panel="login">
               <h2>Entrar no painel</h2>
-              <p>Use seu login/e-mail e senha, ou continue direto com o Google.</p>
+              <p>Use login/e-mail e senha ou continue direto com seu e-mail Google.</p>
               <form data-auth-login-form>
                 <label>Login ou e-mail
-                  <input type="text" name="email" autocomplete="email" placeholder="seu.email@v4company.com" value="${escapeHtml(DEFAULT_EMAIL)}" required />
+                  <input type="text" name="email" autocomplete="email" placeholder="nome@empresa.com" value="${escapeHtml(DEFAULT_EMAIL)}" required />
                 </label>
                 <label>Senha
                   <input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required />
@@ -122,24 +132,31 @@
 
             <div class="v4-auth-panel" data-auth-panel="register" hidden>
               <h2>Criar acesso</h2>
-              <p>Cadastre login/e-mail e senha, ou crie acesso usando Google.</p>
+              <p>Cadastre com login e senha ou continue direto com seu e-mail Google.</p>
               <form data-auth-register-form>
-                <label>Nome
+                <label>Nome completo
                   <input type="text" name="name" autocomplete="name" placeholder="Seu nome" required />
                 </label>
-                <label>Login ou e-mail
-                  <input type="email" name="email" autocomplete="email" placeholder="seu.email@v4company.com" required />
+                <label>E-mail
+                  <input type="email" name="email" autocomplete="email" placeholder="nome@empresa.com" required />
                 </label>
                 <label>Senha
-                  <input type="password" name="password" autocomplete="new-password" placeholder="Crie uma senha" minlength="6" required />
+                  <input type="password" name="password" autocomplete="new-password" placeholder="Crie uma senha segura" minlength="6" required />
                 </label>
-                <button type="submit" class="v4-auth-primary" data-auth-action>Cadastrar com login e senha</button>
+                <label>Confirmar senha
+                  <input type="password" name="confirmPassword" autocomplete="new-password" placeholder="Repita sua senha" minlength="6" required />
+                </label>
+                <button type="submit" class="v4-auth-primary" data-auth-action>Criar cadastro com login e senha</button>
               </form>
               <div class="v4-auth-divider"><span>ou</span></div>
               <button type="button" class="v4-auth-google" data-auth-google data-auth-action>
                 <span class="v4-auth-google-icon" aria-hidden="true">G</span>
                 Continuar com Google
               </button>
+              <div class="v4-auth-info-box">
+                <span>✉</span>
+                <div><strong>Cadastro direto com e-mail</strong><small>Ao continuar com Google, o sistema cria o acesso usando o e-mail validado e pode pedir aprovação do administrador.</small></div>
+              </div>
             </div>
 
             <div class="v4-auth-status" data-auth-status>Faça login para liberar o painel.</div>
@@ -249,7 +266,12 @@
     const form = event.currentTarget;
     const email = form.email.value.trim();
     const password = form.password.value;
+    const confirmPassword = form.confirmPassword.value;
     const name = form.name.value.trim();
+    if (password !== confirmPassword) {
+      setStatus('As senhas não conferem.', 'error');
+      return;
+    }
     setBusy(true);
     try {
       const { data, error } = await ensureClient().auth.signUp({
