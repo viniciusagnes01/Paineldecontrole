@@ -68,7 +68,14 @@
         try {
           const response = await supabase.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: PRODUCTION_REDIRECT_URL }
+            options: {
+              redirectTo: PRODUCTION_REDIRECT_URL,
+              scopes: 'openid email profile',
+              queryParams: {
+                access_type: 'offline',
+                prompt: 'consent'
+              }
+            }
           });
           if (response.error) throw response.error;
         } catch (error) {
@@ -101,7 +108,7 @@
       }
     }, true);
 
-    log('auth_redirect_fix', 'Redirect de autenticação fixado para produção.');
+    log('auth_redirect_fix', 'Redirect de autenticação fixado para produção e Google scopes aplicados.');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { patch(0); });
