@@ -3,6 +3,17 @@
     if (window.V4_BOOT_LOG) window.V4_BOOT_LOG(type, message);
   }
 
+  function loadAuthRedirectFix() {
+    if (document.querySelector('script[data-v4-auth-redirect-fix]')) return;
+    const script = document.createElement('script');
+    script.src = 'src/services/auth-redirect-fix.js?v=auth-redirect-fix-20260530-01';
+    script.defer = true;
+    script.dataset.v4AuthRedirectFix = 'true';
+    document.head.appendChild(script);
+  }
+
+  loadAuthRedirectFix();
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, function (char) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char];
