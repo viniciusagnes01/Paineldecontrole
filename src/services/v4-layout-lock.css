@@ -38,8 +38,8 @@ body,
   display: block !important;
   position: relative !important;
   margin-left: var(--v4-sidebar-width) !important;
-  width: auto !important;
-  max-width: none !important;
+  width: calc(100vw - var(--v4-sidebar-width)) !important;
+  max-width: calc(100vw - var(--v4-sidebar-width)) !important;
   min-width: 0 !important;
   padding: var(--v4-content-pad) !important;
   overflow-x: hidden !important;
@@ -47,6 +47,7 @@ body,
 }
 
 #main > .page,
+#main .page,
 .page {
   width: 100% !important;
   max-width: 100% !important;
@@ -56,105 +57,123 @@ body,
   box-sizing: border-box !important;
 }
 
-.hero,
-.client-hero,
-.glass-card,
-.metric-card,
-.v4-admin-card,
-.dashboard-grid,
-.metric-grid,
-.tab-rail,
-.tabs,
-.tab-bar,
-.table-wrap,
-.source-panel {
+#main .hero,
+#main .client-hero,
+#main .glass-card,
+#main .metric-card,
+#main .v4-admin-card,
+#main .dashboard-grid,
+#main .metric-grid,
+#main .tab-rail,
+#main .tabs,
+#main .tab-bar,
+#main .table-wrap,
+#main .source-panel {
   max-width: 100% !important;
   min-width: 0 !important;
   box-sizing: border-box !important;
 }
 
-.metric-grid {
+#main .hero,
+#main .client-hero {
+  overflow: hidden !important;
+}
+
+#main .metric-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
   gap: clamp(10px, 1vw, 14px) !important;
   width: 100% !important;
+  max-width: 100% !important;
   overflow: visible !important;
 }
 
-.dashboard-grid {
+#main .dashboard-grid {
   display: grid !important;
   grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
   gap: clamp(10px, 1vw, 14px) !important;
   width: 100% !important;
+  max-width: 100% !important;
   overflow: visible !important;
 }
 
-.dashboard-grid > *,
-.metric-grid > * {
+#main .dashboard-grid > *,
+#main .metric-grid > * {
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden !important;
 }
 
-.span-3 { grid-column: span 3 !important; }
-.span-4 { grid-column: span 4 !important; }
-.span-5 { grid-column: span 5 !important; }
-.span-6 { grid-column: span 6 !important; }
-.span-7 { grid-column: span 7 !important; }
-.span-8 { grid-column: span 8 !important; }
-.span-9 { grid-column: span 9 !important; }
-.span-12 { grid-column: span 12 !important; }
+#main .span-3 { grid-column: span 3 !important; }
+#main .span-4 { grid-column: span 4 !important; }
+#main .span-5 { grid-column: span 5 !important; }
+#main .span-6 { grid-column: span 6 !important; }
+#main .span-7 { grid-column: span 7 !important; }
+#main .span-8 { grid-column: span 8 !important; }
+#main .span-9 { grid-column: span 9 !important; }
+#main .span-12 { grid-column: span 12 !important; }
 
-.tab-rail,
-.tabs,
-.tab-bar {
+#main .tab-rail,
+#main .tabs,
+#main .tab-bar {
   overflow-x: auto !important;
   overflow-y: hidden !important;
   white-space: nowrap !important;
 }
 
-.metric-card {
+#main .metric-card {
   min-height: clamp(124px, 11vw, 152px) !important;
 }
 
-.metric-value,
-.metric-card strong {
+#main .metric-value,
+#main .metric-card strong {
   font-size: clamp(23px, 2.15vw, 34px) !important;
   max-width: 100% !important;
 }
 
-.status-row,
-.kpi-row,
-td,
-th,
-.badge,
-.client-tags,
-.source-panel * {
+#main .status-row,
+#main .kpi-row,
+#main td,
+#main th,
+#main .badge,
+#main .client-tags,
+#main .source-panel * {
   min-width: 0 !important;
   max-width: 100% !important;
   overflow-wrap: anywhere !important;
 }
 
+#main .status-list,
+#main .event-list,
+#main [data-real-sync-box],
+#main [data-v4-debug-panel],
+#main [data-v4-debug-toggle],
+#main [data-v4-clear-cache],
+#main [data-action="sync-all-clients"],
+#main [data-action="refresh"] {
+  display: none !important;
+}
+
 @media (max-width: 1440px) {
   :root { --v4-sidebar-width: 238px !important; --v4-content-pad: 14px !important; }
-  .metric-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr)) !important; }
+  #main .metric-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important; }
 }
 
 @media (max-width: 1280px) {
   :root { --v4-sidebar-width: 220px !important; --v4-content-pad: 12px !important; }
-  .span-3,
-  .span-4 { grid-column: span 6 !important; }
+  #main .span-3,
+  #main .span-4 { grid-column: span 6 !important; }
 }
 
 @media (max-width: 1080px) {
-  .span-3,
-  .span-4,
-  .span-5,
-  .span-6,
-  .span-7,
-  .span-8,
-  .span-9,
-  .span-12 { grid-column: 1 / -1 !important; }
+  #main .span-3,
+  #main .span-4,
+  #main .span-5,
+  #main .span-6,
+  #main .span-7,
+  #main .span-8,
+  #main .span-9,
+  #main .span-12 { grid-column: 1 / -1 !important; }
 }
 
 @media (max-width: 920px) {
@@ -165,12 +184,12 @@ th,
   :root { --v4-sidebar-width: 0px !important; --v4-content-pad: 10px !important; }
   #sidebar.sidebar { display: none !important; }
   #main.main,
-  #main { margin-left: 0 !important; width: auto !important; max-width: none !important; }
-  .metric-grid,
-  .dashboard-grid,
-  .form-grid,
-  .v4-admin-grid,
-  .v4-admin-form,
-  .v4-admin-split-list,
-  .v4-media-field { grid-template-columns: 1fr !important; }
+  #main { margin-left: 0 !important; width: 100vw !important; max-width: 100vw !important; }
+  #main .metric-grid,
+  #main .dashboard-grid,
+  #main .form-grid,
+  #main .v4-admin-grid,
+  #main .v4-admin-form,
+  #main .v4-admin-split-list,
+  #main .v4-media-field { grid-template-columns: 1fr !important; }
 }
