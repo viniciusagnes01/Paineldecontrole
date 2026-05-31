@@ -1,0 +1,117 @@
+#main.v4-client-page-active {
+  overflow-x: hidden !important;
+}
+
+#main.v4-client-page-active > .page,
+#main .page:has(.client-hero) {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  overflow-x: hidden !important;
+}
+
+#main.v4-client-page-active .client-hero,
+#main .page:has(.client-hero) .client-hero {
+  width: 100% !important;
+  max-width: 100% !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  overflow: hidden !important;
+}
+
+#main.v4-client-page-active .identity-card,
+#main .page:has(.client-hero) .identity-card {
+  display: none !important;
+}
+
+#main.v4-client-page-active .metric-grid,
+#main .page:has(.client-hero) > .metric-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 14px !important;
+  overflow: visible !important;
+}
+
+#main.v4-client-page-active .dashboard-grid,
+#main .page:has(.client-hero) .dashboard-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 14px !important;
+  overflow: visible !important;
+}
+
+#main.v4-client-page-active .dashboard-grid > .span-3,
+#main .page:has(.client-hero) .dashboard-grid > .span-3 {
+  grid-column: span 4 !important;
+}
+
+#main.v4-client-page-active .dashboard-grid > *,
+#main.v4-client-page-active .metric-grid > *,
+#main .page:has(.client-hero) .dashboard-grid > *,
+#main .page:has(.client-hero) .metric-grid > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+#main.v4-client-page-active .source-panel,
+#main .page:has(.client-hero) .source-panel {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+#main.v4-client-page-active .source-actions,
+#main .page:has(.client-hero) .source-actions {
+  display: none !important;
+}
+
+#main.v4-client-page-active button[data-action*="sync"],
+#main.v4-client-page-active button[data-action="refresh"],
+#main.v4-client-page-active button[data-action*="cache"],
+#main .page:has(.client-hero) button[data-action*="sync"],
+#main .page:has(.client-hero) button[data-action="refresh"],
+#main .page:has(.client-hero) button[data-action*="cache"] {
+  display: none !important;
+}
+
+@media (max-width: 1440px) {
+  #main.v4-client-page-active .metric-grid,
+  #main .page:has(.client-hero) > .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  #main.v4-client-page-active .dashboard-grid > .span-3,
+  #main.v4-client-page-active .span-3,
+  #main.v4-client-page-active .span-4,
+  #main.v4-client-page-active .span-5,
+  #main.v4-client-page-active .span-6,
+  #main.v4-client-page-active .span-7,
+  #main.v4-client-page-active .span-8,
+  #main.v4-client-page-active .span-9,
+  #main.v4-client-page-active .span-12,
+  #main .page:has(.client-hero) .dashboard-grid > .span-3,
+  #main .page:has(.client-hero) .span-3,
+  #main .page:has(.client-hero) .span-4,
+  #main .page:has(.client-hero) .span-5,
+  #main .page:has(.client-hero) .span-6,
+  #main .page:has(.client-hero) .span-7,
+  #main .page:has(.client-hero) .span-8,
+  #main .page:has(.client-hero) .span-9,
+  #main .page:has(.client-hero) .span-12 {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  #main.v4-client-page-active .metric-grid,
+  #main.v4-client-page-active .dashboard-grid,
+  #main .page:has(.client-hero) > .metric-grid,
+  #main .page:has(.client-hero) .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
