@@ -1,0 +1,294 @@
+.v4-admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v4-space-5);
+  padding: clamp(18px, 2vw, 30px);
+}
+
+.v4-admin-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: var(--v4-space-5);
+  align-items: stretch;
+}
+
+.v4-admin-card {
+  border: 1px solid var(--v4-border);
+  border-radius: var(--v4-radius-lg);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.032));
+  box-shadow: var(--v4-shadow);
+  padding: clamp(16px, 1.8vw, 24px);
+}
+
+.v4-admin-card h1,
+.v4-admin-card h2,
+.v4-admin-card h3 {
+  margin: 0 0 var(--v4-space-2);
+}
+
+.v4-admin-card p {
+  color: var(--v4-muted);
+}
+
+.v4-admin-eyebrow {
+  margin: 0 0 var(--v4-space-2);
+  color: var(--v4-muted);
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.v4-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--v4-space-4);
+}
+
+.v4-admin-span-3 { grid-column: span 3; }
+.v4-admin-span-4 { grid-column: span 4; }
+.v4-admin-span-5 { grid-column: span 5; }
+.v4-admin-span-6 { grid-column: span 6; }
+.v4-admin-span-7 { grid-column: span 7; }
+.v4-admin-span-8 { grid-column: span 8; }
+.v4-admin-span-12 { grid-column: span 12; }
+
+.v4-admin-kpi {
+  padding: var(--v4-space-4);
+  border: 1px solid var(--v4-border);
+  border-radius: var(--v4-radius-md);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.v4-admin-kpi small {
+  display: block;
+  color: var(--v4-muted);
+  font-weight: 850;
+}
+
+.v4-admin-kpi strong {
+  display: block;
+  margin-top: var(--v4-space-1);
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1;
+}
+
+.v4-admin-toolbar {
+  display: flex;
+  gap: var(--v4-space-2);
+  flex-wrap: wrap;
+  margin-top: var(--v4-space-4);
+}
+
+.v4-admin-btn {
+  border: 0;
+  border-radius: var(--v4-radius-sm);
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.085);
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.v4-admin-btn.primary {
+  background: linear-gradient(135deg, var(--v4-red-strong), var(--v4-red-dark));
+  box-shadow: 0 14px 32px rgba(207, 16, 34, 0.24);
+}
+
+.v4-admin-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--v4-border);
+  border-radius: var(--v4-radius-md);
+}
+
+.v4-admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.v4-admin-table th,
+.v4-admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.v4-admin-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(17, 18, 24, 0.96);
+  color: var(--v4-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v4-admin-row-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.v4-admin-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--v4-red), var(--v4-red-dark));
+  color: #fff;
+  font-weight: 1000;
+  flex: 0 0 auto;
+}
+
+.v4-admin-form {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--v4-space-3);
+}
+
+.v4-admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #dfe3ed;
+  font-weight: 850;
+}
+
+.v4-admin-form input,
+.v4-admin-form select,
+.v4-admin-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--v4-border-strong);
+  border-radius: var(--v4-radius-sm);
+  background: rgba(0, 0, 0, 0.24);
+  color: #fff;
+  padding: 11px;
+  font-weight: 800;
+}
+
+.v4-admin-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.v4-field-3 { grid-column: span 3; }
+.v4-field-4 { grid-column: span 4; }
+.v4-field-6 { grid-column: span 6; }
+.v4-field-8 { grid-column: span 8; }
+.v4-field-12 { grid-column: span 12; }
+
+.v4-admin-picker {
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--v4-border);
+  border-radius: var(--v4-radius-md);
+  background: rgba(0, 0, 0, 0.18);
+  padding: var(--v4-space-2);
+}
+
+.v4-admin-picker label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: var(--v4-space-2);
+  padding: var(--v4-space-2);
+  border-radius: var(--v4-radius-sm);
+}
+
+.v4-admin-picker label:hover {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.v4-admin-picker input {
+  width: auto !important;
+  margin-top: 3px;
+}
+
+.v4-admin-picker small,
+.v4-admin-muted {
+  color: var(--v4-muted);
+}
+
+.v4-admin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.v4-admin-split-list {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: var(--v4-space-4);
+}
+
+.v4-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v4-space-2);
+}
+
+.v4-admin-list-item {
+  width: 100%;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: var(--v4-space-3);
+  border: 1px solid var(--v4-border);
+  border-radius: var(--v4-radius-md);
+  background: rgba(255, 255, 255, 0.045);
+  padding: var(--v4-space-3);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.v4-admin-list-item.active {
+  border-color: rgba(207, 16, 34, 0.48);
+  background: linear-gradient(135deg, rgba(207, 16, 34, 0.26), rgba(255, 255, 255, 0.045));
+}
+
+@media (max-width: 1100px) {
+  .v4-admin-hero,
+  .v4-admin-split-list {
+    grid-template-columns: 1fr;
+  }
+
+  .v4-admin-span-3,
+  .v4-admin-span-4,
+  .v4-admin-span-5,
+  .v4-admin-span-6,
+  .v4-admin-span-7,
+  .v4-admin-span-8,
+  .v4-admin-span-12,
+  .v4-field-3,
+  .v4-field-4,
+  .v4-field-6,
+  .v4-field-8,
+  .v4-field-12 {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .v4-admin-page {
+    padding: 14px;
+  }
+
+  .v4-admin-table {
+    min-width: 640px;
+  }
+}
