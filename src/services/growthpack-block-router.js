@@ -131,11 +131,11 @@
   function autoLoadFilterPatch() {
     if (document.querySelector('script[data-drive-live-filter-patch]')) return;
     const script = document.createElement('script');
-    script.src = 'src/services/drive-live-filter-patch.js?v=drive-live-filter-patch-20260530-02';
+    script.src = 'src/services/drive-live-filter-patch.js?v=drive-live-filter-patch-20260530-04';
     script.dataset.driveLiveFilterPatch = 'true';
     script.defer = true;
-    script.onload = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks', 'Patch de filtros Drive Live carregado.');
-    script.onerror = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks_error', 'Falha ao carregar patch de filtros Drive Live.');
+    script.onload = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks', 'Loader modular carregado.');
+    script.onerror = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks_error', 'Falha ao carregar loader modular.');
     document.head.appendChild(script);
   }
 
