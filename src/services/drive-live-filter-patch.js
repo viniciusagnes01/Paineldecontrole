@@ -28,8 +28,22 @@
     );
   }
 
+  function loadRbac() {
+    loadScriptOnce(
+      'script[data-v4-rbac-core]',
+      'src/services/rbac-core.js?v=rbac-core-20260530-01',
+      'v4RbacCore'
+    );
+    loadScriptOnce(
+      'script[data-v4-rbac-ui]',
+      'src/services/rbac-ui-patch.js?v=rbac-ui-20260530-01',
+      'v4RbacUi'
+    );
+  }
+
   loadAuthRedirectFix();
   loadAutoSync();
+  loadRbac();
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, function (char) {
