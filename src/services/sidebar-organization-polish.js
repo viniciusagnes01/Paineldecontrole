@@ -38,7 +38,7 @@
       .v4-sidebar-user-main{display:flex;gap:10px;align-items:center;min-width:0}.v4-sidebar-user-main img,.v4-sidebar-user-avatar{width:42px;height:42px;border-radius:15px;object-fit:cover;display:grid;place-items:center;background:#cf1022;color:#fff;font-weight:950;flex:0 0 auto}.v4-sidebar-user-info{min-width:0;line-height:1.1}.v4-sidebar-user-info strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}.v4-sidebar-user-info small{display:block;color:#c7cbd6;font-weight:800;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.v4-sidebar-user-email{color:#8f96aa!important}
       .v4-sidebar-quick-meta{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.v4-sidebar-quick-meta span{padding:8px;border-radius:12px;background:rgba(255,255,255,.07);font-size:10px;color:#c7cbd6;font-weight:850}.v4-sidebar-quick-meta strong{display:block;color:#fff;font-size:13px;margin-top:2px}.v4-sidebar-user-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.v4-sidebar-user-actions button{border:0;border-radius:14px;padding:10px 9px;font-weight:950;cursor:pointer;color:#fff;background:rgba(255,255,255,.10);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.v4-sidebar-user-actions button.primary{background:linear-gradient(135deg,#cf1022,#98091a)}.v4-sidebar-user-actions button.danger{background:rgba(255,255,255,.08);color:#ffb8c0}.v4-sidebar-user-actions button:disabled{opacity:.45;cursor:not-allowed}
       .v4-kommo-section{display:flex;flex-direction:column;gap:4px}.v4-kommo-label{margin:10px 2px 5px;color:#91a4b8;font-size:10px;font-weight:1000;letter-spacing:.11em;text-transform:uppercase}.v4-kommo-item{width:100%;display:flex;align-items:center;gap:10px;min-height:38px;padding:9px 10px;border:0;border-radius:8px;background:transparent;color:#fff;font:800 13px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}.v4-kommo-item:hover{background:rgba(255,255,255,.08)}.v4-kommo-item.active,.v4-kommo-item[data-active="true"]{background:#285b94}.v4-kommo-item .ico{width:22px;height:22px;display:grid;place-items:center;flex:0 0 auto}.v4-kommo-item .chev{margin-left:auto;color:#a9bdd0}.v4-kommo-item small{display:block;color:#9fb0c3;font-size:10px;font-weight:750;line-height:1.1}.v4-kommo-item strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v4-kommo-counter{margin-left:auto;min-width:20px;height:20px;border-radius:999px;background:#cf1022;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:1000}
-      .v4-kommo-fixed{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:auto}.v4-kommo-pinned .v4-kommo-item{min-height:34px;padding:7px 10px}.v4-kommo-pinned .ico{border-radius:999px;font-size:13px;color:#fff}.v4-kommo-clients{padding-bottom:20px}.v4-kommo-client{min-height:58px;border-radius:14px;margin-bottom:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}.v4-kommo-client.active{background:rgba(57,89,151,.42);border-color:rgba(255,255,255,.18)}.v4-kommo-avatar{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--client-color,#cf1022);font-weight:1000;color:#fff;flex:0 0 auto}.v4-kommo-squad{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:6px}.v4-kommo-squad .v4-kommo-item{min-height:48px}.v4-kommo-divider{height:1px;background:rgba(255,255,255,.10);margin:8px 0}
+      .v4-kommo-fixed{border-top:1px solid rgba(255,255,255,.10);padding-top:10px;margin-top:auto}.v4-kommo-clients{padding-bottom:20px}.v4-kommo-client{min-height:58px;border-radius:14px;margin-bottom:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}.v4-kommo-client.active{background:rgba(57,89,151,.42);border-color:rgba(255,255,255,.18)}.v4-kommo-avatar{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--client-color,#cf1022);font-weight:1000;color:#fff;flex:0 0 auto}.v4-kommo-squad{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:6px}.v4-kommo-squad .v4-kommo-item{min-height:48px}.v4-kommo-divider{height:1px;background:rgba(255,255,255,.10);margin:8px 0}
     `;
     document.head.appendChild(style);
   }
@@ -63,10 +63,6 @@
 
   function nativeActiveNav(name) {
     return Boolean(document.querySelector('[data-nav="' + name + '"].active'));
-  }
-
-  function nativeActiveTab(name) {
-    return Boolean(document.querySelector('[data-tab="' + name + '"].active'));
   }
 
   function collectClients() {
@@ -101,7 +97,6 @@
 
   function kommoMenuHtml(user, clients) {
     const auto = window.V4_DRIVE_LIVE_AUTO_SYNC?.snapshot?.();
-    const sourcesCount = auto?.sources?.length || 0;
     const clientsCount = clients.length || auto?.clients?.length || 0;
     return '<div class="v4-kommo-sidebar" data-v4-kommo-sidebar>' +
       '<div class="v4-kommo-top"><div class="v4-kommo-logo"><span><strong>V4 Command</strong><small>Center</small></span><span class="v4-kommo-logo-badge">V4</span></div>' + sidebarUserHtml(user) + '</div>' +
@@ -109,20 +104,6 @@
       '<button class="v4-kommo-item ' + (nativeActiveNav('global') ? 'active' : '') + '" type="button" data-nav="global"><span class="ico">⌂</span><span>Início</span></button>' +
       '<button class="v4-kommo-item" type="button" data-v4-open-organization><span class="ico">◎</span><span>Organização</span><span class="chev">›</span></button>' +
       '<button class="v4-kommo-item ' + (nativeActiveNav('settings') ? 'active' : '') + '" type="button" data-nav="settings"><span class="ico">⚙</span><span>Configurações</span></button>' +
-      '</div>' +
-      '<div class="v4-kommo-section"><div class="v4-kommo-label">Operação</div>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('control') ? 'active' : '') + '" type="button" data-tab="control"><span class="ico">◷</span><span>Painel de Controle</span></button>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('crm') ? 'active' : '') + '" type="button" data-tab="crm"><span class="ico">▱</span><span>CRM & Funil</span><span class="chev">⌄</span></button>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('ads') ? 'active' : '') + '" type="button" data-tab="ads"><span class="ico">◉</span><span>Mídia & Ads</span></button>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('tasks') ? 'active' : '') + '" type="button" data-tab="tasks"><span class="ico">☑</span><span>Tarefas / eKyte</span></button>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('action') ? 'active' : '') + '" type="button" data-tab="action"><span class="ico">✦</span><span>Plano de ação / FCA</span></button>' +
-      '<button class="v4-kommo-item ' + (nativeActiveTab('goals') ? 'active' : '') + '" type="button" data-tab="goals"><span class="ico">◆</span><span>Metas</span></button>' +
-      '</div>' +
-      '<div class="v4-kommo-section v4-kommo-pinned"><div class="v4-kommo-label">Integrações fixadas</div>' +
-      '<button class="v4-kommo-item" type="button" data-tab="central"><span class="ico" style="background:#1a73e8">G</span><span>Google Drive / Sheets</span><span class="v4-kommo-counter">' + escapeHtml(sourcesCount) + '</span></button>' +
-      '<button class="v4-kommo-item" type="button" data-tab="ads"><span class="ico" style="background:#1877f2">f</span><span>Facebook / Instagram</span></button>' +
-      '<button class="v4-kommo-item" type="button" data-tab="central"><span class="ico" style="background:#25d366">W</span><span>WhatsApp Business</span></button>' +
-      '<button class="v4-kommo-item" type="button" data-tab="tasks"><span class="ico" style="background:#ff8a00">E</span><span>eKyte</span></button>' +
       '</div>' +
       renderSquads(clients) +
       '<div class="v4-kommo-fixed"><div class="v4-kommo-section"><button class="v4-kommo-item" type="button" data-nav="settings"><span class="ico">⚙</span><span>Configurações</span></button><button class="v4-kommo-item" type="button" data-v4-open-organization><span class="ico">?</span><span>Ajuda / Acessos</span><span class="chev">›</span></button><button class="v4-kommo-item" type="button"><span class="ico">♡</span><span>Status do sistema</span><span class="v4-kommo-counter">' + escapeHtml(clientsCount) + '</span></button></div></div>' +
@@ -160,9 +141,12 @@
       const openOrg = event.target.closest('[data-v4-open-organization]');
       if (openOrg) {
         event.preventDefault();
-        const launcher = document.querySelector('[data-v4-org-launcher]');
-        if (launcher) launcher.click();
-        else alert('Organização ainda está carregando. Tente novamente em alguns segundos.');
+        if (window.V4_ORGANIZATION_PAGE?.render) window.V4_ORGANIZATION_PAGE.render('users');
+        else {
+          const launcher = document.querySelector('[data-v4-org-launcher]');
+          if (launcher) launcher.click();
+          else alert('Organização ainda está carregando. Tente novamente em alguns segundos.');
+        }
       }
 
       const logout = event.target.closest('[data-v4-sidebar-signout]');
@@ -186,7 +170,7 @@
       const observer = new MutationObserver(function () { setTimeout(renderSidebar, 80); });
       observer.observe(sidebar, { childList: true, subtree: false });
     }
-    log('sidebar_polish', 'Sidebar estilo Kommo aplicada ao V4 Command Center.');
+    log('sidebar_polish', 'Sidebar global limpa. Operação e integrações ficam dentro de cada cliente.');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
