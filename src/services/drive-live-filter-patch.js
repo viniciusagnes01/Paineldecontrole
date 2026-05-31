@@ -49,11 +49,16 @@
       'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-01',
       'v4SidebarPolish'
     );
+    loadScriptOnce(
+      'script[data-v4-organization-page]',
+      'src/services/organization-page.js?v=organization-page-20260530-01',
+      'v4OrganizationPage'
+    );
   }
 
   loadAuthRedirectFix();
   loadAutoSync();
   loadRbac();
 
-  bootLog('drive_live_filter_patch', 'Carregador modular ativo.');
+  bootLog('drive_live_filter_patch', 'Carregador modular ativo com pagina de organizacao.');
 })();
