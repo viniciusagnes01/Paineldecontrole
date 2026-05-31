@@ -46,8 +46,13 @@
     );
     loadScriptOnce(
       'script[data-v4-sidebar-polish]',
-      'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-01',
+      'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-02',
       'v4SidebarPolish'
+    );
+    loadScriptOnce(
+      'script[data-v4-sidebar-fixed-layout]',
+      'src/services/sidebar-fixed-layout.js?v=sidebar-fixed-layout-20260530-01',
+      'v4SidebarFixedLayout'
     );
     loadScriptOnce(
       'script[data-v4-organization-page]',
@@ -60,5 +65,5 @@
   loadAutoSync();
   loadRbac();
 
-  bootLog('drive_live_filter_patch', 'Carregador modular ativo com pagina de organizacao.');
+  bootLog('drive_live_filter_patch', 'Carregador modular ativo com sidebar fixa e pagina de organizacao.');
 })();
