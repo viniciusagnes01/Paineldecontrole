@@ -16,19 +16,19 @@
     SUPER_ADMIN: {
       scope: 'all_clients',
       modules: ['global', 'settings', 'control', 'overview', 'action', 'tasks', 'central', 'ads', 'crm', 'competitors', 'goals', 'status', 'client-config', 'organization'],
-      actions: ['view', 'sync_all', 'sync_crm', 'sync_performance', 'refresh', 'create_client', 'edit_client', 'delete_client', 'create_task', 'edit_task', 'edit_action_plan', 'edit_goals', 'edit_campaigns', 'edit_lps', 'edit_competitors', 'export_all', 'reset', 'manage_users', 'manage_permissions', 'manage_integrations'],
+      actions: ['view', 'sync_all', 'sync_crm', 'sync_performance', 'refresh', 'create_client', 'edit_client', 'delete_client', 'create_task', 'edit_task', 'edit_action_plan', 'edit_goals', 'edit_campaigns', 'edit_lps', 'edit_competitors', 'export_all', 'reset', 'manage_users', 'manage_permissions', 'manage_integrations', 'manage_squads'],
       sensitive: ['tokens', 'technical_config', 'finance', 'all_clients', 'audit']
     },
     DIRETOR_OPERACAO: {
       scope: 'all_clients',
-      modules: ['global', 'control', 'overview', 'action', 'tasks', 'central', 'ads', 'crm', 'goals', 'status'],
-      actions: ['view', 'refresh', 'sync_crm', 'sync_performance', 'edit_action_plan', 'edit_goals'],
+      modules: ['global', 'control', 'overview', 'action', 'tasks', 'central', 'ads', 'crm', 'goals', 'status', 'organization'],
+      actions: ['view', 'refresh', 'sync_crm', 'sync_performance', 'edit_action_plan', 'edit_goals', 'manage_squads'],
       sensitive: ['finance', 'all_clients']
     },
     HEAD_GROWTH: {
       scope: 'squad_clients',
-      modules: ['global', 'control', 'overview', 'action', 'tasks', 'central', 'ads', 'crm', 'goals', 'status'],
-      actions: ['view', 'refresh', 'sync_crm', 'sync_performance', 'create_task', 'edit_task', 'edit_action_plan', 'edit_goals'],
+      modules: ['global', 'control', 'overview', 'action', 'tasks', 'central', 'ads', 'crm', 'goals', 'status', 'organization'],
+      actions: ['view', 'refresh', 'sync_crm', 'sync_performance', 'create_task', 'edit_task', 'edit_action_plan', 'edit_goals', 'manage_squads'],
       sensitive: ['performance', 'operation']
     },
     GP_ACCOUNT: {
@@ -107,8 +107,18 @@
     }
   ];
 
+  const DEFAULT_SQUADS = [
+    { id: 'black-ops', name: 'BLACK OPS', headEmail: 'vinicius.agnes@v4company.com', clientIds: [], active: true },
+    { id: 'growth', name: 'Growth', headEmail: '', clientIds: [], active: true },
+    { id: 'ops', name: 'Operação', headEmail: '', clientIds: [], active: true }
+  ];
+
   function normalizeEmail(email) {
     return String(email || '').trim().toLowerCase();
+  }
+
+  function slugify(text) {
+    return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'squad';
   }
 
   function storedUsers() {
@@ -129,6 +139,45 @@
   function saveUsers(users) {
     const custom = (users || []).filter((user) => !DEFAULT_USERS.some((base) => normalizeEmail(base.email) === normalizeEmail(user.email)) || user.role !== DEFAULT_USERS.find((base) => normalizeEmail(base.email) === normalizeEmail(user.email))?.role);
     localStorage.setItem('v4-rbac-users', JSON.stringify(custom));
+  }
+
+  function storedSquads() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('v4-rbac-squads') || '[]');
+      const merged = [...DEFAULT_SQUADS];
+      saved.forEach((squad) => {
+        const index = merged.findIndex((item) => item.id === squad.id);
+        if (index >= 0) merged[index] = { ...merged[index], ...squad };
+        else merged.push(squad);
+      });
+      return merged;
+    } catch (_error) {
+      return DEFAULT_SQUADS.slice();
+    }
+  }
+
+  function saveSquads(squads) {
+    localStorage.setItem('v4-rbac-squads', JSON.stringify(squads || []));
+    window.dispatchEvent(new CustomEvent('v4:rbac:squads-updated', { detail: squads || [] }));
+  }
+
+  function upsertSquad(data) {
+    const squads = storedSquads();
+    const id = data.id || slugify(data.name);
+    let squad = squads.find((item) => item.id === id);
+    if (!squad) {
+      squad = { id, name: data.name || id, headEmail: '', clientIds: [], active: true };
+      squads.push(squad);
+    }
+    Object.assign(squad, data, { id, clientIds: Array.isArray(data.clientIds) ? data.clientIds : squad.clientIds || [] });
+    saveSquads(squads);
+    return squad;
+  }
+
+  function clientsForUserSquads(user) {
+    const squadIds = user?.squads || [];
+    const squads = storedSquads().filter((squad) => squadIds.includes(squad.id) || normalizeEmail(squad.headEmail) === normalizeEmail(user?.email));
+    return Array.from(new Set(squads.flatMap((squad) => squad.clientIds || [])));
   }
 
   async function getSession() {
@@ -187,12 +236,18 @@
     return Boolean(permissions.actions.includes(action));
   }
 
+  function canManageSquads(user) {
+    return canDo(user, 'manage_squads');
+  }
+
   function canAccessClient(user, clientId) {
     if (!clientId) return true;
     const permissions = permissionsFor(user?.role);
     if (permissions.scope === 'all_clients') return true;
     if ((user?.clientIds || []).includes('*')) return true;
-    return (user?.clientIds || []).includes(clientId);
+    if ((user?.clientIds || []).includes(clientId)) return true;
+    if (permissions.scope === 'squad_clients' && clientsForUserSquads(user).includes(clientId)) return true;
+    return false;
   }
 
   function allowedModules(user) {
@@ -211,6 +266,7 @@
     if (el?.matches?.('form[data-submit="save-client-profile"]')) return 'edit_client';
     if (el?.matches?.('form[data-submit="save-goals"]')) return 'edit_goals';
     if (el?.matches?.('form[data-submit="add-row"]')) return COLLECTION_ACTIONS[el.dataset.collection] || 'edit_task';
+    if (el?.matches?.('[data-v4-squad-form]')) return 'manage_squads';
     return null;
   }
 
@@ -238,8 +294,13 @@
     roles: ROLE_LABELS,
     permissions: PERMISSIONS,
     defaultUsers: DEFAULT_USERS,
+    defaultSquads: DEFAULT_SQUADS,
     storedUsers,
     saveUsers,
+    storedSquads,
+    saveSquads,
+    upsertSquad,
+    clientsForUserSquads,
     refreshCurrentUser,
     getCurrentUser: () => currentUser,
     userFromSession,
@@ -247,6 +308,7 @@
     canAccessModule,
     canAccessClient,
     canDo,
+    canManageSquads,
     allowedModules,
     actionForElement,
     requireAction,
