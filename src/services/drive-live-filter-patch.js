@@ -31,19 +31,20 @@
 
   async function boot() {
     try {
-      await loadCssOnce('v4-ui-system-css', 'src/services/v4-ui-system.css?v=v4-ui-system-20260530-01');
+      await loadCssOnce('v4-ui-system-css', 'src/services/v4-ui-system.css?v=v4-ui-system-20260530-02');
+      await loadCssOnce('v4-admin-entity-pages-css', 'src/services/admin-entity-pages.css?v=admin-entity-pages-20260530-01');
       await loadScriptOnce('script[data-v4-ui-helpers]', 'src/services/v4-ui-helpers.js?v=v4-ui-helpers-20260530-01', 'v4UiHelpers');
 
       await Promise.all([
         loadScriptOnce('script[data-v4-auth-redirect-fix]', 'src/services/auth-redirect-fix.js?v=auth-redirect-fix-20260530-01', 'v4AuthRedirectFix'),
         loadScriptOnce('script[data-v4-drive-auto-sync]', 'src/services/drive-live-auto-sync.js?v=drive-live-auto-sync-20260530-01', 'v4DriveAutoSync'),
-        loadScriptOnce('script[data-v4-rbac-core]', 'src/services/rbac-core.js?v=rbac-core-20260530-03', 'v4RbacCore'),
-        loadScriptOnce('script[data-v4-organization-page]', 'src/services/organization-page.js?v=organization-page-20260530-02', 'v4OrganizationPage')
+        loadScriptOnce('script[data-v4-rbac-core]', 'src/services/rbac-core.js?v=rbac-core-20260530-03', 'v4RbacCore')
       ]);
 
-      await loadScriptOnce('script[data-v4-sidebar-polish]', 'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-03', 'v4SidebarPolish');
+      await loadScriptOnce('script[data-v4-admin-entity-pages]', 'src/services/admin-entity-pages.js?v=admin-entity-pages-20260530-01', 'v4AdminEntityPages');
+      await loadScriptOnce('script[data-v4-sidebar-polish]', 'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-04', 'v4SidebarPolish');
 
-      bootLog('modular_loader', 'UI system, helpers, RBAC, Organizacao e Sidebar carregados.');
+      bootLog('modular_loader', 'UI system, helpers, RBAC, paginas separadas e Sidebar carregados.');
     } catch (error) {
       bootLog('modular_loader_error', error.message || String(error));
     }
