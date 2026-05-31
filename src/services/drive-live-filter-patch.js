@@ -44,15 +44,16 @@
       'src/services/rbac-squads-patch.js?v=rbac-squads-20260530-01',
       'v4RbacSquads'
     );
+    loadScriptOnce(
+      'script[data-v4-sidebar-polish]',
+      'src/services/sidebar-organization-polish.js?v=sidebar-polish-20260530-01',
+      'v4SidebarPolish'
+    );
   }
 
   loadAuthRedirectFix();
   loadAutoSync();
   loadRbac();
 
-  function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, function (char) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char];
-    });
-  }
+  bootLog('drive_live_filter_patch', 'Carregador modular ativo.');
 })();
