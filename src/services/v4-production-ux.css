@@ -1,26 +1,83 @@
 :root {
-  --v4-sidebar-width: 288px;
-  --v4-content-pad: clamp(14px, 1.6vw, 24px);
+  --v4-sidebar-width: 256px;
+  --v4-content-pad: clamp(12px, 1.35vw, 20px);
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+
+#app.app-shell,
+.app-shell {
+  display: block !important;
+  grid-template-columns: none !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+}
+
+#sidebar.sidebar {
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  width: var(--v4-sidebar-width) !important;
+  min-width: var(--v4-sidebar-width) !important;
+  max-width: var(--v4-sidebar-width) !important;
+  height: 100dvh !important;
+  padding: 12px 10px !important;
+  overflow: hidden !important;
+  z-index: 999 !important;
+}
+
+#sidebar .v4-sidebar-shell {
+  height: calc(100dvh - 24px) !important;
+  max-height: calc(100dvh - 24px) !important;
+}
+
+#sidebar .v4-sidebar-scroll {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 3px !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(207, 16, 34, .8) transparent;
+}
+
+#sidebar .v4-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+#sidebar .v4-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar .v4-sidebar-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(207, 16, 34, .8);
 }
 
 #main.main,
 #main {
+  display: block !important;
   margin-left: var(--v4-sidebar-width) !important;
-  width: calc(100dvw - var(--v4-sidebar-width)) !important;
-  max-width: calc(100dvw - var(--v4-sidebar-width)) !important;
-  overflow-x: clip !important;
-}
-
-#sidebar.sidebar {
-  width: var(--v4-sidebar-width) !important;
-  min-width: var(--v4-sidebar-width) !important;
-  max-width: var(--v4-sidebar-width) !important;
+  width: calc(100vw - var(--v4-sidebar-width)) !important;
+  max-width: calc(100vw - var(--v4-sidebar-width)) !important;
+  min-width: 0 !important;
+  padding: var(--v4-content-pad) !important;
+  overflow-x: hidden !important;
 }
 
 .page {
-  padding: var(--v4-content-pad) !important;
   width: 100% !important;
   max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  gap: clamp(14px, 1.4vw, 20px) !important;
+  min-width: 0 !important;
 }
 
 .hero,
@@ -28,61 +85,95 @@
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  overflow: hidden;
+  overflow: hidden !important;
+  border-radius: clamp(18px, 1.8vw, 26px) !important;
 }
 
 .hero {
-  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) minmax(220px, 300px) !important;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr) minmax(190px, 250px) !important;
+  padding: clamp(18px, 2.4vw, 34px) !important;
+  gap: clamp(14px, 1.8vw, 24px) !important;
 }
 
 .hero-logo {
-  width: clamp(72px, 7vw, 112px) !important;
-  height: clamp(72px, 7vw, 112px) !important;
-  object-fit: contain;
+  width: clamp(64px, 5.8vw, 96px) !important;
+  height: clamp(64px, 5.8vw, 96px) !important;
+  object-fit: contain !important;
+}
+
+.hero h1,
+.client-hero h1,
+.v4-admin-card h1 {
+  font-size: clamp(30px, 3.1vw, 52px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.055em !important;
+}
+
+.hero-copy {
+  max-width: 70ch !important;
+  font-size: clamp(14px, 1.22vw, 20px) !important;
+  line-height: 1.32 !important;
 }
 
 .period-box,
 .identity-card {
-  max-width: 100%;
+  max-width: 100% !important;
   min-width: 0 !important;
 }
 
 .metric-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important;
-  gap: clamp(12px, 1.2vw, 18px) !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
+  gap: clamp(12px, 1.1vw, 16px) !important;
   width: 100% !important;
   max-width: 100% !important;
 }
 
 .metric-card {
   min-width: 0 !important;
-  overflow: hidden;
+  min-height: clamp(130px, 13vw, 160px) !important;
+  overflow: hidden !important;
+  border-radius: clamp(16px, 1.5vw, 22px) !important;
+  padding: clamp(14px, 1.3vw, 20px) !important;
+}
+
+.metric-top {
+  font-size: clamp(10px, .86vw, 13px) !important;
+}
+
+.metric-icon {
+  width: clamp(34px, 3vw, 42px) !important;
+  height: clamp(34px, 3vw, 42px) !important;
 }
 
 .metric-card strong,
 .metric-value {
-  font-size: clamp(24px, 2.5vw, 38px) !important;
+  font-size: clamp(24px, 2.4vw, 36px) !important;
   line-height: 1 !important;
 }
 
 .dashboard-grid {
+  display: grid !important;
   grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.1vw, 16px) !important;
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
 }
 
 .glass-card,
 .metric-card,
 .v4-admin-card {
   min-width: 0 !important;
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .status-row,
 .kpi-row,
 .config-tile,
-.v4-admin-pill {
+.v4-admin-pill,
+.table-wrap,
+.v4-admin-table-wrap {
   min-width: 0 !important;
 }
 
@@ -92,7 +183,7 @@
 .v4-admin-pill,
 td,
 th {
-  overflow-wrap: anywhere;
+  overflow-wrap: anywhere !important;
 }
 
 .tab-rail,
@@ -102,7 +193,7 @@ th {
   max-width: 100% !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  white-space: nowrap;
+  white-space: nowrap !important;
   scrollbar-color: rgba(207, 16, 34, .75) rgba(255, 255, 255, .08);
   scrollbar-width: thin;
 }
@@ -110,7 +201,7 @@ th {
 .tab-rail::-webkit-scrollbar,
 .tab-bar::-webkit-scrollbar,
 .tabs::-webkit-scrollbar {
-  height: 6px;
+  height: 5px;
 }
 
 .tab-rail::-webkit-scrollbar-thumb,
@@ -130,7 +221,7 @@ th {
 .v4-field-6,
 .v4-field-4,
 .v4-field-3 {
-  min-width: 0;
+  min-width: 0 !important;
 }
 
 .form-field input,
@@ -156,24 +247,33 @@ th {
 }
 
 .v4-sidebar-brand strong {
-  font-size: clamp(15px, 1.25vw, 18px) !important;
+  font-size: clamp(14px, 1vw, 17px) !important;
+}
+
+.v4-sidebar-brand-badge {
+  width: 34px !important;
+  height: 34px !important;
 }
 
 .v4-nav-item {
-  min-height: 38px !important;
-  padding: 9px 10px !important;
+  min-height: 36px !important;
+  padding: 8px 9px !important;
 }
 
 .v4-nav-text strong {
-  font-size: 12.5px;
+  font-size: 12px !important;
 }
 
 .v4-nav-text small {
-  font-size: 9.5px;
+  font-size: 9px !important;
+}
+
+.v4-user-footer-card {
+  padding: 8px !important;
 }
 
 .v4-user-footer-actions .danger {
-  min-width: 48px;
+  min-width: 46px !important;
 }
 
 .v4-media-field {
@@ -189,7 +289,7 @@ th {
 
 .v4-media-upload-row input[type="file"] {
   min-height: auto !important;
-  padding: 9px !important;
+  padding: 8px !important;
   cursor: pointer;
 }
 
@@ -200,29 +300,37 @@ th {
   line-height: 1.35;
 }
 
+@media (min-width: 1400px) {
+  :root {
+    --v4-sidebar-width: 270px;
+    --v4-content-pad: 22px;
+  }
+}
+
 @media (max-width: 1366px) {
   :root {
-    --v4-sidebar-width: 272px;
-    --v4-content-pad: 18px;
+    --v4-sidebar-width: 246px;
+    --v4-content-pad: 16px;
   }
 
   .hero {
-    grid-template-columns: minmax(62px, auto) minmax(0, 1fr) minmax(190px, 260px) !important;
+    grid-template-columns: minmax(56px, auto) minmax(0, 1fr) minmax(170px, 230px) !important;
   }
 
   .hero h1,
   .v4-admin-card h1 {
-    font-size: clamp(30px, 3vw, 48px) !important;
+    font-size: clamp(28px, 2.8vw, 44px) !important;
   }
 
   .hero-copy {
-    font-size: clamp(14px, 1.2vw, 18px) !important;
+    font-size: clamp(13px, 1.1vw, 17px) !important;
   }
 }
 
 @media (max-width: 1180px) {
   :root {
-    --v4-sidebar-width: 248px;
+    --v4-sidebar-width: 220px;
+    --v4-content-pad: 14px;
   }
 
   .hero,
@@ -233,7 +341,7 @@ th {
 
   .period-box,
   .identity-card {
-    width: 100%;
+    width: 100% !important;
   }
 
   .span-3,
@@ -244,8 +352,8 @@ th {
 
 @media (max-width: 920px) {
   :root {
-    --v4-sidebar-width: 76px;
-    --v4-content-pad: 14px;
+    --v4-sidebar-width: 72px;
+    --v4-content-pad: 12px;
   }
 
   .span-3,
@@ -270,14 +378,14 @@ th {
   .v4-sidebar-brand,
   .v4-nav-item,
   .v4-user-footer-card {
-    justify-content: center;
+    justify-content: center !important;
   }
 }
 
 @media (max-width: 680px) {
   :root {
     --v4-sidebar-width: 0px;
-    --v4-content-pad: 12px;
+    --v4-content-pad: 10px;
   }
 
   #sidebar.sidebar {
@@ -287,8 +395,8 @@ th {
   #main.main,
   #main {
     margin-left: 0 !important;
-    width: 100dvw !important;
-    max-width: 100dvw !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
   }
 
   .metric-grid,
@@ -303,13 +411,13 @@ th {
 
   .hero-logo,
   .v4-admin-avatar-lg {
-    width: 64px !important;
-    height: 64px !important;
+    width: 58px !important;
+    height: 58px !important;
   }
 
   .hero h1,
   .client-hero h1,
   .v4-admin-card h1 {
-    font-size: clamp(28px, 10vw, 38px) !important;
+    font-size: clamp(26px, 9vw, 36px) !important;
   }
 }
