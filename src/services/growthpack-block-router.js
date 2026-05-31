@@ -46,11 +46,7 @@
 
   function enrichSource(source) {
     const blockKeys = blockKeysForSource(source);
-    return {
-      ...source,
-      block_keys: blockKeys,
-      block_labels: blockKeys.map((key) => BLOCK_BY_KEY[key]?.label).filter(Boolean)
-    };
+    return { ...source, block_keys: blockKeys, block_labels: blockKeys.map((key) => BLOCK_BY_KEY[key]?.label).filter(Boolean) };
   }
 
   function sourceMatchesBlock(source, blockKey) {
@@ -62,14 +58,7 @@
 
   function sourceMatchesSearch(source, search) {
     if (!search) return true;
-    const haystack = normalize([
-      source.client_name,
-      source.source_name,
-      source.sheet_name,
-      source.spreadsheet_id,
-      source.gid,
-      (source.block_labels || []).join(' ')
-    ].join(' '));
+    const haystack = normalize([source.client_name, source.source_name, source.sheet_name, source.spreadsheet_id, source.gid, (source.block_labels || []).join(' ')].join(' '));
     return normalize(search).split(' ').filter(Boolean).every((token) => haystack.includes(token));
   }
 
@@ -91,24 +80,14 @@
   }
 
   function filterSources(sources, filters = {}) {
-    return sortSourcesForBlock((sources || [])
-      .map(enrichSource)
-      .filter((source) => !filters.clientId || source.client_id === filters.clientId)
-      .filter((source) => sourceMatchesBlock(source, filters.blockKey))
-      .filter((source) => sourceMatchesSearch(source, filters.search)), filters.blockKey);
+    return sortSourcesForBlock((sources || []).map(enrichSource).filter((source) => !filters.clientId || source.client_id === filters.clientId).filter((source) => sourceMatchesBlock(source, filters.blockKey)).filter((source) => sourceMatchesSearch(source, filters.search)), filters.blockKey);
   }
 
   async function loadSources(filters = {}) {
     if (!window.V4_DRIVE_LIVE) throw new Error('Drive Live não carregado.');
     const payload = await window.V4_DRIVE_LIVE.panelSources(filters.clientId || '');
     const filtered = filterSources(payload.data || [], filters);
-    return {
-      ok: true,
-      data: filtered,
-      raw_count: (payload.data || []).length,
-      filtered_count: filtered.length,
-      filters
-    };
+    return { ok: true, data: filtered, raw_count: (payload.data || []).length, filtered_count: filtered.length, filters };
   }
 
   async function readSource(sourceId, options = {}) {
@@ -128,32 +107,21 @@
     return readBlock(clientId, 'fca', options);
   }
 
-  function autoLoadFilterPatch() {
-    if (document.querySelector('script[data-drive-live-filter-patch]')) return;
+  function autoLoadProductionLoader() {
+    if (document.querySelector('script[data-v4-production-loader]')) return;
     const script = document.createElement('script');
-    script.src = 'src/services/drive-live-filter-patch.js?v=drive-live-filter-patch-20260530-04';
-    script.dataset.driveLiveFilterPatch = 'true';
+    script.src = 'src/services/v4-production-loader.js?v=v4-production-loader-20260530-01';
+    script.dataset.v4ProductionLoader = 'true';
     script.defer = true;
-    script.onload = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks', 'Loader modular carregado.');
-    script.onerror = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks_error', 'Falha ao carregar loader modular.');
+    script.onload = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks', 'Loader final de producao carregado.');
+    script.onerror = () => window.V4_BOOT_LOG && window.V4_BOOT_LOG('growthpack_blocks_error', 'Falha ao carregar loader final de producao.');
     document.head.appendChild(script);
   }
 
-  window.V4_GROWTHPACK_BLOCK_ROUTER = {
-    blocks: BLOCKS,
-    blockByKey: BLOCK_BY_KEY,
-    normalize,
-    enrichSource,
-    filterSources,
-    loadSources,
-    readSource,
-    readBlock,
-    readFcaSupport,
-    storesRowsInSupabase: false
-  };
+  window.V4_GROWTHPACK_BLOCK_ROUTER = { blocks: BLOCKS, blockByKey: BLOCK_BY_KEY, normalize, enrichSource, filterSources, loadSources, readSource, readBlock, readFcaSupport, storesRowsInSupabase: false };
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoLoadFilterPatch);
-  else autoLoadFilterPatch();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoLoadProductionLoader);
+  else autoLoadProductionLoader();
 
   if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('growthpack_blocks', 'Roteador de blocos GrowthPack carregado.');
 })();
