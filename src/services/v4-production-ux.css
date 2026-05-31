@@ -1,0 +1,315 @@
+:root {
+  --v4-sidebar-width: 288px;
+  --v4-content-pad: clamp(14px, 1.6vw, 24px);
+}
+
+#main.main,
+#main {
+  margin-left: var(--v4-sidebar-width) !important;
+  width: calc(100dvw - var(--v4-sidebar-width)) !important;
+  max-width: calc(100dvw - var(--v4-sidebar-width)) !important;
+  overflow-x: clip !important;
+}
+
+#sidebar.sidebar {
+  width: var(--v4-sidebar-width) !important;
+  min-width: var(--v4-sidebar-width) !important;
+  max-width: var(--v4-sidebar-width) !important;
+}
+
+.page {
+  padding: var(--v4-content-pad) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.hero,
+.client-hero {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.hero {
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) minmax(220px, 300px) !important;
+}
+
+.hero-logo {
+  width: clamp(72px, 7vw, 112px) !important;
+  height: clamp(72px, 7vw, 112px) !important;
+  object-fit: contain;
+}
+
+.period-box,
+.identity-card {
+  max-width: 100%;
+  min-width: 0 !important;
+}
+
+.metric-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) !important;
+  gap: clamp(12px, 1.2vw, 18px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.metric-card {
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.metric-card strong,
+.metric-value {
+  font-size: clamp(24px, 2.5vw, 38px) !important;
+  line-height: 1 !important;
+}
+
+.dashboard-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.glass-card,
+.metric-card,
+.v4-admin-card {
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.status-row,
+.kpi-row,
+.config-tile,
+.v4-admin-pill {
+  min-width: 0 !important;
+}
+
+.status-row strong,
+.kpi-row span,
+.config-tile p,
+.v4-admin-pill,
+td,
+th {
+  overflow-wrap: anywhere;
+}
+
+.tab-rail,
+.tab-bar,
+.tabs {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap;
+  scrollbar-color: rgba(207, 16, 34, .75) rgba(255, 255, 255, .08);
+  scrollbar-width: thin;
+}
+
+.tab-rail::-webkit-scrollbar,
+.tab-bar::-webkit-scrollbar,
+.tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tab-rail::-webkit-scrollbar-thumb,
+.tab-bar::-webkit-scrollbar-thumb,
+.tabs::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--v4-red), var(--v4-red-dark));
+  border-radius: 999px;
+}
+
+.form-grid,
+.v4-admin-form {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)) !important;
+}
+
+.v4-field-12,
+.v4-field-8,
+.v4-field-6,
+.v4-field-4,
+.v4-field-3 {
+  min-width: 0;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea,
+.v4-admin-form input,
+.v4-admin-form select,
+.v4-admin-form textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.v4-auth-logout,
+[data-real-sync-box],
+[data-v4-debug-panel],
+[data-v4-debug-toggle],
+[data-v4-clear-cache],
+[data-action="sync-all-clients"],
+[data-action="refresh"],
+.status-list + .btn.ghost,
+.status-list + button.btn.ghost {
+  display: none !important;
+}
+
+.v4-sidebar-brand strong {
+  font-size: clamp(15px, 1.25vw, 18px) !important;
+}
+
+.v4-nav-item {
+  min-height: 38px !important;
+  padding: 9px 10px !important;
+}
+
+.v4-nav-text strong {
+  font-size: 12.5px;
+}
+
+.v4-nav-text small {
+  font-size: 9.5px;
+}
+
+.v4-user-footer-actions .danger {
+  min-width: 48px;
+}
+
+.v4-media-field {
+  grid-column: 1 / -1 !important;
+}
+
+.v4-media-upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.v4-media-upload-row input[type="file"] {
+  min-height: auto !important;
+  padding: 9px !important;
+  cursor: pointer;
+}
+
+.v4-media-upload-status {
+  display: block;
+  color: var(--v4-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 1366px) {
+  :root {
+    --v4-sidebar-width: 272px;
+    --v4-content-pad: 18px;
+  }
+
+  .hero {
+    grid-template-columns: minmax(62px, auto) minmax(0, 1fr) minmax(190px, 260px) !important;
+  }
+
+  .hero h1,
+  .v4-admin-card h1 {
+    font-size: clamp(30px, 3vw, 48px) !important;
+  }
+
+  .hero-copy {
+    font-size: clamp(14px, 1.2vw, 18px) !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  :root {
+    --v4-sidebar-width: 248px;
+  }
+
+  .hero,
+  .client-hero,
+  .v4-admin-hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .period-box,
+  .identity-card {
+    width: 100%;
+  }
+
+  .span-3,
+  .span-4 {
+    grid-column: span 6 !important;
+  }
+}
+
+@media (max-width: 920px) {
+  :root {
+    --v4-sidebar-width: 76px;
+    --v4-content-pad: 14px;
+  }
+
+  .span-3,
+  .span-4,
+  .span-6,
+  .span-8,
+  .span-12 {
+    grid-column: 1 / -1 !important;
+  }
+
+  .v4-sidebar-brand strong,
+  .v4-sidebar-brand small,
+  .v4-nav-label,
+  .v4-nav-text,
+  .v4-user-footer-info,
+  .v4-user-footer-actions,
+  .v4-chevron,
+  .v4-counter {
+    display: none !important;
+  }
+
+  .v4-sidebar-brand,
+  .v4-nav-item,
+  .v4-user-footer-card {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 680px) {
+  :root {
+    --v4-sidebar-width: 0px;
+    --v4-content-pad: 12px;
+  }
+
+  #sidebar.sidebar {
+    display: none !important;
+  }
+
+  #main.main,
+  #main {
+    margin-left: 0 !important;
+    width: 100dvw !important;
+    max-width: 100dvw !important;
+  }
+
+  .metric-grid,
+  .dashboard-grid,
+  .form-grid,
+  .v4-admin-grid,
+  .v4-admin-form,
+  .v4-admin-split-list,
+  .v4-media-field {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-logo,
+  .v4-admin-avatar-lg {
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  .hero h1,
+  .client-hero h1,
+  .v4-admin-card h1 {
+    font-size: clamp(28px, 10vw, 38px) !important;
+  }
+}
