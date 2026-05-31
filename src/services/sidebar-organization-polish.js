@@ -70,22 +70,21 @@
 
   function renderSquads(clients) {
     const items = squads();
-    if (!items.length) return '';
     const open = isOpen(SQUADS_OPEN_KEY);
     const content = navButton({
       active: open,
       attrs: 'data-v4-squad-toggle',
       icon: '▦',
       label: 'Squads',
-      sublabel: 'Selecionar equipe',
+      sublabel: 'Página de equipes',
       counter: items.length,
       chevron: open ? '⌃' : '⌄'
     }) + '<div class="v4-nav-panel ' + (open ? 'open' : '') + '">' +
-      navButton({ attrs: 'data-v4-open-organization', icon: '◎', label: 'Geral / Todos os squads', sublabel: 'Gerenciar equipes', extraClass: 'v4-all' }) +
+      navButton({ attrs: 'data-v4-admin-page="squads"', icon: '◎', label: 'Gestão de squads', sublabel: 'Heads, membros e clientes', extraClass: 'v4-all' }) +
       items.slice(0, 12).map(function (squad) {
         const firstClient = (squad.clientIds || []).find((id) => clients.some((client) => client.id === id));
         return navButton({
-          attrs: firstClient ? 'data-client="' + ui().escape(firstClient) + '"' : 'data-v4-open-organization',
+          attrs: firstClient ? 'data-client="' + ui().escape(firstClient) + '"' : 'data-v4-admin-page="squads"',
           icon: ui().initials(squad.name),
           label: squad.name,
           sublabel: squad.headEmail || 'Sem head definido',
@@ -104,15 +103,16 @@
       attrs: 'data-v4-client-toggle',
       icon: '◈',
       label: 'Clientes',
-      sublabel: active ? active.name : 'Geral / Todos',
+      sublabel: active ? active.name : 'Gestão da carteira',
       counter: clients.length,
       chevron: open ? '⌃' : '⌄'
     }) + '<div class="v4-nav-panel ' + (open ? 'open' : '') + '">' +
-      navButton({ attrs: 'data-nav="global"', icon: '⌂', label: 'Geral / Todos', sublabel: 'Visão consolidada', extraClass: 'v4-all' }) +
+      navButton({ attrs: 'data-v4-admin-page="clients"', icon: '⌂', label: 'Gestão de clientes', sublabel: 'Dados, fontes e integrações', extraClass: 'v4-all' }) +
+      navButton({ attrs: 'data-nav="global"', icon: '◌', label: 'Dashboard geral', sublabel: 'Visão consolidada' }) +
       clients.map(function (client) {
         return '<button class="v4-nav-item v4-nav-subitem ' + (client.active ? 'active' : '') + '" type="button" data-client="' + ui().escape(client.id) + '">' +
           '<span class="v4-nav-avatar" style="--client-color:' + ui().escape(client.color) + '">' + ui().escape(client.initials) + '</span>' +
-          '<span class="v4-nav-text"><strong>' + ui().escape(client.name) + '</strong><small>' + ui().escape(client.meta || 'Cliente ativo') + '</small></span>' +
+          '<span class="v4-nav-text"><strong>' + ui().escape(client.name) + '</strong><small>' + ui().escape(client.meta || 'Operação do cliente') + '</small></span>' +
           '</button>';
       }).join('') + '</div>';
     return section('Carteira', content);
@@ -125,9 +125,9 @@
       ? '<img src="' + e(user.avatar_url) + '" alt="" />'
       : '<span class="v4-user-footer-avatar">' + e(ui().initials(name)) + '</span>';
     return '<footer class="v4-sidebar-footer">' +
-      '<button type="button" class="v4-user-footer-card" data-v4-user-profile>' + avatar +
+      '<button type="button" class="v4-user-footer-card" data-v4-admin-page="users">' + avatar +
       '<span class="v4-user-footer-info"><strong>' + e(name) + '</strong><small>' + e(roleLabel(user?.role)) + ' • ' + e(user?.email || '-') + '</small></span><span class="v4-chevron">›</span></button>' +
-      '<div class="v4-user-footer-actions"><button type="button" class="primary" data-v4-user-profile>Usuário</button><button type="button" class="danger" data-v4-sidebar-signout>Sair</button></div>' +
+      '<div class="v4-user-footer-actions"><button type="button" class="primary" data-v4-admin-page="users">Usuário</button><button type="button" class="danger" data-v4-sidebar-signout>Sair</button></div>' +
       '</footer>';
   }
 
@@ -137,7 +137,8 @@
       '<div class="v4-sidebar-scroll">' +
         section('Principal',
           navButton({ active: activeNav('global'), attrs: 'data-nav="global"', icon: '⌂', label: 'Início' }) +
-          navButton({ attrs: 'data-v4-open-organization', icon: '◎', label: 'Organização', chevron: '›' }) +
+          navButton({ attrs: 'data-v4-admin-page="overview"', icon: '◎', label: 'Organização', sublabel: 'Admin do sistema', chevron: '›' }) +
+          navButton({ attrs: 'data-v4-admin-page="users"', icon: '●', label: 'Usuários', sublabel: 'Pessoas e acesso' }) +
           navButton({ active: activeNav('settings'), attrs: 'data-nav="settings"', icon: '⚙', label: 'Configurações' })
         ) + renderSquads(clients) + renderClients(clients) +
         section('Sistema', navButton({ icon: '♡', label: 'Status do sistema', counter: clients.length })) +
@@ -158,11 +159,6 @@
     } finally {
       rendering = false;
     }
-  }
-
-  function openUserPage() {
-    if (window.V4_ORGANIZATION_PAGE?.render) window.V4_ORGANIZATION_PAGE.render('users');
-    else document.querySelector('[data-v4-org-launcher]')?.click();
   }
 
   async function signOut() {
@@ -189,11 +185,6 @@
         render();
         return;
       }
-      if (event.target.closest('[data-v4-user-profile], [data-v4-open-organization]')) {
-        event.preventDefault();
-        openUserPage();
-        return;
-      }
       if (event.target.closest('[data-v4-sidebar-signout]')) {
         event.preventDefault();
         signOut();
@@ -217,7 +208,7 @@
     window.addEventListener('v4:growthpack:sources-ready', render);
     window.addEventListener('v4:rbac:squads-updated', render);
     document.addEventListener('click', function () { setTimeout(render, 90); }, true);
-    ui().log('sidebar', 'Sidebar consolidada carregada.');
+    ui().log('sidebar', 'Sidebar conectada as paginas separadas de admin.');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
