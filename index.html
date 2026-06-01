@@ -6,12 +6,12 @@
   <title>V4 Command Center</title>
   <link rel="icon" href="src/assets/v4-company-logo.jpg" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="src/styles.css?v=prod-clean-20260531-04" />
-  <link rel="stylesheet" href="src/services/v4-layout-lock.css?v=prod-clean-20260531-04" />
-  <link rel="stylesheet" href="src/services/client-route-runtime-fix.css?v=client-route-fix-20260531-01" />
+  <link rel="stylesheet" href="src/styles.css?v=prod-clean-20260601-rbac-01" />
+  <link rel="stylesheet" href="src/services/v4-layout-lock.css?v=prod-clean-20260601-rbac-01" />
+  <link rel="stylesheet" href="src/services/client-route-runtime-fix.css?v=client-route-fix-20260601-rbac-01" />
   <script>
     (function () {
-      var CLEANUP_VERSION = 'prod-clean-20260531-04';
+      var CLEANUP_VERSION = 'prod-clean-20260601-rbac-01';
       window.V4_BOOT_DEBUG = [];
       window.V4_SAFE_MODE = false;
       function bootLog(type, message) {
@@ -23,7 +23,6 @@
           [
             'v4-growthpack-debug-log',
             'v4-boot-debug-log',
-            'v4-command-center-state-v6-crm-performance-losses',
             'v4-sidebar-clients-open',
             'v4-sidebar-squads-open'
           ].forEach(function (key) {
@@ -31,7 +30,7 @@
             sessionStorage.removeItem(key);
           });
           localStorage.setItem('v4-cleanup-version', CLEANUP_VERSION);
-          bootLog('cache_cleanup', 'Cache legado limpo.');
+          bootLog('cache_cleanup', 'Cache legado limpo sem apagar estado principal.');
         } catch (error) {
           bootLog('cache_cleanup_error', error.message || String(error));
         }
@@ -63,50 +62,56 @@
   </template>
 
   <script>
-    window.V4_ASSET_VERSION = 'prod-clean-20260531-04';
+    window.V4_ASSET_VERSION = 'prod-clean-20260601-rbac-01';
     window.V4_RUNTIME_API_URL = 'https://script.google.com/macros/s/AKfycbw3St4yVxOXDrJorFa-CWCzn08G2Ht9Ctu4QCIPPYK15RiQFayZaw63UyyHrWk8kKO8/exec';
     if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('config', 'Runtime API configurada.');
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="src/data/seed.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/active-clients.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/official-client-bindings-patch.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/remove-treinando-online.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/media-accounts-config.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/tracking-config.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/monitoring-alerts-config.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/st1-internet-performance-config.js?v=prod-clean-20260531-04"></script>
-  <script src="src/data/clients-ekyte-config.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/official-runtime-fix.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/growthpack-priority-patch.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/integrations.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/alphaville-integrations.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/ekyte-integration.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/ekyte-client-project-bindings.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/growthpack-data.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/remove-dash-crm-and-fix-media.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/performance-source-authority.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/growthpack-dynamic.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/sheets-crm.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/sheets-performance.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/client-branding.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/drive-branding.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/filter-runtime-fix.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/admin-panel-black-ops.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/runtime-api.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/communication-base-real.js?v=prod-clean-20260531-04"></script>
-  <script src="src/app.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/media-ads-runtime-fix.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/st1-media-force-loader.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/fca-dashboard.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/ekyte-ui.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/supabase-drive-live.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/growthpack-block-router.js?v=prod-clean-20260531-04"></script>
-  <script src="src/services/client-route-runtime-fix.js?v=client-route-fix-20260531-01"></script>
-  <link rel="stylesheet" href="src/services/v4-layout-lock.css?v=prod-clean-20260531-04-late" />
-  <link rel="stylesheet" href="src/services/client-route-runtime-fix.css?v=client-route-fix-20260531-01-late" />
+  <script src="src/data/seed.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/active-clients.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/roles.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/squads.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/core/auth.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/core/audit-log.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/core/permissions.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/official-client-bindings-patch.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/remove-treinando-online.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/media-accounts-config.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/tracking-config.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/monitoring-alerts-config.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/st1-internet-performance-config.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/data/clients-ekyte-config.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/official-runtime-fix.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/growthpack-priority-patch.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/integrations.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/alphaville-integrations.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/ekyte-integration.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/ekyte-client-project-bindings.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/growthpack-data.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/remove-dash-crm-and-fix-media.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/performance-source-authority.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/growthpack-dynamic.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/sheets-crm.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/sheets-performance.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/client-branding.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/drive-branding.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/filter-runtime-fix.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/admin-panel-black-ops.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/runtime-api.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/communication-base-real.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/app.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/rbac-runtime-bridge.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/media-ads-runtime-fix.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/st1-media-force-loader.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/fca-dashboard.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/ekyte-ui.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/supabase-drive-live.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/growthpack-block-router.js?v=prod-clean-20260601-rbac-01"></script>
+  <script src="src/services/client-route-runtime-fix.js?v=client-route-fix-20260601-rbac-01"></script>
+  <link rel="stylesheet" href="src/services/v4-layout-lock.css?v=prod-clean-20260601-rbac-01-late" />
+  <link rel="stylesheet" href="src/services/client-route-runtime-fix.css?v=client-route-fix-20260601-rbac-01-late" />
   <script>
-    if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('loaded', 'Scripts principais limpos carregados com trava de cliente.');
+    if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('loaded', 'Scripts principais carregados com RBAC base e trava de cliente.');
   </script>
 </body>
 </html>
