@@ -1,10 +1,8 @@
 (function () {
-  function ensureCss() {
-    var id = 'v4-client-route-runtime-fix-css';
-    var href = 'src/services/client-route-runtime-fix.css?v=client-route-fix-20260531-01';
+  function addCss(id, href) {
     var existing = document.getElementById(id);
     if (existing) {
-      if (existing.href.indexOf('client-route-fix-20260531-01') === -1) existing.href = href;
+      existing.href = href;
       return;
     }
     var link = document.createElement('link');
@@ -14,8 +12,13 @@
     document.head.appendChild(link);
   }
 
-  function isClientRoute() {
-    return Boolean(document.querySelector('#main .client-hero'));
+  function addJs(selector, src, dataKey) {
+    if (document.querySelector(selector)) return;
+    var script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    if (dataKey) script.dataset[dataKey] = 'true';
+    document.head.appendChild(script);
   }
 
   function removeTechnicalButtons() {
@@ -29,11 +32,9 @@
   }
 
   function activate() {
-    ensureCss();
-    var main = document.getElementById('main');
-    if (!main) return;
-    if (isClientRoute()) main.classList.add('v4-client-page-active');
-    else main.classList.remove('v4-client-page-active');
+    addCss('v4-client-route-runtime-fix-css', 'src/services/client-route-runtime-fix.css?v=client-route-fix-20260531-02');
+    addCss('v4-command-redesign-css', 'src/services/v4-command-redesign.css?v=v4-redesign-20260531-01');
+    addJs('script[data-v4-command-redesign]', 'src/services/v4-command-redesign.js?v=v4-redesign-20260531-01', 'v4CommandRedesign');
     removeTechnicalButtons();
   }
 
@@ -49,7 +50,7 @@
     });
     if (document.body) observer.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('resize', activate);
-    if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('client_route_fix', 'Correcao especifica da rota de cliente carregada.');
+    if (window.V4_BOOT_LOG) window.V4_BOOT_LOG('v4_redesign_bootstrap', 'Novo V4 Command Redesign inicializado pelo runtime fix.');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
