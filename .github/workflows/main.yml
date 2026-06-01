@@ -18,6 +18,10 @@ jobs:
           test -f index.html
           test -f vercel.json
           test -f src/services/runtime-api.js
-          test -f src/services/real-data-sync.js
+          test -f src/services/supabase-drive-live.js
           test -f src/services/filter-runtime-fix.js
+          test -f src/services/v4-command-redesign.js
+          test -f src/services/v4-command-redesign.css
+          test -f src/services/admin-entity-pages.js
+          test -f src/services/admin-entity-pages.css
           echo "Static V4 Command Center files validated. Deploy is handled by Vercel."
